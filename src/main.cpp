@@ -1,12 +1,35 @@
 ﻿#include <DxLib.h>
+#include <lua.hpp>
+#include <sol/sol.hpp>
 
 int main(int argc, char** argv)
 {
-
+    if (!AttachConsole(ATTACH_PARENT_PROCESS)) {
+        AllocConsole();
+        SetConsoleTitle(TEXT("DxLua Console"));
+    }
     FILE* fp;
-    AllocConsole();
     freopen_s(&fp, "CONOUT$", "w", stdout); /* 標準出力(stdout)を新しいコンソールに向ける */
+    freopen_s(&fp, "CONIN$", "r", stdin);
     freopen_s(&fp, "CONOUT$", "w", stderr); /* 標準エラー出力(stderr)を新しいコンソールに向ける */
+
+    sol::state lua;
+    lua.open_libraries(sol::lib::base, sol::lib::package, sol::lib::io);
+    lua.set_function(
+        "print",
+        [](sol::variadic_args va) {
+            int i = 0;
+            for (auto v : va) {
+                auto str = v.get<std::string>();
+                if (i) putchar('\t');
+                fwrite(str.c_str(), 1, str.size(), stdout);
+                i++;
+            }
+            putchar('\n');
+        }
+    );
+    lua.script("print('Hello World' , 123 , 'moge')");
+
     printf("test");
 
     ChangeWindowMode(TRUE);//非全画面にセット
