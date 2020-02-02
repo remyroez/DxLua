@@ -39,3 +39,6 @@
 
 # .gitkeep
 !.gitkeep
+
+# DxLib Log file
+Log.txt
