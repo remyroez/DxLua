@@ -4,6 +4,10 @@
 
 int main(int argc, char** argv)
 {
+    sol::state lua;
+    lua.open_libraries(sol::lib::base, sol::lib::package, sol::lib::io);
+
+#ifdef _WIN32
     if (!AttachConsole(ATTACH_PARENT_PROCESS)) {
         AllocConsole();
         SetConsoleTitle(TEXT("DxLua Console"));
@@ -13,8 +17,6 @@ int main(int argc, char** argv)
     freopen_s(&fp, "CONIN$", "r", stdin);
     freopen_s(&fp, "CONOUT$", "w", stderr); /* 標準エラー出力(stderr)を新しいコンソールに向ける */
 
-    sol::state lua;
-    lua.open_libraries(sol::lib::base, sol::lib::package, sol::lib::io);
     lua.set_function(
         "print",
         [](sol::variadic_args va) {
@@ -28,9 +30,17 @@ int main(int argc, char** argv)
             putchar('\n');
         }
     );
-    lua.script("print('Hello World' , 123 , 'moge')");
+#endif // _WIN32
 
-    printf("test");
+    lua.script("print('Hello World' , 123 , 'moge')");
+    printf("test\n");
+
+    {
+        auto file = FileRead_open("main.lua");
+        auto size = FileRead_size("main.lua");
+        printf("Log.txt: %d (%lld byte)\n", file, size);
+        FileRead_close(file);
+    }
 
     ChangeWindowMode(TRUE);//非全画面にセット
     SetGraphMode(640, 480, 32);//画面サイズ指定
