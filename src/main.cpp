@@ -5,24 +5,24 @@
 
 #include <filesystem>
 
-int nogame(std::string_view path = std::string_view()) {
+int nogame(std::filesystem::path path) {
     if (!path.empty()) {
-        printfDx(_T("パス: %s\n\n"), path.data());
+        printfDx(_T("パス: %s\n\n"), path.string().c_str());
     }
     printfDx(_T("Lua スクリプトファイルが見つかりませんでした\n"));
     printfDx(_T("何かキーを押すと終了します\n"));
     return WaitKey();
 }
 
-bool loadScript(sol::state &lua, std::string_view path) {
+bool loadScript(sol::state &lua, std::filesystem::path path) {
     bool succeeded = false;
 
-    auto size = FileRead_size(path.data());
+    auto size = FileRead_size(path.string().c_str());
     if (size < 0) {
         // 見つからなかった
 
     } else {
-        auto file = FileRead_open(path.data());
+        auto file = FileRead_open(path.string().c_str());
         std::vector<std::byte> buffer;
         buffer.resize(size);
         if (FileRead_read(buffer.data(), size, file) >= 0) {
@@ -55,9 +55,8 @@ int main(int argc, char** argv)
     bool allocedConsole = false;
     bool console = true;
     bool window = true;
-    std::string scriptFilename = "main.lua";
-    std::string scriptDirectory = "";
-    std::string scriptPath = scriptFilename;
+    std::filesystem::path scriptFilename = "main.lua";
+    std::filesystem::path scriptPath = scriptFilename;
 
     argagg::parser argparser{ {
         { "console", {"-c", "--console"}, "コンソールを使用します", 0},
@@ -165,9 +164,23 @@ int main(int argc, char** argv)
             } else if (ext == ".dxa") {
                 // アーカイブ
                 std::filesystem::current_path(path.remove_filename());
-                auto archive = path.stem().string();
-                scriptPath = archive.append(scriptFilename);
+                auto archive = path.stem();
+                scriptPath = archive.append(scriptFilename.string());
             }
+        }
+
+    } else {
+        // パスが指定されていない
+        if (std::filesystem::exists("main.lua")) {
+            // スクリプト main.lua があった
+
+        } else if (std::filesystem::exists("game/main.lua")) {
+            // game ディレクトリの下にスクリプト main.lua があった
+            std::filesystem::current_path("./game");
+
+        } else if (std::filesystem::exists("game.dxa")) {
+            // アーカイブ game.dxa があった
+            scriptPath = "game/main.lua";
         }
     }
 
@@ -187,6 +200,7 @@ int main(int argc, char** argv)
     //
 
     if (loaded) {
+        printfDx(_T("パス: %s\n\n読み込みに成功しました"), scriptPath.string().c_str());
         while (ProcessMessage() == 0) {
             ClearDrawScreen();//裏画面消す
             SetDrawScreen(DX_SCREEN_BACK);//描画先を裏画面に
