@@ -5,6 +5,15 @@
 
 #include <filesystem>
 
+inline void my_panic(sol::optional<std::string> maybe_msg) {
+    std::cerr << "Lua is in a panic state and will now abort() the application" << std::endl;
+    if (maybe_msg) {
+        const std::string& msg = maybe_msg.value();
+        std::cerr << "\terror message: " << msg << std::endl;
+    }
+    // When this function exits, Lua will exhibit default behavior and abort()
+}
+
 int nogame(std::filesystem::path path) {
     if (!path.empty()) {
         printfDx(_T("パス: %s\n\n"), path.string().c_str());
@@ -26,7 +35,7 @@ bool loadScript(sol::state &lua, std::filesystem::path path) {
         std::vector<std::byte> buffer;
         buffer.resize(size);
         if (FileRead_read(buffer.data(), size, file) >= 0) {
-            auto result = lua.load_buffer(buffer.data(), buffer.size());
+            auto result = lua.load_buffer(buffer.data(), buffer.size(), path.filename().string().c_str());
             if (result.valid()) {
                 auto presult = result.call();
 
@@ -66,7 +75,7 @@ int main(int argc, char** argv)
         { "help", {"-h", "--help"}, "今表示している引数のヘルプを表示します", 0},
     } };
 
-    sol::state lua;
+    sol::state lua(sol::c_call<decltype(&my_panic), &my_panic>);
     lua.open_libraries(sol::lib::base, sol::lib::package, sol::lib::io);
 
     argagg::parser_results args;
@@ -99,6 +108,7 @@ int main(int argc, char** argv)
                 SetConsoleTitle(TEXT("DxLua Console"));
             }
         }
+        SetConsoleOutputCP(CP_UTF8);
     }
 
     if (attachedConsole || allocedConsole) {
@@ -201,6 +211,18 @@ int main(int argc, char** argv)
 
     if (loaded) {
         printfDx(_T("パス: %s\n\n読み込みに成功しました"), scriptPath.string().c_str());
+
+        // DxLua.boot を実行
+        if (sol::object mod = lua["DxLua"]; mod.is<sol::table>()) {
+            if (sol::object boot = mod.as<sol::table>()["boot"]; boot.is<sol::function>()) {
+                if (auto result = boot.as<sol::protected_function>().call(123, "hoge"); !result.valid()) {
+                    sol::error err = result;
+                    std::cerr << err.what() << std::endl;
+                }
+            }
+        }
+
+        // メインループ
         while (ProcessMessage() == 0) {
             ClearDrawScreen();//裏画面消す
             SetDrawScreen(DX_SCREEN_BACK);//描画先を裏画面に
@@ -219,9 +241,10 @@ int main(int argc, char** argv)
     DxLib_End();
 
 #ifdef _WIN32
-    if (attachedConsole || console) {
+    if (attachedConsole || allocedConsole) {
         FreeConsole();
     }
 #endif
+
     return 0;
 }
