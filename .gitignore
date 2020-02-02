@@ -30,3 +30,12 @@
 *.exe
 *.out
 *.app
+
+# Build directory
+/build
+
+# Include directory
+/include/*
+
+# .gitkeep
+!.gitkeep
