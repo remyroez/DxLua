@@ -3,6 +3,8 @@
 #include <sol/sol.hpp>
 #include <argagg/argagg.hpp>
 
+#include <filesystem>
+
 int nogame(std::string_view path = std::string_view()) {
     if (!path.empty()) {
         printfDx(_T("パス: %s\n\n"), path.data());
@@ -53,7 +55,9 @@ int main(int argc, char** argv)
     bool allocedConsole = false;
     bool console = true;
     bool window = true;
-    std::string scriptPath = "main.lua";
+    std::string scriptFilename = "main.lua";
+    std::string scriptDirectory = "";
+    std::string scriptPath = scriptFilename;
 
     argagg::parser argparser{ {
         { "console", {"-c", "--console"}, "コンソールを使用します", 0},
@@ -135,17 +139,47 @@ int main(int argc, char** argv)
         std::cout << argparser;
     }
     if (args.pos.size() > 0) {
-        scriptPath = args.as<std::string>();
+        // 指定パス
+        std::filesystem::path path = args.as<std::string>();
+
+        // 絶対パスに変換
+        if (!path.is_absolute()) {
+            path = std::filesystem::absolute(path);
+        }
+
+        // パスの対象別に読み込みパスの作成
+        if (std::filesystem::is_directory(path)) {
+            // ディレクトリ
+            std::filesystem::current_path(path);
+            scriptPath = scriptFilename;
+
+        } else if (std::filesystem::is_regular_file(path)) {
+            // ファイル
+            auto ext = path.extension();
+            if (ext == ".lua") {
+                // スクリプト
+                scriptFilename = path.filename().string();
+                std::filesystem::current_path(path.remove_filename());
+                scriptPath = scriptFilename;
+
+            } else if (ext == ".dxa") {
+                // アーカイブ
+                std::filesystem::current_path(path.remove_filename());
+                auto archive = path.stem().string();
+                scriptPath = archive.append(scriptFilename);
+            }
+        }
     }
 
-    lua.script("print('Hello World' , 123 , 'moge')");
-    printf("test\n");
-
-    auto loaded = loadScript(lua, scriptPath);
-
+    // 初期設定
+    SetMainWindowText("DxLua");
     ChangeWindowMode(window);//非全画面にセット
     SetGraphMode(640, 480, 32);//画面サイズ指定
     //SetOutApplicationLogValidFlag(FALSE);//Log.txtを生成しないように設定
+
+    // スクリプトのロード
+    auto loaded = loadScript(lua, scriptPath);
+
     if (DxLib_Init() == 1){ return -1; }//初期化に失敗時にエラーを吐かせて終了
 
     //
