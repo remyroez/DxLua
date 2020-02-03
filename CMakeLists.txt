@@ -17,3 +17,6 @@ if (MSVC)
 endif()
 
 add_subdirectory(src)
+
+get_property("TARGET_SOURCE_FILES" TARGET DxLua PROPERTY SOURCES)
+source_group(TREE "${CMAKE_CURRENT_LIST_DIR}" FILES ${TARGET_SOURCE_FILES})
