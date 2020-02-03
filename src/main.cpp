@@ -206,7 +206,6 @@ int main(int argc, char** argv)
     // 初期設定
     SetMainWindowText("DxLua");
     ChangeWindowMode(window);
-    SetGraphMode(640, 480, 32);//画面サイズ指定
     //SetOutApplicationLogValidFlag(FALSE);//Log.txtを生成しないように設定
 
     // スクリプトのロード
@@ -219,14 +218,17 @@ int main(int argc, char** argv)
     }
 
     // メッセージ出力
-    if (message) {
-        printfDx(_T("%s\n"), message.str().c_str());
+    {
+        auto messageDx = message.str();
+        if (messageDx.size() > 0) {
+            printfDx(_T("%s\n"), messageDx.c_str());
+        }
     }
 
     bool waitBeforeEnd = false;
     if (loaded) {
         // 読み込み済み
-        printfDx(_T("パス: %s\n\nLua スクリプトファイルの読み込みに成功しました"), argPath.string().c_str());
+        //printfDx(_T("パス: %s\n\nLua スクリプトファイルの読み込みに成功しました\n"), argPath.string().c_str());
 
         // DxLua.Boot を実行
         bool booted = false;
@@ -234,7 +236,7 @@ int main(int argc, char** argv)
             if (sol::object Boot = DxLuaObject.as<sol::table>()["Boot"]; Boot.is<sol::function>()) {
                 if (auto result = Boot.as<sol::protected_function>().call(123, "hoge"); !result.valid()) {
                     sol::error err = result;
-                    printfDx(_T("%s\n"), err.what());
+                    std::cerr << err.what() << std::endl;
                     
                 } else {
                     // 正常に終了
