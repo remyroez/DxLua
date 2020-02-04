@@ -28,10 +28,10 @@ function DxLua.Update()
     -- キー入力取得
     Key = DxLua.GetJoypadInputState(DxLua.DX_INPUT_KEY_PAD1)
 
-    if band(Key, DxLua.PAD_INPUT_UP) ~= 0 then PlayerY = PlayerY - 3 end	-- 上を押していたら上に進む
-    if band(Key, DxLua.PAD_INPUT_DOWN) ~= 0 then PlayerY = PlayerY + 3 end	-- 下を押していたら下に進む
-    if band(Key, DxLua.PAD_INPUT_RIGHT) ~= 0 then PlayerX = PlayerX + 3 end	-- 右を押していたら右に進む
-    if band(Key, DxLua.PAD_INPUT_LEFT) ~= 0 then PlayerX = PlayerX - 3 end	-- 左を押していたら左に進む
+    if band(Key, DxLua.PAD_INPUT_UP) ~= 0 then PlayerY = PlayerY - 3 end    -- 上を押していたら上に進む
+    if band(Key, DxLua.PAD_INPUT_DOWN) ~= 0 then PlayerY = PlayerY + 3 end  -- 下を押していたら下に進む
+    if band(Key, DxLua.PAD_INPUT_RIGHT) ~= 0 then PlayerX = PlayerX + 3 end -- 右を押していたら右に進む
+    if band(Key, DxLua.PAD_INPUT_LEFT) ~= 0 then PlayerX = PlayerX - 3 end  -- 左を押していたら左に進む
 
     -- 落下処理
     PlayerY = PlayerY - JumpPower

@@ -25,7 +25,10 @@ sol::table openDxLua(sol::this_state s)
     -- ループ
     if type(DxLua.Update) == 'function' then
         while (DxLua.ProcessMessage() == 0 and DxLua.CheckHitKey(DxLua.KEY_INPUT_ESCAPE) == 0) do
-            DxLua.Update()
+            local result = DxLua.Update()
+            if result then
+                return result -- エラーが起きたら直ちに終了
+            end
         end
     end
 
@@ -69,6 +72,10 @@ end)lua"
     library["DrawGraph"] = [](float xf, float yf, int GrHandle, bool TransFlag) {
         return DrawGraph(xf, yf, GrHandle, TransFlag ? TRUE : FALSE);
     };
+    library["DrawBox"] = [](int x1, int y1, int x2, int y2, unsigned int Color, bool FillFlag) {
+        return DrawBox(x1, y1, x2, y2, Color, FillFlag ? TRUE : FALSE);
+    };
+    DXLUA_INSTALL(library, GetColor);
 
     DXLUA_INSTALL(library, DX_SCREEN_FRONT);
     DXLUA_INSTALL(library, DX_SCREEN_BACK);
@@ -78,6 +85,7 @@ end)lua"
 
     DXLUA_INSTALL(library, CheckHitKey);
     DXLUA_INSTALL(library, GetJoypadInputState);
+    DXLUA_INSTALL(library, WaitKey);
 
     DXLUA_INSTALL(library, KEY_INPUT_ESCAPE);
 
