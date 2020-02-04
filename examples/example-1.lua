@@ -6,7 +6,7 @@ local PlayerGraph
 local Key
 
 -- 画面モードのセット
-DxLua.SetGraphMode(640, 480, 16, 30)
+DxLua.SetGraphMode(640, 480, 16)
 
 -- ＤＸライブラリ初期化処理
 function DxLua.Init()
@@ -19,7 +19,6 @@ function DxLua.Init()
 	-- キャラクターの初期位置をセット
 	PlayerX = 0
     PlayerY = 0
-
 end
 
 -- ループ
@@ -47,29 +46,4 @@ function DxLua.Update()
 
     -- 裏画面の内容を表画面に反映させる
     DxLua.ScreenFlip()
-end
-
--- ブート処理
-function DxLua.Boot(...)
-    -- ＤＸライブラリ初期化処理
-    if type(DxLua.Init) == 'function' then
-        local result = DxLua.Init()
-        if result then
-            return result -- エラーが起きたら直ちに終了
-        end
-    end
-
-    -- ループ
-    if type(DxLua.Update) == 'function' then
-        while (DxLua.ProcessMessage() == 0 and DxLua.CheckHitKey(DxLua.KEY_INPUT_ESCAPE) == 0) do
-            DxLua.Update()
-        end
-    end
-
-    -- ＤＸライブラリ使用の終了処理
-    if type(DxLua.End) == 'function' then
-        DxLua.End()
-    end
-
-    return 'exit'
 end

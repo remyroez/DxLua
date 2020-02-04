@@ -11,6 +11,43 @@ sol::table openDxLua(sol::this_state s)
     sol::state_view lua(s);
     sol::table library = lua.create_table();
 
+    // 実行関数
+    {
+        auto result = lua.safe_script(R"lua( return function (...)
+    -- ＤＸライブラリ初期化処理
+    if type(DxLua.Init) == 'function' then
+        local result = DxLua.Init()
+        if result then
+            return result -- エラーが起きたら直ちに終了
+        end
+    end
+
+    -- ループ
+    if type(DxLua.Update) == 'function' then
+        while (DxLua.ProcessMessage() == 0 and DxLua.CheckHitKey(DxLua.KEY_INPUT_ESCAPE) == 0) do
+            DxLua.Update()
+        end
+    end
+
+    -- ＤＸライブラリ使用の終了処理
+    if type(DxLua.End) == 'function' then
+        DxLua.End()
+    end
+
+    return 'exit'
+end)lua"
+        );
+        if (!result.valid()) {
+            sol::error err = result;
+            std::cerr << err.what() << std::endl;
+
+        } else {
+            if (sol::object fn = result.get<sol::function>(); fn.is<sol::function>()) {
+                library["Run"] = fn;
+            }
+        }
+    }
+
 #define DXLUA_INSTALL(T, X) T[#X] = X;
 
     DXLUA_INSTALL(library, ProcessMessage);

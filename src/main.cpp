@@ -230,11 +230,11 @@ int main(int argc, char** argv)
         // 読み込み済み
         //printfDx(_T("パス: %s\n\nLua スクリプトファイルの読み込みに成功しました\n"), argPath.string().c_str());
 
-        // DxLua.Boot を実行
+        // DxLua.Run を実行
         bool booted = false;
         if (DxLuaObject.is<sol::table>()) {
-            if (sol::object Boot = DxLuaObject.as<sol::table>()["Boot"]; Boot.is<sol::function>()) {
-                if (auto result = Boot.as<sol::protected_function>().call(123, "hoge"); !result.valid()) {
+            if (sol::object Run = DxLuaObject.as<sol::table>()["Run"]; Run.is<sol::function>()) {
+                if (auto result = Run.as<sol::protected_function>().call(123, "hoge"); !result.valid()) {
                     sol::error err = result;
                     std::cerr << err.what() << std::endl;
                     
