@@ -70,7 +70,18 @@ int main(int argc, char** argv)
     } };
 
     sol::state lua(sol::c_call<decltype(&my_panic), &my_panic>);
-    lua.open_libraries(sol::lib::base, sol::lib::package, sol::lib::io, sol::lib::bit32);
+    lua.open_libraries(
+        sol::lib::base,
+        sol::lib::package,
+        sol::lib::string,
+        sol::lib::os,
+        sol::lib::math,
+        sol::lib::table,
+        //sol::lib::debug,
+        sol::lib::bit32,
+        sol::lib::io
+    );
+
     auto DxLuaObject = lua.require("DxLua", sol::c_call<decltype(&DxLua::openDxLua), &DxLua::openDxLua>);
 
     // 引数の解析

@@ -55,6 +55,9 @@ end)lua"
 
     DXLUA_INSTALL(library, ProcessMessage);
 
+    DXLUA_INSTALL(library, WaitTimer);
+    DXLUA_INSTALL(library, WaitKey);
+
     //DXLUA_INSTALL(library, SetGraphMode);
     library["SetGraphMode"] = [](int ScreenSizeX, int ScreenSizeY, int ColorBitDepth, sol::variadic_args va) {
         return SetGraphMode(ScreenSizeX, ScreenSizeY, ColorBitDepth, va.leftover_count() > 0 ? va[0].as<int>() : 60);
@@ -85,7 +88,6 @@ end)lua"
 
     DXLUA_INSTALL(library, CheckHitKey);
     DXLUA_INSTALL(library, GetJoypadInputState);
-    DXLUA_INSTALL(library, WaitKey);
 
     DXLUA_INSTALL(library, KEY_INPUT_ESCAPE);
 
