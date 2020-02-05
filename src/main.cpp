@@ -79,7 +79,8 @@ int main(int argc, char** argv)
         sol::lib::table,
         //sol::lib::debug,
         sol::lib::bit32,
-        sol::lib::io
+        sol::lib::io,
+        sol::lib::ffi
     );
 
     auto DxLuaObject = lua.require("DxLua", sol::c_call<decltype(&DxLua::openDxLua), &DxLua::openDxLua>);
@@ -217,6 +218,7 @@ int main(int argc, char** argv)
     // 初期設定
     SetMainWindowText("DxLua");
     ChangeWindowMode(window);
+    SetUseCharCodeFormat(DX_CHARCODEFORMAT_UTF8);
     //SetOutApplicationLogValidFlag(FALSE);//Log.txtを生成しないように設定
 
     // スクリプトのロード

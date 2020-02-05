@@ -78,7 +78,12 @@ end)lua"
     library["DrawBox"] = [](int x1, int y1, int x2, int y2, unsigned int Color, bool FillFlag) {
         return DrawBox(x1, y1, x2, y2, Color, FillFlag ? TRUE : FALSE);
     };
+    library["DrawString"] = [](int x, int y, const TCHAR* String, unsigned int Color, sol::variadic_args va) {
+        return DrawString(x, y, String, Color, va.leftover_count() > 0 ? va[0].as<int>() : 0);
+    };
     DXLUA_INSTALL(library, GetColor);
+
+    DXLUA_INSTALL(library, SetFontSize);
 
     DXLUA_INSTALL(library, DX_SCREEN_FRONT);
     DXLUA_INSTALL(library, DX_SCREEN_BACK);
