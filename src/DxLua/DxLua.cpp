@@ -93,6 +93,7 @@ end)lua"
     DXLUA_INSTALL(library, GetColor);
 
     DXLUA_INSTALL(library, SetFontSize);
+    DXLUA_INSTALL(library, SetDrawBright);
 
     DXLUA_INSTALL(library, DX_SCREEN_FRONT);
     DXLUA_INSTALL(library, DX_SCREEN_BACK);
