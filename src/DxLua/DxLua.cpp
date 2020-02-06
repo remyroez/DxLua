@@ -58,6 +58,11 @@ end)lua"
     DXLUA_INSTALL(library, WaitTimer);
     DXLUA_INSTALL(library, WaitKey);
 
+    DXLUA_INSTALL(library, GetNowCount);
+    library["GetNowCount"] = [](sol::variadic_args va) {
+        return GetNowCount(va.leftover_count() > 0 ? (va[0].as<bool>() ? TRUE : FALSE) : FALSE);
+    };
+
     DXLUA_INSTALL(library, GetRand);
     DXLUA_INSTALL(library, SRand);
 
