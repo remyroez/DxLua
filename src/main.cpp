@@ -21,15 +21,15 @@ inline void my_panic(sol::optional<std::string> maybe_msg) {
 bool loadScript(sol::state &lua, std::filesystem::path path, std::ostringstream &message) {
     bool succeeded = false;
 
-    auto size = FileRead_size(path.string().c_str());
+    auto size = DxLib::FileRead_size(path.string().c_str());
     if (size < 0) {
         // 見つからなかった
 
     } else {
-        auto file = FileRead_open(path.string().c_str());
+        auto file = DxLib::FileRead_open(path.string().c_str());
         std::vector<std::byte> buffer;
         buffer.resize(size);
-        if (FileRead_read(buffer.data(), size, file) >= 0) {
+        if (DxLib::FileRead_read(buffer.data(), size, file) >= 0) {
             auto result = lua.load_buffer(buffer.data(), buffer.size(), path.filename().string().c_str());
             if (result.valid()) {
                 auto presult = result.call();
@@ -47,7 +47,7 @@ bool loadScript(sol::state &lua, std::filesystem::path path, std::ostringstream 
                 message << err.what() << std::endl;
             }
         }
-        FileRead_close(file);
+        DxLib::FileRead_close(file);
     }
 
     return succeeded;
@@ -220,17 +220,17 @@ int main(int argc, char** argv)
     }
 
     // 初期設定
-    SetMainWindowText("DxLua");
-    ChangeWindowMode(window);
-    SetUseCharCodeFormat(DX_CHARCODEFORMAT_UTF8);
-    //SetOutApplicationLogValidFlag(FALSE);//Log.txtを生成しないように設定
+    DxLib::SetMainWindowText("DxLua");
+    DxLib::ChangeWindowMode(window);
+    DxLib::SetUseCharCodeFormat(DX_CHARCODEFORMAT_UTF8);
+    //DxLib::SetOutApplicationLogValidFlag(FALSE);
 
     // スクリプトのロード
     std::ostringstream message;
     auto loaded = ::loadScript(lua, scriptPath, message);
 
     // ＤＸライブラリ初期化
-    if (DxLib_Init()){
+    if (DxLib::DxLib_Init()){
         return -1;
     }
 
@@ -238,7 +238,7 @@ int main(int argc, char** argv)
     {
         auto messageDx = message.str();
         if (messageDx.size() > 0) {
-            printfDx(_T("%s\n"), messageDx.c_str());
+            DxLib::printfDx(_T("%s\n"), messageDx.c_str());
         }
     }
 
@@ -261,11 +261,11 @@ int main(int argc, char** argv)
                 }
 
             } else {
-                printfDx(_T("変数 DxLua.Boot が関数ではない、または存在しませんでした"));
+                DxLib::printfDx(_T("変数 DxLua.Boot が関数ではない、または存在しませんでした"));
             }
 
         } else {
-            printfDx(_T("変数 DxLua がテーブルではない、または存在しませんでした"));
+            DxLib::printfDx(_T("変数 DxLua がテーブルではない、または存在しませんでした"));
         }
 
         // ブートに失敗したらキー入力待ち
@@ -276,19 +276,19 @@ int main(int argc, char** argv)
     } else {
         // 読み込みなし
         if (!scriptPath.empty()) {
-            printfDx(_T("パス: %s\n\n"), argPath.string().c_str());
+            DxLib::printfDx(_T("パス: %s\n\n"), argPath.string().c_str());
         }
-        printfDx(_T("Lua スクリプトファイルの読み込みに失敗しました\n"));
+        DxLib::printfDx(_T("Lua スクリプトファイルの読み込みに失敗しました\n"));
         waitBeforeEnd = true;
     }
 
     if (waitBeforeEnd) {
-        printfDx(_T("\n何かキーを押すと終了します\n"));
-        WaitKey();
+        DxLib::printfDx(_T("\n何かキーを押すと終了します\n"));
+        DxLib::WaitKey();
     }
 
     // ＤＸライブラリ終了処理
-    DxLib_End();
+    DxLib::DxLib_End();
 
 #ifdef _WIN32
     // コンソール開放
