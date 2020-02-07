@@ -305,13 +305,13 @@ function CheckEliminatBlock()
 		end
 
 		-- 空きを積める
-		for i = WORLD_HEIGHT - 1, 0, -1 do
+		for i = WORLD_HEIGHT - 1, 1, -1 do
 			for j = 1, WORLD_WIDTH do
 				if Block[j][i] ~= 0 then
-					local index = 1
+					local index = i + 1
 					for k = i + 1, WORLD_HEIGHT do
 						index = k
-						if Block[ j ][ k ] then
+						if Block[j][k] ~= 0 then
 							break
 						end
 					end
@@ -341,8 +341,8 @@ function InitBufferBlock()
 end
 
 -- 特定ブロックが消えるか探索
+-- DxLua: もっとわかりやすい数え方に変更
 function CheckEliminatBlockToOne(x, y)
-	--[[
 	local CheckBlock
 	local BlockNum
 
@@ -350,41 +350,120 @@ function CheckEliminatBlockToOne(x, y)
 	CheckBlock = Block[x][y]
 
 	-- 左右にどれだけつながっているか調べる
-	for(i = 0 x + i >= 0 and Block[ x + i ][ y ] == CheckBlock i --){}
-	i ++
-	for(BlockNum = 0 x + i < WORLD_WIDTH and Block[ x + i ][ y ] == CheckBlock BlockNum ++, i ++){}
+	BlockNum = 1 -- DxLua: 起点を１つ目に数える
+
+	-- DxLua: 右方向の同じブロックを数える
+	for i = x + 1, WORLD_WIDTH do
+		if Block[i][y] ~= CheckBlock then
+			-- DxLua: 違うブロックなので終了
+			break
+		else
+			BlockNum = BlockNum + 1
+		end
+	end
+
+	-- DxLua: 左方向の同じブロックを数える
+	for i = x - 1, 1, -1 do
+		if Block[i][y] ~= CheckBlock then
+			-- DxLua: 違うブロックなので終了
+			break
+		else
+			BlockNum = BlockNum + 1
+		end
+	end
 
 	-- ３つ以上つながっていたらここで終了
-	if(BlockNum >= 3) return 1
-
+	if BlockNum >= 3 then return 1 end
 
 	-- 上下にどれだけつながっているか調べる
-	for(i = 0 y + i >= 0 and Block[ x ][ y + i ] == CheckBlock i --){}
-	i ++
-	for(BlockNum = 0 y + i < WORLD_HEIGHT and Block[ x ][ y + i ] == CheckBlock BlockNum ++, i ++){}
+	BlockNum = 1
+
+	-- DxLua: 下方向の同じブロックを数える
+	for i = y + 1, WORLD_HEIGHT do
+		if Block[x][i] ~= CheckBlock then
+			break
+		else
+			BlockNum = BlockNum + 1
+		end
+	end
+
+	-- DxLua: 上方向の同じブロックを数える
+	for i = y - 1, 1, -1 do
+		if Block[x][i] ~= CheckBlock then
+			break
+		else
+			BlockNum = BlockNum + 1
+		end
+	end
 
 	-- ３つ以上つながっていたらここで終了
-	if(BlockNum >= 3) return 1
+	if BlockNum >= 3 then return 1 end
 
+	-- DxLua: 縦幅と横幅の大きい方を取る
+	local WorldMax = math.max(WORLD_WIDTH, WORLD_HEIGHT)
 
 	-- 左上から右下にかけて繋がっている数を調べる
-	for(i = 0 y + i >= 0 and x + i >= 0 and Block[ x + i ][ y + i ] == CheckBlock i --){}
-	i ++
-	for(BlockNum = 0 x + i < WORLD_WIDTH and y + i < WORLD_HEIGHT and Block[ x + i ][ y + i ] == CheckBlock BlockNum ++, i ++){}
+	BlockNum = 1
+
+	-- DxLua: 左上方向の同じブロックを数える
+	for i = 1, WorldMax do
+		-- DxLua: チェックする座標
+		local CheckX, CheckY = x - i, y - i
+		if (CheckX < 1) or (CheckY < 1) then
+			-- DxLua: チェックする座標が画面外なので終了
+			break
+		elseif Block[CheckX][CheckY] ~= CheckBlock then
+			break
+		else
+			BlockNum = BlockNum + 1
+		end
+	end
+
+	-- DxLua: 右下方向の同じブロックを数える
+	for i = 1, WorldMax do
+		local CheckX, CheckY = x + i, y + i
+		if (CheckX > WORLD_WIDTH) or (CheckY > WORLD_HEIGHT) then
+			break
+		elseif Block[CheckX][CheckY] ~= CheckBlock then
+			break
+		else
+			BlockNum = BlockNum + 1
+		end
+	end
 
 	-- ３つ以上つながっていたらここで終了
-	if(BlockNum >= 3) return 1
-
+	if BlockNum >= 3 then return 1 end
 
 	-- 右上から左下にかけて繋がっている数を調べる
-	for(i = 0 y + i >= 0 and  x - i < WORLD_WIDTH and Block[ x - i ][ y + i ] == CheckBlock i --){}
-	i ++
-	for(BlockNum = 0 x - i >= 0 and y + i < WORLD_HEIGHT and Block[ x - i ][ y + i ] == CheckBlock BlockNum ++, i ++){}
+	BlockNum = 1
+
+	-- DxLua: 右上方向の同じブロックを数える
+	for i = 1, WorldMax do
+		local CheckX, CheckY = x + i, y - i
+		if (CheckX > WORLD_WIDTH) or (CheckY < 1) then
+			break
+		elseif Block[CheckX][CheckY] ~= CheckBlock then
+			break
+		else
+			BlockNum = BlockNum + 1
+		end
+	end
+
+	-- DxLua: 左下方向の同じブロックを数える
+	for i = 1, WorldMax do
+		local CheckX, CheckY = x - i, y + i
+		if (CheckX < 1) or (CheckY > WORLD_HEIGHT) then
+			break
+		elseif Block[CheckX][CheckY] ~= CheckBlock then
+			break
+		else
+			BlockNum = BlockNum + 1
+		end
+	end
 
 	-- ３つ以上つながっていたらここで終了
-	if(BlockNum >= 3) return 1
+	if BlockNum >= 3 then return 1 end
 
-	--]]
 	-- ここまで来ていたら消えない
 	return 0
 end
