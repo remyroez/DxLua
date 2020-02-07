@@ -239,7 +239,10 @@ function LockActiveBlock(x, y)
 
 		-- 次に出そうとしているスペースがなかったらゲームオーバー処理
 		for i = 1, 3 do
-			if Block[ActiveX][ActiveY - i + 1] ~= 0 then GameOver() end
+			if Block[ActiveX][ActiveY - i + 1] ~= 0 then
+				GameOver()
+				return 0
+			end
 		end
 	end
 
@@ -253,8 +256,14 @@ function LockActiveBlock(x, y)
 	return 0
 end
 
+local GameOvered = false
+
 -- ゲームオーバー処理
 function GameOver()
+	-- DxLua: ゲームオーバーになったら同じ処理をしないようにする
+	if GameOvered then return end
+	GameOvered = true
+
 	-- 画面中心にゲームオーバーを表示
 	ScreenDraw()
 	DxLua.DrawString(300, 220, "GameOver", DxLua.GetColor(255, 255, 255))
@@ -263,11 +272,9 @@ function GameOver()
 	-- キー入力待ち
 	DxLua.WaitKey()
 
-	-- ＤＸライブラリ終了
-	--DxLua.DxLib_End()
-
 	-- ソフト終了
-	--exit(-1)
+	-- DxLua: 直接終了できないので専用の関数を使用
+	DxLua.Quit()
 end
 
 -- 消えるブロックがあるか調べてあったら消す処理をする

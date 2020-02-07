@@ -21,6 +21,12 @@ sol::table openDxLua(sol::this_state s)
         // ハードコーディング
         // TODO: バイナリ化
         auto result = lua.safe_script(R"lua( return function (...)
+    -- 終了関数
+    local QuitCode = false
+    function DxLua.Quit(code)
+        QuitCode = code or 'exit'
+    end
+
     -- ＤＸライブラリ初期化処理
     if type(DxLua.Init) == 'function' then
         local result = DxLua.Init()
@@ -32,7 +38,7 @@ sol::table openDxLua(sol::this_state s)
     -- ループ
     if type(DxLua.Update) == 'function' then
         while (DxLua.ProcessMessage() == 0 and DxLua.CheckHitKey(DxLua.KEY_INPUT_ESCAPE) == 0) do
-            local result = DxLua.Update()
+            local result = DxLua.Update() or QuitCode
             if result then
                 return result -- エラーが起きたら直ちに終了
             end

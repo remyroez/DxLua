@@ -7,6 +7,8 @@
 
 #include "DxLua/DxLua.h"
 
+namespace {
+
 inline void my_panic(sol::optional<std::string> maybe_msg) {
     std::cerr << "Lua is in a panic state and will now abort() the application" << std::endl;
     if (maybe_msg) {
@@ -51,6 +53,8 @@ bool loadScript(sol::state &lua, std::filesystem::path path, std::ostringstream 
     return succeeded;
 }
 
+} // namespace
+
 int main(int argc, char** argv)
 {
     bool attachedConsole = false;
@@ -69,7 +73,7 @@ int main(int argc, char** argv)
         { "help", {"-h", "--help"}, "今表示している引数のヘルプを表示します", 0},
     } };
 
-    sol::state lua(sol::c_call<decltype(&my_panic), &my_panic>);
+    sol::state lua(sol::c_call<decltype(&::my_panic), &::my_panic>);
     lua.open_libraries(
         sol::lib::base,
         sol::lib::package,
@@ -223,7 +227,7 @@ int main(int argc, char** argv)
 
     // スクリプトのロード
     std::ostringstream message;
-    auto loaded = loadScript(lua, scriptPath, message);
+    auto loaded = ::loadScript(lua, scriptPath, message);
 
     // ＤＸライブラリ初期化
     if (DxLib_Init()){
