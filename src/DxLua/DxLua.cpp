@@ -28,7 +28,7 @@ sol::table openDxLua(sol::this_state s)
     end
 
     -- ＤＸライブラリ初期化処理
-    if type(DxLua.Init) == 'function' then
+    if DxLua.Init then
         local result = DxLua.Init()
         if result then
             return result -- エラーが起きたら直ちに終了
@@ -36,9 +36,11 @@ sol::table openDxLua(sol::this_state s)
     end
 
     -- ループ
-    if type(DxLua.Update) == 'function' then
+    if DxLua.Update then
+        local BeforeTime = DxLua.GetNowCount()
         while (DxLua.ProcessMessage() == 0 and DxLua.CheckHitKey(DxLua.KEY_INPUT_ESCAPE) == 0) do
-            local result = DxLua.Update() or QuitCode
+            local DeltaTime = (DxLua.GetNowCount() - BeforeTime) / 1000
+            local result = DxLua.Update(DeltaTime) or QuitCode
             if result then
                 return result -- エラーが起きたら直ちに終了
             end
@@ -46,7 +48,7 @@ sol::table openDxLua(sol::this_state s)
     end
 
     -- ＤＸライブラリ使用の終了処理
-    if type(DxLua.End) == 'function' then
+    if DxLua.End then
         DxLua.End()
     end
 
