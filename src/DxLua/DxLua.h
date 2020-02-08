@@ -4,8 +4,12 @@
 #include <lua.hpp>
 #include <sol/sol.hpp>
 
+#include <filesystem>
+#include <sstream>
+
 namespace DxLua {
 
+// DxLua ライブラリの展開
 sol::table openDxLua(sol::this_state s);
 
 } // namespace DxLua
