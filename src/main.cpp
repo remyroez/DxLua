@@ -5,6 +5,10 @@
 
 #include <filesystem>
 
+#include "DxLua/DxLua.h"
+
+namespace {
+
 inline void my_panic(sol::optional<std::string> maybe_msg) {
     std::cerr << "Lua is in a panic state and will now abort() the application" << std::endl;
     if (maybe_msg) {
@@ -14,27 +18,18 @@ inline void my_panic(sol::optional<std::string> maybe_msg) {
     // When this function exits, Lua will exhibit default behavior and abort()
 }
 
-int nogame(std::filesystem::path path) {
-    if (!path.empty()) {
-        printfDx(_T("パス: %s\n\n"), path.string().c_str());
-    }
-    printfDx(_T("Lua スクリプトファイルが見つかりませんでした\n"));
-    printfDx(_T("何かキーを押すと終了します\n"));
-    return WaitKey();
-}
-
-bool loadScript(sol::state &lua, std::filesystem::path path) {
+bool loadScript(sol::state &lua, std::filesystem::path path, std::ostringstream &message) {
     bool succeeded = false;
 
-    auto size = FileRead_size(path.string().c_str());
+    auto size = DxLib::FileRead_size(path.string().c_str());
     if (size < 0) {
         // 見つからなかった
 
     } else {
-        auto file = FileRead_open(path.string().c_str());
+        auto file = DxLib::FileRead_open(path.string().c_str());
         std::vector<std::byte> buffer;
         buffer.resize(size);
-        if (FileRead_read(buffer.data(), size, file) >= 0) {
+        if (DxLib::FileRead_read(buffer.data(), size, file) >= 0) {
             auto result = lua.load_buffer(buffer.data(), buffer.size(), path.filename().string().c_str());
             if (result.valid()) {
                 auto presult = result.call();
@@ -44,19 +39,21 @@ bool loadScript(sol::state &lua, std::filesystem::path path) {
 
                 } else {
                     sol::error err = presult;
-                    std::cerr << err.what() << std::endl;
+                    message << err.what() << std::endl;
                 }
 
             } else {
                 sol::error err = result;
-                std::cerr << err.what() << std::endl;
+                message << err.what() << std::endl;
             }
         }
-        FileRead_close(file);
+        DxLib::FileRead_close(file);
     }
 
     return succeeded;
 }
+
+} // namespace
 
 int main(int argc, char** argv)
 {
@@ -66,6 +63,7 @@ int main(int argc, char** argv)
     bool window = true;
     std::filesystem::path scriptFilename = "main.lua";
     std::filesystem::path scriptPath = scriptFilename;
+    std::filesystem::path argPath;
 
     argagg::parser argparser{ {
         { "console", {"-c", "--console"}, "コンソールを使用します", 0},
@@ -75,9 +73,23 @@ int main(int argc, char** argv)
         { "help", {"-h", "--help"}, "今表示している引数のヘルプを表示します", 0},
     } };
 
-    sol::state lua(sol::c_call<decltype(&my_panic), &my_panic>);
-    lua.open_libraries(sol::lib::base, sol::lib::package, sol::lib::io);
+    sol::state lua(sol::c_call<decltype(&::my_panic), &::my_panic>);
+    lua.open_libraries(
+        sol::lib::base,
+        sol::lib::package,
+        sol::lib::string,
+        sol::lib::os,
+        sol::lib::math,
+        sol::lib::table,
+        //sol::lib::debug,
+        sol::lib::bit32,
+        sol::lib::io,
+        sol::lib::ffi
+    );
 
+    auto DxLuaObject = lua.require("DxLua", sol::c_call<decltype(&DxLua::openDxLua), &DxLua::openDxLua>);
+
+    // 引数の解析
     argagg::parser_results args;
     try {
         args = argparser.parse(argc, argv);
@@ -86,9 +98,13 @@ int main(int argc, char** argv)
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
     }
+
+    // コンソール使用
     if (args["console"]) {
         console = true;
     }
+
+    // フルスクリーン／ウィンドウモード
     if (args["fullscreen"]) {
         window = false;
 
@@ -135,9 +151,12 @@ int main(int argc, char** argv)
     }
 #endif // _WIN32
 
+    // バージョン
     if (args["version"]) {
         std::cout << "DxLua 0.1.0" << std::endl;
     }
+
+    // ヘルプ
     if (args["help"]) {
         std::cout << "使い方:" << std::endl;
         std::cout << "    DxLua [オプション] luaスクリプトファイル" << std::endl;
@@ -147,9 +166,12 @@ int main(int argc, char** argv)
         std::cout << "オプション:" << std::endl;
         std::cout << argparser;
     }
+
+    // パスの解析
     if (args.pos.size() > 0) {
         // 指定パス
         std::filesystem::path path = args.as<std::string>();
+        argPath = path;
 
         // 絶対パスに変換
         if (!path.is_absolute()) {
@@ -183,64 +205,93 @@ int main(int argc, char** argv)
         // パスが指定されていない
         if (std::filesystem::exists("main.lua")) {
             // スクリプト main.lua があった
+            argPath = scriptPath;
 
         } else if (std::filesystem::exists("game/main.lua")) {
             // game ディレクトリの下にスクリプト main.lua があった
             std::filesystem::current_path("./game");
+            argPath = "game/main.lua";
 
         } else if (std::filesystem::exists("game.dxa")) {
             // アーカイブ game.dxa があった
             scriptPath = "game/main.lua";
+            argPath = scriptPath;
         }
     }
 
     // 初期設定
-    SetMainWindowText("DxLua");
-    ChangeWindowMode(window);//非全画面にセット
-    SetGraphMode(640, 480, 32);//画面サイズ指定
-    //SetOutApplicationLogValidFlag(FALSE);//Log.txtを生成しないように設定
+    DxLib::SetMainWindowText("DxLua");
+    DxLib::ChangeWindowMode(window);
+    DxLib::SetUseCharCodeFormat(DX_CHARCODEFORMAT_UTF8);
+    //DxLib::SetOutApplicationLogValidFlag(FALSE);
 
     // スクリプトのロード
-    auto loaded = loadScript(lua, scriptPath);
+    std::ostringstream message;
+    auto loaded = ::loadScript(lua, scriptPath, message);
 
-    if (DxLib_Init() == 1){ return -1; }//初期化に失敗時にエラーを吐かせて終了
+    // ＤＸライブラリ初期化
+    if (DxLib::DxLib_Init()){
+        return -1;
+    }
 
-    //
-    //ここで画像・音を読み込み
-    //
+    // メッセージ出力
+    {
+        auto messageDx = message.str();
+        if (messageDx.size() > 0) {
+            DxLib::printfDx(_T("%s\n"), messageDx.c_str());
+        }
+    }
 
+    bool waitBeforeEnd = false;
     if (loaded) {
-        printfDx(_T("パス: %s\n\n読み込みに成功しました"), scriptPath.string().c_str());
+        // 読み込み済み
+        //printfDx(_T("パス: %s\n\nLua スクリプトファイルの読み込みに成功しました\n"), argPath.string().c_str());
 
-        // DxLua.boot を実行
-        if (sol::object mod = lua["DxLua"]; mod.is<sol::table>()) {
-            if (sol::object boot = mod.as<sol::table>()["boot"]; boot.is<sol::function>()) {
-                if (auto result = boot.as<sol::protected_function>().call(123, "hoge"); !result.valid()) {
+        // DxLua.Run を実行
+        bool booted = false;
+        if (DxLuaObject.is<sol::table>()) {
+            if (sol::object Run = DxLuaObject.as<sol::table>()["Run"]; Run.is<sol::function>()) {
+                if (auto result = Run.as<sol::protected_function>().call(123, "hoge"); !result.valid()) {
                     sol::error err = result;
                     std::cerr << err.what() << std::endl;
+                    
+                } else {
+                    // 正常に終了
+                    booted = true;
                 }
+
+            } else {
+                DxLib::printfDx(_T("変数 DxLua.Boot が関数ではない、または存在しませんでした"));
             }
+
+        } else {
+            DxLib::printfDx(_T("変数 DxLua がテーブルではない、または存在しませんでした"));
         }
 
-        // メインループ
-        while (ProcessMessage() == 0) {
-            ClearDrawScreen();//裏画面消す
-            SetDrawScreen(DX_SCREEN_BACK);//描画先を裏画面に
-
-            //
-            //ここに毎フレーム呼ぶ処理を書く
-            //
-
-            ScreenFlip();//裏画面を表画面にコピー
+        // ブートに失敗したらキー入力待ち
+        if (!booted) {
+            waitBeforeEnd = true;
         }
 
     } else {
-        nogame(scriptPath);
+        // 読み込みなし
+        if (!scriptPath.empty()) {
+            DxLib::printfDx(_T("パス: %s\n\n"), argPath.string().c_str());
+        }
+        DxLib::printfDx(_T("Lua スクリプトファイルの読み込みに失敗しました\n"));
+        waitBeforeEnd = true;
     }
 
-    DxLib_End();
+    if (waitBeforeEnd) {
+        DxLib::printfDx(_T("\n何かキーを押すと終了します\n"));
+        DxLib::WaitKey();
+    }
+
+    // ＤＸライブラリ終了処理
+    DxLib::DxLib_End();
 
 #ifdef _WIN32
+    // コンソール開放
     if (attachedConsole || allocedConsole) {
         FreeConsole();
     }
