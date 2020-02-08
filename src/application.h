@@ -97,14 +97,14 @@ protected:
 	// コンソールの破棄
 	bool teardown_console();
 
+	// エンジンの初期設定
+	bool configure_engine();
+
 	// エンジンのセットアップ
 	bool setup_engine();
 
-	// エンジンの初期化処理
-	bool initialize_engine();
-
-	// エンジンの終了処理
-	bool finalize_engine();
+	// エンジンの破棄
+	bool teardown_engine();
 
 	// スクリプトの読み込み
 	bool load_script(std::ostringstream& message);

@@ -121,7 +121,7 @@ application::done_code application::boot() {
         // Lua のセットアップに失敗
         done = done_code::error;
 
-    } else if (!setup_engine()) {
+    } else if (!configure_engine()) {
         // エンジンのセットアップに失敗
         done = done_code::error;
 
@@ -158,7 +158,7 @@ application::done_code application::run() {
         loaded_script = true;
     }
 
-    if (!initialize_engine()) {
+    if (!setup_engine()) {
         // エンジンの初期化に失敗
         done = done_code::error;
 
@@ -235,7 +235,7 @@ application::done_code application::run() {
             }
         }
 
-        finalize_engine();
+        teardown_engine();
     }
 
     // リスタート時の出力
@@ -496,8 +496,8 @@ bool application::teardown_console() {
     return true;
 }
 
-// エンジンのセットアップ
-bool application::setup_engine() {
+// エンジンの初期設定
+bool application::configure_engine() {
     DxLib::DxLib_GlobalStructInitialize();
     DxLib::SetMainWindowText("DxLua");
     DxLib::ChangeWindowMode(_option.window);
@@ -507,8 +507,8 @@ bool application::setup_engine() {
     return true;
 }
 
-// エンジンの初期化処理
-bool application::initialize_engine() {
+// エンジンのセットアップ
+bool application::setup_engine() {
     bool succeeded = false;
 
     if (_initialized_engine) {
@@ -526,8 +526,8 @@ bool application::initialize_engine() {
     return succeeded;
 }
 
-// エンジンの終了処理
-bool application::finalize_engine() {
+// エンジンの破棄
+bool application::teardown_engine() {
     bool succeeded = false;
 
     if (!_initialized_engine) {
