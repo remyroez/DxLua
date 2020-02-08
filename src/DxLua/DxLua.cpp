@@ -27,29 +27,18 @@ sol::table openDxLua(sol::this_state s)
         QuitCode = code or 'exit'
     end
 
-    -- ＤＸライブラリ初期化処理
-    if DxLua.Init then
-        local result = DxLua.Init()
-        if result then
-            return result -- エラーが起きたら直ちに終了
-        end
-    end
-
     -- ループ
     if DxLua.Update then
-        local BeforeTime = DxLua.GetNowCount()
-        while (DxLua.ProcessMessage() == 0 and DxLua.CheckHitKey(DxLua.KEY_INPUT_ESCAPE) == 0) do
-            local DeltaTime = (DxLua.GetNowCount() - BeforeTime) / 1000
+        local BeforeTime = DxLua.GetNowHiPerformanceCount()
+        while (DxLua.ProcessMessage() == 0) do
+            local NowTime = DxLua.GetNowHiPerformanceCount()
+            local DeltaTime = (NowTime - BeforeTime) / 1000000
+            BeforeTime = NowTime;
             local result = DxLua.Update(DeltaTime) or QuitCode
             if result then
                 return result -- エラーが起きたら直ちに終了
             end
         end
-    end
-
-    -- ＤＸライブラリ使用の終了処理
-    if DxLua.End then
-        DxLua.End()
     end
 
     return 'exit'
@@ -78,9 +67,11 @@ end)lua"
     DXLUA_PORT(library, WaitTimer);
     DXLUA_PORT(library, WaitKey);
 
-    DXLUA_PORT(library, GetNowCount);
     library["GetNowCount"] = [](sol::variadic_args va) {
         return GetNowCount(va.leftover_count() > 0 ? (va[0].as<bool>() ? TRUE : FALSE) : FALSE);
+    };
+    library["GetNowHiPerformanceCount"] = [](sol::variadic_args va) {
+        return GetNowHiPerformanceCount(va.leftover_count() > 0 ? (va[0].as<bool>() ? TRUE : FALSE) : FALSE);
     };
 
     DXLUA_PORT(library, GetRand);
