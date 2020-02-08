@@ -1,8 +1,8 @@
 -- キー入力基本
 local band = bit.band
 
-local PlayerX, PlayerY
-local PlayerGraph
+--local PlayerX, PlayerY
+--local PlayerGraph
 local Key
 
 -- 画面モードのセット
@@ -23,22 +23,24 @@ function DxLua.Init(...)
     PlayerY = 0
 end
 
+local Speed = 300
+
 -- ループ
 function DxLua.Update(DeltaTime)
     -- キー入力取得
     Key = DxLua.GetJoypadInputState(DxLua.DX_INPUT_KEY_PAD1)
 
     -- 上を押していたら上に進む
-    if band(Key, DxLua.PAD_INPUT_UP) ~= 0 then PlayerY = PlayerY - 100 * DeltaTime end
+    if band(Key, DxLua.PAD_INPUT_UP) ~= 0 then PlayerY = PlayerY - Speed * DeltaTime end
 
     -- 下を押していたら下に進む
-    if band(Key, DxLua.PAD_INPUT_DOWN) ~= 0 then PlayerY = PlayerY + 100 * DeltaTime end
+    if band(Key, DxLua.PAD_INPUT_DOWN) ~= 0 then PlayerY = PlayerY + Speed * DeltaTime end
 
     -- 右を押していたら右に進む
-    if band(Key, DxLua.PAD_INPUT_RIGHT) ~= 0 then PlayerX = PlayerX + 100 * DeltaTime end
+    if band(Key, DxLua.PAD_INPUT_RIGHT) ~= 0 then PlayerX = PlayerX + Speed * DeltaTime end
 
     -- 左を押していたら左に進む
-    if band(Key, DxLua.PAD_INPUT_LEFT) ~= 0 then PlayerX = PlayerX - 100 * DeltaTime end
+    if band(Key, DxLua.PAD_INPUT_LEFT) ~= 0 then PlayerX = PlayerX - Speed * DeltaTime end
 
     if DxLua.CheckHitKey(DxLua.KEY_INPUT_F5) ~= 0 then return 'reload' end
 

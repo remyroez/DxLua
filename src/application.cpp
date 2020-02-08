@@ -143,9 +143,8 @@ application::done_code application::run() {
     bool loaded_script = false;
     if (!load_script(message)) {
         // スクリプトの読み込みに失敗
-        if (auto message_string = message.str(); !message_string.empty()) {
-            std::cerr << message_string << std::endl;
-        }
+        message << std::endl << u8"スクリプトの読み込みに失敗しました";
+        std::cerr << message.str() << std::endl;
 
     } else {
         loaded_script = true;
@@ -156,18 +155,39 @@ application::done_code application::run() {
         done = done_code::error;
 
     } else {
+        // 初期化呼び出し済みかどうか
+        bool inited = false;
         while (loaded_script) {
-            // 初期化
-            done = call_init(message);
+            done = done_code::none;
 
-            // 実行
-            if (done == done_code::none) {
-                done = call_run(message);
+            // 初期化ステップ
+            if (inited) {
+                // 初期化呼び出し済み
+
+            } else {
+                // 初期化呼び出し
+                done = call_init(message);
             }
 
-            // 終了
-            if (done == done_code::exit) {
-                done = call_end(message);
+            // 実行ステップ
+            if (done != done_code::none) {
+                // 既に終了していたら何もしない
+
+            } else {
+                // 初期化呼び出し済み
+                inited = true;
+
+                // 実行呼び出し
+                done = call_run(message);
+
+                // 終了ステップ
+                if (done != done_code::exit) {
+                    // exit 以外で終了していたら実行しない
+
+                } else {
+                    // 終了呼び出し
+                    done = call_end(message);
+                }
             }
 
             // 終了コード別に処理
@@ -182,13 +202,13 @@ application::done_code application::run() {
                 loaded_script = false;
                 if (!load_script(message)) {
                     // スクリプトの読み込みに失敗
-                    if (auto message_string = message.str(); !message_string.empty()) {
-                        std::cerr << message_string << std::endl;
-                    }
+                    message << std::endl << u8"スクリプトの再読み込みに失敗しました";
+                    std::cerr << message.str() << std::endl;
 
                 } else {
                     // 読み込み成功したので再実行
                     loaded_script = true;
+                    std::cout << u8"スクリプトを再読み込みしました" << std::endl;
                     continue;
                 }
             }
@@ -198,9 +218,10 @@ application::done_code application::run() {
         // エラーメッセージ
         if (auto message_string = message.str(); !message_string.empty()) {
             DxLib::clsDx();
-            DxLib::printfDx(_T("%s\n"), message_string.c_str());
-            DxLib::printfDx(_T("\n何かキーを押すと終了します\n"));
-            DxLib::WaitKey();
+            DxLib::printfDx(u8"%s\n", message_string.c_str());
+            DxLib::printfDx(u8"\n何かキーを押すと終了します\n");
+            DxLib::ScreenFlip();
+            auto Key = DxLib::WaitKey();
         }
 
         finalize_engine();
