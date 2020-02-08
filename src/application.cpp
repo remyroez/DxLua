@@ -14,11 +14,11 @@ using namespace remyroez;
 
 // 解析機の準備
 static const argagg::parser argparser{ {
-    { "console", {"-c", "--console"}, "コンソールを使用します", 0},
-    { "window", {"-w", "--window"}, "強制的にウィンドウモードで起動します", 0},
-    { "fullscreen", {"-f", "--fullscreen"}, "強制的にフルスクリーンモードで起動します", 0},
-    { "version", {"-v", "--version"}, "バージョン情報を表示します", 0},
-    { "help", {"-h", "--help"}, "今表示している引数のヘルプを表示します", 0},
+    { "console", {"-c", "--console"}, u8"コンソールを使用します", 0},
+    { "window", {"-w", "--window"}, u8"強制的にウィンドウモードで起動します", 0},
+    { "fullscreen", {"-f", "--fullscreen"}, u8"強制的にフルスクリーンモードで起動します", 0},
+    { "version", {"-v", "--version"}, u8"バージョン情報を表示します", 0},
+    { "help", {"-h", "--help"}, u8"今表示している引数のヘルプを表示します", 0},
 } };
 
 // スクリプトの終了関数を呼ぶ
@@ -130,6 +130,13 @@ application::done_code application::boot() {
         done = run();
     }
 
+    if (!teardown_lua()) {
+        // Lua の破棄に失敗
+
+    } else {
+        // 成功
+    }
+
     return done;
 }
 
@@ -140,6 +147,7 @@ application::done_code application::run() {
     // エラーメッセージ
     std::ostringstream message;
 
+    // スクリプトの読み込み
     bool loaded_script = false;
     if (!load_script(message)) {
         // スクリプトの読み込みに失敗
@@ -158,8 +166,6 @@ application::done_code application::run() {
         // 初期化呼び出し済みかどうか
         bool inited = false;
         while (loaded_script) {
-            done = done_code::none;
-
             // 初期化ステップ
             if (inited) {
                 // 初期化呼び出し済み
@@ -167,16 +173,17 @@ application::done_code application::run() {
             } else {
                 // 初期化呼び出し
                 done = call_init(message);
+                inited = true;
             }
 
             // 実行ステップ
-            if (done != done_code::none) {
+            if (!inited) {
+                // 初期化呼び出しが成功していない
+
+            } else if (done != done_code::none) {
                 // 既に終了していたら何もしない
 
             } else {
-                // 初期化呼び出し済み
-                inited = true;
-
                 // 実行呼び出し
                 done = call_run(message);
 
@@ -209,6 +216,7 @@ application::done_code application::run() {
                     // 読み込み成功したので再実行
                     loaded_script = true;
                     std::cout << u8"スクリプトを再読み込みしました" << std::endl;
+                    done = done_code::none;
                     continue;
                 }
             }
@@ -219,12 +227,20 @@ application::done_code application::run() {
         if (auto message_string = message.str(); !message_string.empty()) {
             DxLib::clsDx();
             DxLib::printfDx(u8"%s\n", message_string.c_str());
-            DxLib::printfDx(u8"\n何かキーを押すと終了します\n");
+            DxLib::printfDx(u8"\nＦ５キーを押すとリスタート、それ以外のキーを押すと終了します\n");
             DxLib::ScreenFlip();
             auto Key = DxLib::WaitKey();
+            if (Key == KEY_INPUT_F5) {
+                done = done_code::restart;
+            }
         }
 
         finalize_engine();
+    }
+
+    // リスタート時の出力
+    if (done == done_code::restart) {
+        std::cout << u8"ゲームをリスタートしています…" << std::endl;
     }
 
     return done;
@@ -232,26 +248,26 @@ application::done_code application::run() {
 
 // スクリプトの初期化関数を呼ぶ
 application::done_code application::call_init(std::ostringstream& message) {
-    return ::call_luafn(_dxLua, "Init", message, sol::as_args(_option.args));
+    return ::call_luafn(*_dxLua, "Init", message, sol::as_args(_option.args));
 }
 
 // スクリプトの実行関数を呼ぶ
 application::done_code application::call_run(std::ostringstream& message) {
-    return ::call_luafn(_dxLua, "Run", message);
+    return ::call_luafn(*_dxLua, "Run", message);
 }
 
 // スクリプトの終了関数を呼ぶ
 application::done_code application::call_end(std::ostringstream& message) {
-    return ::call_luafn(_dxLua, "End", message);
+    return ::call_luafn(*_dxLua, "End", message);
 }
 
 // Lua のセットアップ
 bool application::setup_lua() {
     // Lua ステートの構築
-    _state = sol::state(sol::c_call<decltype(&application::panic), &application::panic>);
+    _state = std::make_unique<sol::state>(sol::state(sol::c_call<decltype(&application::panic), &application::panic>));
 
     // 標準ライブラリの展開
-    _state.open_libraries(
+    _state->open_libraries(
         sol::lib::base,
         sol::lib::package,
         sol::lib::string,
@@ -265,13 +281,13 @@ bool application::setup_lua() {
     );
 
     // DxLua ライブラリの展開
-    _dxLua = _state.require("DxLua", sol::c_call<decltype(&DxLua::openDxLua), &DxLua::openDxLua>);
+    _dxLua = _state->require("DxLua", sol::c_call<decltype(&DxLua::openDxLua), &DxLua::openDxLua>);
 
 #ifdef _WIN32
     // コンソール使用時の設定
     if (has_console()) {
         // Lua 関数を C++ stdout に合わせて修正
-        _state.set_function(
+        _state->set_function(
             "print",
             [](sol::variadic_args va) {
                 int i = 0;
@@ -287,7 +303,23 @@ bool application::setup_lua() {
     }
 #endif // _WIN32
 
-    return _dxLua.is<sol::table>();
+    return _dxLua->is<sol::table>();
+}
+
+// Lua の破棄
+bool application::teardown_lua() {
+    // DxLua ライブラリの破棄
+    if (_dxLua) {
+        _dxLua.reset();
+    }
+
+    // Lua ステートの破棄
+    if (_state) {
+        _state->stack_clear();
+        _state->collect_garbage();
+        _state.reset();
+    }
+    return true;
 }
 
 // 引数の解析
@@ -391,6 +423,8 @@ bool application::parse_arguments(int argc, const char** argv) {
 
 // コンソールのセットアップ
 bool application::setup_console() {
+    bool succeeded = false;
+
 #ifdef _WIN32
     // コンソールの使用
     if (_option.console && !has_console()) {
@@ -419,10 +453,34 @@ bool application::setup_console() {
         freopen_s(&fp, "CONOUT$", "w", stderr);
     }
 
-    return has_console();
+    succeeded = has_console();
 #else
-    return true;
+    succeeded = true;
 #endif // _WIN32
+
+    // バージョン情報
+    if (_option.version) {
+        std::cout << "DxLua 0.1.0" << std::endl;
+    }
+
+    // ヘルプ
+    if (_option.help) {
+        std::cout << u8"使い方:" << std::endl;
+        std::cout << u8"    DxLua [オプション...] <パス> [<サブ引数>...]" << std::endl;
+        std::cout << std::endl;
+        std::cout << u8"引数:" << std::endl;
+        std::cout << u8"    <パス>" << std::endl;
+        std::cout << u8"        Lua スクリプトファイル" << std::endl;
+        std::cout << u8"        または main.lua が入っているディレクトリ" << std::endl;
+        std::cout << u8"        または main.lua が入っている dxa ファイル" << std::endl;
+        std::cout << u8"    <サブ引数>" << std::endl;
+        std::cout << u8"        スクリプトに渡される任意の数の引数" << std::endl;
+        std::cout << std::endl;
+        std::cout << u8"オプション:" << std::endl;
+        std::cout << argparser << std::endl;
+    }
+
+    return succeeded;
 }
 
 // コンソールの開放
@@ -476,7 +534,7 @@ bool application::finalize_engine() {
         // 未初期化
         succeeded = true;
 
-    } else if (!DxLib::DxLib_End()) {
+    } else if (DxLib::DxLib_End() == -1) {
         // ＤＸライブラリの終了に失敗
 
     } else {
@@ -511,7 +569,7 @@ bool application::load_script(std::ostringstream& message) {
         // ファイルの内容を取得
         if (DxLib::FileRead_read(buffer.data(), size, file) >= 0) {
             // 内容を Lua として読み込み
-            auto result = _state.load_buffer(buffer.data(), buffer.size(), path.filename().string().c_str());
+            auto result = _state->load_buffer(buffer.data(), buffer.size(), path.filename().string().c_str());
             if (result.valid()) {
                 // 読み込みに成功したので実行
                 auto presult = result.call();

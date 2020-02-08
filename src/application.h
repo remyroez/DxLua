@@ -88,10 +88,13 @@ protected:
 	// Lua のセットアップ
 	bool setup_lua();
 
+	// Lua の破棄
+	bool teardown_lua();
+
 	// コンソールのセットアップ
 	bool setup_console();
 
-	// コンソールの開放
+	// コンソールの破棄
 	bool teardown_console();
 
 	// エンジンのセットアップ
@@ -112,10 +115,10 @@ protected:
 
 private:
 	// Lua ステート
-	sol::state _state;
+	std::unique_ptr<sol::state> _state;
 
 	// DxLua ライブラリオブジェクト
-	sol::object _dxLua;
+	sol::optional<sol::object> _dxLua;
 
 	// オプション
 	struct option {

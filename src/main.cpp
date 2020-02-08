@@ -9,8 +9,10 @@ int main(int argc, char** argv)
         // セットアップ失敗
 
     } else {
-        // 実行
-        app.boot();
+        using done_code = remyroez::application::done_code;
+
+        // 実行（restart が返ったらループ）
+        while (app.boot() == done_code::restart) {}
 
         // 終了
         app.teardown();

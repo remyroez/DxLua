@@ -30,7 +30,7 @@ sol::table openDxLua(sol::this_state s)
     -- ループ
     if DxLua.Update then
         local BeforeTime = DxLua.GetNowHiPerformanceCount()
-        while (DxLua.ProcessMessage() == 0 and DxLua.CheckHitKey(DxLua.KEY_INPUT_ESCAPE) == 0) do
+        while (DxLua.ProcessMessage() == 0) do
             local NowTime = DxLua.GetNowHiPerformanceCount()
             local DeltaTime = (NowTime - BeforeTime) / 1000000
             BeforeTime = NowTime;

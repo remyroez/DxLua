@@ -42,7 +42,7 @@ function DxLua.Update(DeltaTime)
     -- 左を押していたら左に進む
     if band(Key, DxLua.PAD_INPUT_LEFT) ~= 0 then PlayerX = PlayerX - Speed * DeltaTime end
 
-    if DxLua.CheckHitKey(DxLua.KEY_INPUT_F5) ~= 0 then return 'reload' end
+    if DxLua.CheckHitKey(DxLua.KEY_INPUT_F5) ~= 0 then return 'restart' end
 
     -- 画面を初期化する
     DxLua.ClearDrawScreen()
