@@ -21,6 +21,11 @@ function DxLua.Init(...)
 	-- キャラクターの初期位置をセット
 	PlayerX = 0
     PlayerY = 0
+
+    --local v = VECTOR.new(123, 456)
+    --print(tostring(VECTOR), tostring(v), tostring(v.x), tostring(v.y), tostring(v.z))
+    local v = DxLua.VECTOR { 123, 456 }
+    print(tostring(VECTOR), tostring(DxLua.VECTOR), tostring(v), tostring(v.x), tostring(v.y), tostring(v.z))
 end
 
 local Speed = 300
