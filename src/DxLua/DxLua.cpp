@@ -8,13 +8,36 @@
 
 namespace DxLua {
 
-sol::table solopen_dxlua(sol::this_state s)
-{
+// 監視対象の追加
+void add_watchee(sol::object &lib, const std::filesystem::path& watchee) {
+    auto &context = detail::context::get(lib);
+    context.add_watchee(watchee);
+}
+
+// 監視対象の追加
+void add_watchee(sol::object &lib, std::filesystem::path&& watchee) {
+    auto& context = detail::context::get(lib);
+    context.add_watchee(watchee);
+}
+
+// 監視対象のクリア
+void clear_watchee(sol::object &lib) {
+    auto& context = detail::context::get(lib);
+    context.clear_watchee();
+}
+
+// 監視
+bool watch(sol::object& lib) {
+    auto& context = detail::context::get(lib);
+    return context.watch();
+}
+
+// DxLua ライブラリの展開
+sol::table solopen_dxlua(sol::this_state s) {
     // ステート
     sol::state_view lua(s);
 
     // テーブル
-    // TODO: DxLua ユーザータイプ
     sol::table library = lua.create_table();
 
     // 実行関数
@@ -57,6 +80,9 @@ end)lua"
             }
         }
     }
+
+    // コンテキストのインスタンス化
+    detail::context::set(library);
 
     // 小分けにした各ポート関数を呼ぶ
     detail::port_define(lua, library);

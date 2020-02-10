@@ -283,6 +283,9 @@ bool application::setup_lua() {
     // DxLua ライブラリの展開
     _dxLua = _state->require("DxLua", sol::c_call<decltype(&DxLua::solopen_dxlua), &DxLua::solopen_dxlua>);
 
+    // 監視ファイルの追加
+    DxLua::add_watchee(*_dxLua, _option.argpath);
+
 #ifdef _WIN32
     // コンソール使用時の設定
     if (has_console()) {
