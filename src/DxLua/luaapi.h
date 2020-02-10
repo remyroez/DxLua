@@ -5,7 +5,7 @@
 #include <sol/sol.hpp>
 
 #define DXLUA_PORT_EX(T, X, Y) T[#X] = Y;
-#define DXLUA_PORT(T, X) DXLUA_PORT_EX(T, X, X);
+#define DXLUA_PORT(T, X) T[#X] = X;
 #define DXLUA_REMOVE(T, X) T[#X] = sol::nil;
 
 namespace DxLua::detail {
