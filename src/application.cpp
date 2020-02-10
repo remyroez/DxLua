@@ -281,7 +281,7 @@ bool application::setup_lua() {
     );
 
     // DxLua ライブラリの展開
-    _dxLua = _state->require("DxLua", sol::c_call<decltype(&DxLua::openDxLua), &DxLua::openDxLua>);
+    _dxLua = _state->require("DxLua", sol::c_call<decltype(&DxLua::solopen_dxlua), &DxLua::solopen_dxlua>);
 
 #ifdef _WIN32
     // コンソール使用時の設定

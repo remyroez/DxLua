@@ -8,7 +8,7 @@
 
 namespace DxLua {
 
-sol::table openDxLua(sol::this_state s)
+sol::table solopen_dxlua(sol::this_state s)
 {
     // ステート
     sol::state_view lua(s);
@@ -58,52 +58,9 @@ end)lua"
         }
     }
 
-    auto VECTOR = lua.new_usertype<DxLib::VECTOR>(
-        "VECTOR",
-        "x", &DxLib::VECTOR::x,
-        "y", &DxLib::VECTOR::y,
-        "z", &DxLib::VECTOR::z,
-        sol::meta_function::to_string, [](const DxLib::VECTOR &v) {
-            std::ostringstream ost;
-            ost << "{ x = " << v.x << ", y = " << v.y << ", z = " << v.z << " }";
-            return ost.str();
-        }
-    );
-    sol::table tableVECTOR = lua["VECTOR"];
-    sol::table metaVECTOR = tableVECTOR[sol::metatable_key] = lua.create_table();
-
-    tableVECTOR["new"] = [](sol::variadic_args va) {
-        if (va.leftover_count() > 0 && va[0].is<sol::table>()) {
-            sol::table t = va[0].as<sol::table>();
-            if (t[1].get_type() == sol::type::number) {
-                return DxLib::VECTOR{
-                    t[1].get_or<float>(0),
-                    t[2].get_or<float>(0),
-                    t[3].get_or<float>(0)
-                };
-
-            } else {
-                return DxLib::VECTOR{
-                    t["x"].get_or<float>(0),
-                    t["y"].get_or<float>(0),
-                    t["z"].get_or<float>(0)
-                };
-            }
-
-        } else {
-            return DxLib::VECTOR{
-                va.leftover_count() > 0 && va[0].is<float>() ? va[0].as<float>() : 0,
-                va.leftover_count() > 1 && va[0].is<float>() ? va[1].as<float>() : 0,
-                va.leftover_count() > 2 && va[0].is<float>() ? va[2].as<float>() : 0
-            };
-        }
-    };
-    metaVECTOR["__call"] = [](sol::stack_object self, sol::variadic_args va) { return sol::table(self)["new"](va); };
-    DXLUA_PORT(library, VECTOR);
-    lua["VECTOR"] = sol::nil;
-
     // 小分けにした各ポート関数を呼ぶ
-    detail::portDefine(library);
+    detail::port_define(lua, library);
+    detail::port_type(lua, library);
 
     // 以下、ポーティング
 

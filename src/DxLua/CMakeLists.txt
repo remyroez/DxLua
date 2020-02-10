@@ -5,4 +5,5 @@ target_sources(DxLua PRIVATE
     context.cpp
     luaapi.h
     luaapi_define.cpp
+    luaapi_type.cpp
 )

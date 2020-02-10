@@ -6,7 +6,7 @@
 
 namespace DxLua::detail {
 
-void portDefine(sol::table &t)
+void port_define(sol::state_view &lua, sol::table &t)
 {
 	// ＤＸライブラリのバージョン
 	DXLUA_PORT(t, DXLIB_VERSION)

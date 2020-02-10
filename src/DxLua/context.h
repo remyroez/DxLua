@@ -4,8 +4,6 @@
 #include <lua.hpp>
 #include <sol/sol.hpp>
 
-#define DXLUA_PORT(T, X) T[#X] = X;
-
 namespace DxLua::detail {
 
 class context final {
