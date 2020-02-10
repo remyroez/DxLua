@@ -42,11 +42,11 @@ public:
 		// 正常に終了
 		exit,
 
-		// リスタート要求
-		restart,
-
 		// リロード要求
 		reload,
+
+		// スワップ要求
+		swap,
 
 		// エラー発生
 		error,
@@ -120,6 +120,13 @@ private:
 	// DxLua ライブラリオブジェクト
 	sol::optional<sol::object> _dxLua;
 
+	// 監視モード
+	enum class watch_mode {
+		none,
+		reload,
+		swap,
+	};
+
 	// オプション
 	struct option {
 		// ファイル名
@@ -131,8 +138,17 @@ private:
 		// 引数として指定されたパス
 		std::filesystem::path argpath;
 
+		// 監視対象のパス
+		std::filesystem::path watch_path;
+
 		// 引数リスト
 		std::vector<std::string> args;
+
+		// 監視モード
+		watch_mode watch = watch_mode::none;
+
+		// 監視のインターバル
+		int watch_interval = 1000;
 
 		// コンソールを使用するかどうか
 		bool console = true;

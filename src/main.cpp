@@ -7,7 +7,7 @@ int main(int argc, char** argv)
 
     } else {
         // 実行（restart が返ったらループ）
-        while (app.boot() == remyroez::application::done_code::restart) {}
+        while (app.boot() == remyroez::application::done_code::reload) {}
 
         // 終了
         app.teardown();

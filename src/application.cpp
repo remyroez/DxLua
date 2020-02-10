@@ -14,6 +14,8 @@ using namespace remyroez;
 
 // 解析機の準備
 static const argagg::parser argparser{ {
+    { "hotreload", {"-r", "--hotreload"}, u8"スクリプト／アーカイブファイルを指定した間隔（ミリ秒）で監視し、変更があれば再起動します", 1},
+    { "hotswap", {"-s", "--hotswap"}, u8"スクリプト／アーカイブファイルを指定した間隔（ミリ秒）で監視し、変更があれば再読み込みします", 1},
     { "console", {"-c", "--console"}, u8"コンソールを使用します", 0},
     { "window", {"-w", "--window"}, u8"強制的にウィンドウモードで起動します", 0},
     { "fullscreen", {"-f", "--fullscreen"}, u8"強制的にフルスクリーンモードで起動します", 0},
@@ -52,11 +54,11 @@ application::done_code call_luafn(sol::object &dxLua, std::string_view name, std
         if (!run_result.as<bool>()) {
             done = application::done_code::none;
             
-        } else if (run_result.as<std::string>() == "restart") {
-            done = application::done_code::restart;
-
         } else if (run_result.as<std::string>() == "reload") {
             done = application::done_code::reload;
+
+        } else if (run_result.as<std::string>() == "swap") {
+            done = application::done_code::swap;
         }
     }
 
@@ -204,7 +206,7 @@ application::done_code application::run() {
                     std::cerr << message_string << std::endl;
                 }
 
-            } else if (done == done_code::reload) {
+            } else if (done == done_code::swap) {
                 message.clear();
                 loaded_script = false;
                 if (!load_script(message)) {
@@ -227,11 +229,11 @@ application::done_code application::run() {
         if (auto message_string = message.str(); !message_string.empty()) {
             DxLib::clsDx();
             DxLib::printfDx(u8"%s\n", message_string.c_str());
-            DxLib::printfDx(u8"\nＦ５キーを押すとリスタート、それ以外のキーを押すと終了します\n");
+            DxLib::printfDx(u8"\nＦ５キーを押すとリロード、それ以外のキーを押すと終了します\n");
             DxLib::ScreenFlip();
             auto Key = DxLib::WaitKey();
             if (Key == KEY_INPUT_F5) {
-                done = done_code::restart;
+                done = done_code::reload;
             }
         }
 
@@ -239,8 +241,8 @@ application::done_code application::run() {
     }
 
     // リスタート時の出力
-    if (done == done_code::restart) {
-        std::cout << u8"ゲームをリスタートしています…" << std::endl;
+    if (done == done_code::reload) {
+        std::cout << u8"スクリプトをリロードしています…" << std::endl;
     }
 
     return done;
@@ -253,7 +255,14 @@ application::done_code application::call_init(std::ostringstream& message) {
 
 // スクリプトの実行関数を呼ぶ
 application::done_code application::call_run(std::ostringstream& message) {
-    return ::call_luafn(*_dxLua, "Run", message);
+    std::string watch = "";
+    switch (_option.watch) {
+    case watch_mode::reload: watch = "reload"; break;
+    case watch_mode::swap: watch = "swap"; break;
+    case watch_mode::none: watch = ""; break;
+    default: watch = ""; break;
+    }
+    return ::call_luafn(*_dxLua, "Run", message, watch, _option.watch_interval);
 }
 
 // スクリプトの終了関数を呼ぶ
@@ -342,6 +351,18 @@ bool application::parse_arguments(int argc, const char** argv) {
         return false;
     }
 
+    // ファイル監視
+    if (auto hotreload = args["hotreload"]; hotreload) {
+        // ホットリロード
+        _option.watch = watch_mode::reload;
+        _option.watch_interval = hotreload.as<int>();
+
+    } else if (auto hotswap = args["hotswap"]; hotswap) {
+        // ホットスワップ
+        _option.watch = watch_mode::swap;
+        _option.watch_interval = hotswap.as<int>();
+    }
+
     // コンソール使用
     if (args["console"]) {
         _option.console = true;
@@ -385,6 +406,7 @@ bool application::parse_arguments(int argc, const char** argv) {
             // ディレクトリ
             std::filesystem::current_path(path);
             _option.path = _option.filename;
+            _option.watch_path = _option.path;
 
         } else if (std::filesystem::is_regular_file(path)) {
             // ファイル
@@ -394,12 +416,14 @@ bool application::parse_arguments(int argc, const char** argv) {
                 _option.filename = path.filename().string();
                 std::filesystem::current_path(path.remove_filename());
                 _option.path = _option.filename;
+                _option.watch_path = _option.path;
 
             } else if (ext == ".dxa") {
                 // アーカイブ
                 std::filesystem::current_path(path.remove_filename());
                 auto archive = path.stem();
                 _option.path = archive.append(_option.filename.string());
+                _option.watch_path = path.filename();
             }
         }
 
@@ -408,16 +432,19 @@ bool application::parse_arguments(int argc, const char** argv) {
         if (std::filesystem::exists(application::default_filename)) {
             // スクリプト main.lua があった
             _option.argpath = _option.path;
+            _option.watch_path = _option.argpath;
 
-        } else if (std::filesystem::exists(application::default_directory / application::default_filename)) {
+        } else if (auto dirfilepath = application::default_directory / application::default_filename; std::filesystem::exists(dirfilepath)) {
             // game ディレクトリの下にスクリプト main.lua があった
             std::filesystem::current_path(application::default_directory);
-            _option.argpath = "game/main.lua";
+            _option.argpath = dirfilepath;
+            _option.watch_path = _option.argpath;
 
         } else if (std::filesystem::exists(application::default_archive)) {
             // アーカイブ game.dxa があった
             _option.path = application::default_directory / application::default_filename;
             _option.argpath = _option.path;
+            _option.watch_path = application::default_archive;
         }
     }
 
