@@ -39,14 +39,18 @@ public:
 public:
 	// 監視対象の追加
 	void add_watchee(const std::filesystem::path &watchee) {
-		_watchees.emplace_back(watchee);
-		_watchees.back().watch();
+		if (std::filesystem::exists(watchee)) {
+			_watchees.emplace_back(watchee);
+			_watchees.back().watch();
+		}
 	}
 
 	// 監視対象の追加
 	void add_watchee(std::filesystem::path &&watchee) {
-		_watchees.emplace_back(watchee);
-		_watchees.back().watch();
+		if (std::filesystem::exists(watchee)) {
+			_watchees.emplace_back(watchee);
+			_watchees.back().watch();
+		}
 	}
 
 	// 監視対象のクリア
@@ -74,7 +78,13 @@ public:
 	static context &get(sol::table &t) { return t[context::key].get<context>(); }
 
 	// コンテキストの取得
-	static context &get(sol::object &o) { return context::get(o.as<sol::table>()); }
+	static context &get(sol::object &o) { return const_cast<context &>(context::get(o.as<sol::table>())); }
+
+	// コンテキストの取得
+	static const context &get(const sol::table &t) { return t[context::key].get<context>(); }
+
+	// コンテキストの取得
+	static const context &get(const sol::object &o) { return context::get(o.as<sol::table>()); }
 
 	// コンテキストの設定
 	static void set(sol::table &t);

@@ -29,7 +29,7 @@ void set_base_path(sol::object &library, const std::filesystem::path &path) {
 }
 
 // ベースパスを連結して返す
-std::filesystem::path append_base_path(sol::object &library, const std::filesystem::path &path) {
+std::filesystem::path append_base_path(const sol::object &library, const std::filesystem::path &path) {
 	return DXLUA_CONTEXT(library).append_base_path(path);
 }
 
@@ -144,8 +144,8 @@ end)lua"
 	};
 	DXLUA_PORT(library, SetDrawScreen);
 
-	library["LoadGraph"] = [](const TCHAR *FileName, sol::variadic_args va) {
-		return LoadGraph(FileName, va.leftover_count() > 0 ? va[0].as<bool>() : false);
+	library["LoadGraph"] = [library](const TCHAR *FileName, sol::variadic_args va) {
+		return LoadGraph(to_data_path(library, FileName).c_str(), va.leftover_count() > 0 ? va[0].as<bool>() : false);
 	};
 	library["DrawGraph"] = [](float xf, float yf, int GrHandle, bool TransFlag) {
 		return DrawGraph(xf, yf, GrHandle, TransFlag ? TRUE : FALSE);

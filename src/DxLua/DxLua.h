@@ -21,7 +21,17 @@ void clear_watchee(sol::object &library);
 void set_base_path(sol::object &library, const std::filesystem::path &path);
 
 // ベースパスを連結して返す
-std::filesystem::path append_base_path(sol::object &library, const std::filesystem::path &path);
+std::filesystem::path append_base_path(const sol::object &library, const std::filesystem::path &path);
+
+// データパスに変換する
+inline std::string to_data_path(const sol::object &library, const std::filesystem::path &path) {
+	return append_base_path(library, path).string();
+}
+
+// データパスに変換する
+inline std::string to_data_path(const sol::table &library, const std::filesystem::path &path) {
+	return append_base_path(library.as<sol::object>(), path).string();
+}
 
 // ベースパスのクリア
 void clear_base_path(sol::object &library);

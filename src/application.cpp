@@ -293,7 +293,9 @@ bool application::setup_lua() {
 	_dxLua = _state->require("DxLua", sol::c_call<decltype(&DxLua::solopen_dxlua), &DxLua::solopen_dxlua>);
 
 	// 監視ファイルの追加
-	DxLua::add_watchee(*_dxLua, _option.argpath);
+	if (_option.watch != watch_mode::none) {
+		DxLua::add_watchee(*_dxLua, _option.watch_path);
+	}
 
 	// ベースパスの設定
 	DxLua::set_base_path(*_dxLua, _option.base_path);
