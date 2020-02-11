@@ -143,6 +143,16 @@ end)lua"
 		return ClearDrawScreen();
 	};
 	DXLUA_PORT(library, SetDrawScreen);
+	DXLUA_PORT(library, SetDrawArea);
+#if 0
+	library["GetDrawArea"] = [lua]() {
+		RECT rect;
+		GetDrawArea(&rect);
+		return rect;
+	};
+#endif
+	DXLUA_PORT(library, SetDrawAreaFull);
+	DXLUA_PORT(library, SetDraw3DScale);
 
 	library["LoadGraph"] = [library](const TCHAR *FileName, sol::variadic_args va) {
 		return LoadGraph(to_data_path(library, FileName).c_str(), va.leftover_count() > 0 ? va[0].as<bool>() : false);
