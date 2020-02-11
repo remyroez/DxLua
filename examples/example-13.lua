@@ -43,6 +43,9 @@ end
 
 -- ループ
 function DxLua.Update()
+	-- DxLua: キー入力で終了
+	if DxLua.CheckHitKeyAll() ~= 0 then return 'exit' end
+
 	-- 画面を消去
 	DxLua.ClearDrawScreen()
 
@@ -55,6 +58,4 @@ function DxLua.Update()
 
 	-- 裏画面の内容を表画面に反映させる
 	DxLua.ScreenFlip()
-
-	if DxLua.CheckHitKeyAll() ~= 0 then return 'exit' end
 end
