@@ -133,6 +133,10 @@ end)lua"
 	DXLUA_PORT(library, GetRand);
 	DXLUA_PORT(library, SRand);
 
+	library["SetAlwaysRunFlag"] = [](sol::object Flag) {
+		return SetAlwaysRunFlag(Flag.as<bool>() ? TRUE : FALSE);
+	};
+
 	//DXLUA_PORT(library, SetGraphMode);
 	library["SetGraphMode"] = [](int ScreenSizeX, int ScreenSizeY, int ColorBitDepth, sol::variadic_args va) {
 		return SetGraphMode(ScreenSizeX, ScreenSizeY, ColorBitDepth, va.leftover_count() > 0 ? va[0].as<int>() : 60);
