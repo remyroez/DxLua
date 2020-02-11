@@ -21,9 +21,16 @@ function DxLua.Init(...)
 	-- キャラクターの初期位置をセット
 	PlayerX = 0
     PlayerY = 0
+
+    --local v = VECTOR.new(123, 456)
+    --print(tostring(VECTOR), tostring(v), tostring(v.x), tostring(v.y), tostring(v.z))
+    --local v = DxLua.VECTOR { 123, 456 }
+    --print(tostring(VECTOR), tostring(DxLua.VECTOR), tostring(v), tostring(v.x), tostring(v.y), tostring(v.z))
+
+    print(tostring(DxLua.__context__), tostring(DxLua.__context__:watch()))
 end
 
-local Speed = 300
+local Speed = 100
 
 -- ループ
 function DxLua.Update(DeltaTime)
