@@ -19,12 +19,12 @@ public:
 	~application() = default;
 
 	// コピーコンストラクタなどの削除
-	application(const application&) = delete;
-	application(application&&) = delete;
-	application& operator=(const application&) = delete;
+	application(const application &) = delete;
+	application(application &&) = delete;
+	application &operator=(const application &) = delete;
 
 	// ムーブ代入
-	application& operator=(application&& other) noexcept {
+	application &operator=(application &&other) noexcept {
 		_state = std::move(other._state);
 		_dxLua = std::move(other._dxLua);
 		_option = std::move(other._option);
@@ -58,10 +58,10 @@ public:
 
 public:
 	// 設定処理
-	bool setup(int argc = 0, const char** argv = nullptr);
+	bool setup(int argc = 0, const char **argv = nullptr);
 
 	// 設定処理
-	bool setup(int argc = 0, char** argv = nullptr) { return setup(argc, const_cast<const char **>(argv)); }
+	bool setup(int argc = 0, char **argv = nullptr) { return setup(argc, const_cast<const char **>(argv)); }
 
 	// 終了処理
 	bool teardown();
@@ -74,16 +74,16 @@ protected:
 	done_code run();
 
 	// スクリプトの初期化関数を呼ぶ
-	application::done_code call_init(std::ostringstream& message);
+	application::done_code call_init(std::ostringstream &message);
 
 	// スクリプトの実行関数を呼ぶ
-	application::done_code call_run(std::ostringstream& message);
+	application::done_code call_run(std::ostringstream &message);
 
 	// スクリプトの終了関数を呼ぶ
-	application::done_code call_end(std::ostringstream& message);
+	application::done_code call_end(std::ostringstream &message);
 
 	// 引数の解析
-	bool parse_arguments(int argc, const char** argv);
+	bool parse_arguments(int argc, const char **argv);
 
 	// Lua のセットアップ
 	bool setup_lua();
@@ -107,7 +107,7 @@ protected:
 	bool teardown_engine();
 
 	// スクリプトの読み込み
-	bool load_script(std::ostringstream& message);
+	bool load_script(std::ostringstream &message);
 
 protected:
 	// Lua 用パニック関数
