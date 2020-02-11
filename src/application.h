@@ -138,6 +138,9 @@ private:
 		// 引数として指定されたパス
 		std::filesystem::path argpath;
 
+		// スクリプトやアセットのベースパス
+		std::filesystem::path base_path;
+
 		// 監視対象のパス
 		std::filesystem::path watch_path;
 

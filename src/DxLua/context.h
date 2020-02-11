@@ -8,6 +8,9 @@
 #include <lua.hpp>
 #include <sol/sol.hpp>
 
+// コンテキスト取得マクロ
+#define DXLUA_CONTEXT(X) (detail::context::get(X))
+
 namespace DxLua::detail {
 
 class context final {
@@ -19,15 +22,17 @@ public:
 	~context() = default;
 
 	// コピーコンストラクタなどの削除
-	context(const context&) = delete;
-	context& operator=(const context&) = delete;
+	context(const context &) = delete;
+	context &operator=(const context &) = delete;
 
 	// ムーブコンストラクタ
-	context(context&& other) noexcept : _watchees(std::move(other._watchees)) {}
+	context(context &&other) noexcept
+		: _watchees(std::move(other._watchees)), _base_path(std::move(other._base_path)) {}
 
 	// ムーブ代入
-	context& operator=(context&& other) noexcept {
+	context &operator=(context &&other) noexcept {
 		_watchees = std::move(other._watchees);
+		_base_path = std::move(other._base_path);
 		return *this;
 	}
 
@@ -47,19 +52,32 @@ public:
 	// 監視対象のクリア
 	void clear_watchee() { _watchees.clear(); }
 
+	// ベースパスの設定
+	void set_base_path(const std::filesystem::path &path) {
+		_base_path = path;
+	}
+
+	// ベースパスを連結して返す
+	std::filesystem::path append_base_path(const std::filesystem::path &path) const {
+		return _base_path.empty() ? path : (_base_path / path);
+	}
+
+	// ベースパスのクリア
+	void clear_base_path() { _base_path.clear(); }
+
 public: // Lua API
 	// 監視
 	bool watch();
 
 public:
 	// コンテキストの取得
-	static context& get(sol::table& t) { return t[context::key].get<context>(); }
+	static context &get(sol::table &t) { return t[context::key].get<context>(); }
 
 	// コンテキストの取得
-	static context& get(sol::object& o) { return context::get(o.as<sol::table>()); }
+	static context &get(sol::object &o) { return context::get(o.as<sol::table>()); }
 
 	// コンテキストの設定
-	static void set(sol::table& t);
+	static void set(sol::table &t);
 
 	// コンテキストのキー
 	static const std::string key;
@@ -81,6 +99,9 @@ private:
 
 	// 監視対象
 	std::vector<watchee> _watchees;
+
+	// ベースパス
+	std::filesystem::path _base_path;
 };
 
 } // namespace DxLua::detail

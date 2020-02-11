@@ -9,16 +9,25 @@
 namespace DxLua {
 
 // 監視対象の追加
-void add_watchee(sol::object &lib, const std::filesystem::path& watchee);
+void add_watchee(sol::object &library, const std::filesystem::path &watchee);
 
 // 監視対象の追加
-void add_watchee(sol::object &lib, std::filesystem::path&& watchee);
+void add_watchee(sol::object &library, std::filesystem::path &&watchee);
 
 // 監視対象のクリア
-void clear_watchee(sol::object &lib);
+void clear_watchee(sol::object &library);
+
+// ベースパスの設定
+void set_base_path(sol::object &library, const std::filesystem::path &path);
+
+// ベースパスを連結して返す
+std::filesystem::path append_base_path(sol::object &library, const std::filesystem::path &path);
+
+// ベースパスのクリア
+void clear_base_path(sol::object &library);
 
 // 監視
-bool watch(sol::object& lib);
+bool watch(sol::object &library);
 
 // DxLua ライブラリの展開
 sol::table solopen_dxlua(sol::this_state s);

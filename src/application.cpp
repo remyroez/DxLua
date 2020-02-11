@@ -295,6 +295,9 @@ bool application::setup_lua() {
     // 監視ファイルの追加
     DxLua::add_watchee(*_dxLua, _option.argpath);
 
+    // ベースパスの設定
+    DxLua::set_base_path(*_dxLua, _option.base_path);
+
 #ifdef _WIN32
     // コンソール使用時の設定
     if (has_console()) {
@@ -422,8 +425,9 @@ bool application::parse_arguments(int argc, const char** argv) {
                 // アーカイブ
                 std::filesystem::current_path(path.remove_filename());
                 auto archive = path.stem();
-                _option.path = archive.append(_option.filename.string());
+                _option.path = archive / _option.filename;
                 _option.watch_path = path.filename();
+                _option.base_path = archive;
             }
         }
 
@@ -445,6 +449,7 @@ bool application::parse_arguments(int argc, const char** argv) {
             _option.path = application::default_directory / application::default_filename;
             _option.argpath = _option.path;
             _option.watch_path = application::default_archive;
+            _option.base_path = application::default_archive.stem();
         }
     }
 
