@@ -1,8 +1,8 @@
 -- 移動速度を一定にする(２)
 
-local Time = Time or 0
+Time = Time or 0
 
-local x = x or 0
+x = x or 0
 
 DxLua.SetGraphMode(640, 480, 16)
 
