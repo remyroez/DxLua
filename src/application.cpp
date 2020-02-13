@@ -42,7 +42,6 @@ application::done_code call_luafn(sol::object &dxLua, std::string_view name, std
 
 		// エラーメッセージを返す
 		sol::error err = protected_result;
-		std::cerr << err.what() << std::endl;
 		message << err.what() << std::endl;
 
 	} else {
