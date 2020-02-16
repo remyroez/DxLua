@@ -10,7 +10,7 @@ void port_type(sol::state_view &lua, sol::table &t) {
 	// VECTOR
 	{
 		// ユーザー型定義
-		auto VECTOR = lua.new_usertype<DxLib::VECTOR>(
+		auto VECTOR = t.new_usertype<DxLib::VECTOR>(
 			"VECTOR",
 			"x", &DxLib::VECTOR::x,
 			"y", &DxLib::VECTOR::y,
@@ -23,7 +23,7 @@ void port_type(sol::state_view &lua, sol::table &t) {
 		);
 
 		// ユーザー型をテーブルとして取得
-		sol::table tableVECTOR = lua["VECTOR"];
+		sol::table tableVECTOR = t["VECTOR"];
 
 		// メタテーブルの作成
 		sol::table metaVECTOR = tableVECTOR[sol::metatable_key] = lua.create_table();
@@ -60,11 +60,45 @@ void port_type(sol::state_view &lua, sol::table &t) {
 		metaVECTOR["__call"] = [](sol::stack_object self, sol::variadic_args va) { return sol::table(self)["new"](va); };
 
 		// ライブラリに追加
-		DXLUA_PORT(t, VECTOR);
 		DXLUA_PORT_EX(t, FLOAT3, VECTOR);
+	}
 
-		// グローバルから削除
-		DXLUA_REMOVE(lua, VECTOR);
+	// IPDATA
+	{
+		// ユーザー型定義
+		auto IPDATA = t.new_usertype<DxLib::IPDATA>(
+			"IPDATA",
+			"d1", &DxLib::IPDATA::d1,
+			"d2", &DxLib::IPDATA::d2,
+			"d3", &DxLib::IPDATA::d3,
+			"d4", &DxLib::IPDATA::d4,
+			sol::meta_function::to_string, [](const DxLib::IPDATA &ipdata) {
+				std::ostringstream ost;
+				ost
+					<< "{ d1 = " << ipdata.d1
+					<< ", d2 = " << ipdata.d2
+					<< ", d3 = " << ipdata.d3
+					<< ", d4 = " << ipdata.d4
+					<< " }";
+				return ost.str();
+			}
+		);
+	}
+
+	// IPDATA_IPv6
+	{
+		// ユーザー型定義
+		auto IPDATA_IPv6 = t.new_usertype<DxLib::IPDATA_IPv6>(
+			"IPDATA_IPv6",
+			"ScopeID", &DxLib::IPDATA_IPv6::ScopeID,
+			sol::meta_function::to_string, [](const DxLib::IPDATA_IPv6 &ipdata) {
+				std::ostringstream ost;
+				ost
+					<< "{ ScopeID = " << ipdata.ScopeID
+					<< " }";
+				return ost.str();
+			}
+		);
 	}
 }
 

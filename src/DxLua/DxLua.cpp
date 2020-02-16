@@ -180,6 +180,10 @@ end)lua"
 
 	DXLUA_PORT(library, SetFontSize);
 	DXLUA_PORT(library, SetDrawBright);
+	
+	library["GetCharBytes"] = [](int CharCodeFormat, const char *String) {
+		return GetCharBytes(CharCodeFormat, String);
+	};
 
 	DXLUA_PORT(library, CheckHitKey);
 	library["CheckHitKeyAll"] = [](sol::variadic_args va) {
