@@ -115,6 +115,7 @@ end)lua"
 	// 小分けにした各ポート関数を呼ぶ
 	detail::port_define(lua, library);
 	detail::port_type(lua, library);
+	detail::port_network(lua, library);
 
 	// 以下、ポーティング
 
@@ -135,6 +136,10 @@ end)lua"
 
 	library["SetAlwaysRunFlag"] = [](sol::object Flag) {
 		return SetAlwaysRunFlag(Flag.as<bool>() ? TRUE : FALSE);
+	};
+
+	library["SetDoubleStartValidFlag"] = [](sol::object Flag) {
+		return SetDoubleStartValidFlag(Flag.as<bool>() ? TRUE : FALSE);
 	};
 
 	//DXLUA_PORT(library, SetGraphMode);

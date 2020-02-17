@@ -21,6 +21,12 @@ local StateMachine = {
 }
 
 -- 現在の状態に合わせてメソッドを呼び分ける
+function StateMachine:ChangeState(state)
+	print('ChangeState', self.State, state)
+	self.State = state
+end
+
+-- 現在の状態に合わせてメソッドを呼び分ける
 function StateMachine:Update(...)
 	if self[self.State] then
 		self[self.State](self, ...)
@@ -29,12 +35,12 @@ end
 
 -- どちらのキーが押されるか監視する
 function StateMachine:Select()
-	if DxLua.CheckHitKey(DxLua.KEY_INPUT_Z) then
+	if DxLua.CheckHitKey(DxLua.KEY_INPUT_Z) ~= 0 then
 		Key = 'Z'
-		self.State = 'Host'
-	elseif DxLua.CheckHitKey(DxLua.KEY_INPUT_X) then
+		self:ChangeState 'Host'
+	elseif DxLua.CheckHitKey(DxLua.KEY_INPUT_X) ~= 0 then
 		Key = 'X'
-		self.State = 'Client'
+		self:ChangeState 'Client'
 	end
 end
 
@@ -46,7 +52,7 @@ function StateMachine:Host()
 	-- 接続があるまで待つ表示
 	ScreenStringAdd("接続があるまで待ちます")
 
-	self.State = 'WaitAccess'
+	self:ChangeState 'WaitAccess'
 end
 
 -- 接続があるまでここでループ
@@ -58,7 +64,7 @@ function StateMachine:WaitAccess()
 	if NetHandle ~= -1 then
 		-- 接続待ちを解除
 		DxLua.StopListenNetWork()
-		self.State = 'PreChat'
+		self:ChangeState 'PreChat'
 	end
 end
 
@@ -88,7 +94,7 @@ function StateMachine:Client()
 	if self.IP.d1 < 0 or self.IP.d2 < 0 or self.IP.d3 < 0 or self.IP.d4 < 0 then
 		ScreenStringAdd("IP値の数が間違っています")
 	else
-		self.State = 'Input'
+		self:ChangeState 'Input'
 	end
 end
 
@@ -102,7 +108,7 @@ function StateMachine:Connect()
 
 	-- 接続に成功したらループから抜ける
 	if NetHandle ~= -1 then
-		self.State = 'PreChat'
+		self:ChangeState 'PreChat'
 	else
 		-- 接続失敗表示
 		ScreenStringAdd("接続は失敗しました")
@@ -119,6 +125,8 @@ function StateMachine:PreChat()
 
 	-- 作成した入力ハンドルをアクティブにする
 	DxLua.SetActiveKeyInput(InputHandle)
+
+	self:ChangeState 'Chat'
 end
 
 -- チャットループ
