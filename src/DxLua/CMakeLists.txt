@@ -7,4 +7,5 @@ target_sources(DxLua PRIVATE
     luaapi_define.cpp
     luaapi_type.cpp
     luaapi_network.cpp
+    luaapi_keyinput.cpp
 )

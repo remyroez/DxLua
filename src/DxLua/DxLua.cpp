@@ -43,6 +43,31 @@ bool watch(sol::object &library) {
 	return DXLUA_CONTEXT(library).watch();
 }
 
+// 入力バッファを要求サイズ分確保して返す
+char *require_input_buffer(sol::object &library, size_t size) {
+	return DXLUA_CONTEXT(library).require_input_buffer(size);
+}
+
+// キー入力情報の登録
+void register_key_input(sol::object &library, int handle, size_t size, bool cancelable, bool ascii_only, bool number_only, bool zenkaku_only, bool enable_new_line) {
+	return DXLUA_CONTEXT(library).register_key_input(handle, size, cancelable, ascii_only, number_only, zenkaku_only, enable_new_line);
+}
+
+// キー入力情報の登録解除
+size_t get_key_input_size(sol::object &library, int handle) {
+	return DXLUA_CONTEXT(library).get_key_input_size(handle);
+}
+
+// キー入力情報の登録解除
+void deregister_key_input(sol::object &library, int handle) {
+	DXLUA_CONTEXT(library).deregister_key_input(handle);
+}
+
+// すべてのキー入力情報の登録解除
+void clear_key_inputs(sol::object &library) {
+	DXLUA_CONTEXT(library).clear_key_inputs();
+}
+
 // DxLua ライブラリの展開
 sol::table solopen_dxlua(sol::this_state s) {
 	// ステート
@@ -116,6 +141,7 @@ end)lua"
 	detail::port_define(lua, library);
 	detail::port_type(lua, library);
 	detail::port_network(lua, library);
+	detail::port_keyinput(lua, library);
 
 	// 以下、ポーティング
 

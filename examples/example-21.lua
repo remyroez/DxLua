@@ -1,5 +1,5 @@
 -- チャットプログラム基本
-local band, bnot = bit.band, bit.bnot
+local band, bor, bnot, rshift = bit.band, bit.bor, bit.bnot, bit.rshift
 
 local CHAT_LINENUM = 20 -- チャット中の文字列を表示する行数
 local MAX_STRLENGTH = 80 -- チャットで1行で入力できる文字数
@@ -13,6 +13,31 @@ NetHandle = NetHandle or 0 -- 接続相手のネットワークハンドル
 ScreenString = ScreenString or {} -- 画面に表示中のチャット文字列
 
 StrBuf = StrBuf or ''
+
+local function get_int(buffer, index)
+	index = index or 1
+	if type(buffer) ~= 'table' then
+		return 0
+	end
+	local num = 0
+	num = bor(num, buffer[index + 0] or 0)
+	num = bor(num, rshift(buffer[index + 1] or 0, 8))
+	num = bor(num, rshift(buffer[index + 2] or 0, 16))
+	num = bor(num, rshift(buffer[index + 3] or 0, 24))
+	return num
+end
+
+local function get_string(buffer, index)
+	index = index or 1
+	if type(buffer) ~= 'table' then
+		return ''
+	end
+	local str = ''
+	for i = index, #buffer do
+		str = str .. string.char(buffer[i])
+	end
+	return str
+end
 
 -- DxLua: 状態が複雑なのでステートマシンで管理する
 local StateMachine = {
@@ -76,7 +101,8 @@ function StateMachine:Client()
 
 	-- ＩＰの入力を行う
 	-- DxLua: 使用方法が C と異なる
-	local ip, err = DxLua.KeyInputSingleCharString(0, INPUT_LINE * FONT_SIZE + 2, 80, false)
+	local err, ip = DxLua.KeyInputSingleCharString(0, INPUT_LINE * FONT_SIZE + 2, 80, false)
+	StrBuf = type(ip) == 'string' and ip or ''
 
 	-- 文字列からＩＰを抜き出す
 	-- DxLua: 正規表現を使用して一度に取り出す
@@ -84,17 +110,17 @@ function StateMachine:Client()
 	self.IP.d2 = -1
 	self.IP.d3 = -1
 	self.IP.d4 = -1
-	local d1, d2, d3, d4 = (StrBuf:gmatch('([0-9])%.([0-9])%.([0-9])%.([0-9])'))()
-	if d1 then self.IP.d1 = d1 end
-	if d2 then self.IP.d2 = d2 end
-	if d3 then self.IP.d3 = d3 end
-	if d4 then self.IP.d4 = d4 end
+	local d1, d2, d3, d4 = (StrBuf:gmatch('([0-9]+)%.([0-9]+)%.([0-9]+)%.([0-9]+)'))()
+	if d1 then self.IP.d1 = tonumber(d1) end
+	if d2 then self.IP.d2 = tonumber(d2) end
+	if d3 then self.IP.d3 = tonumber(d3) end
+	if d4 then self.IP.d4 = tonumber(d4) end
 
 	-- もし３つピリオドがなかった場合は入力のし直し
 	if self.IP.d1 < 0 or self.IP.d2 < 0 or self.IP.d3 < 0 or self.IP.d4 < 0 then
 		ScreenStringAdd("IP値の数が間違っています")
 	else
-		self:ChangeState 'Input'
+		self:ChangeState 'Connect'
 	end
 end
 
@@ -139,16 +165,27 @@ function StateMachine:Chat()
 	-- 受信した文字列がある場合は受信する
 	if DxLua.GetNetWorkDataLength(NetHandle) > 4 then
 		-- 受信した文字列の長さを得る
-		local StrLength, _ = DxLua.NetWorkRecvToPeek(NetHandle, 4)
+		local err, buffer = DxLua.NetWorkRecvToPeek(NetHandle, 4)
+		StrLength = get_int(buffer)
 
 		-- 受信するはずの文字列長より受信されている文字数が少ない場合は
 		-- 何もせずもどる
 		if StrLength + 4 <= DxLua.GetNetWorkDataLength(NetHandle) then
 			-- 文字列の長さを得る
-			local Length, _ = DxLua.NetWorkRecv(NetHandle, 4)
+			err, buffer = DxLua.NetWorkRecv(NetHandle, 4)
+			Length = get_int(buffer)
+			print('recv1', tostring(err), tostring(Length))
+			for i, v in ipairs(buffer) do
+				print('  buffer', tostring(i), tostring(v))
+			end
 
 			-- メッセージを受信
-			local Message = DxLua.NetWorkRecv(NetHandle, Length)
+			err, buffer = DxLua.NetWorkRecv(NetHandle, Length)
+			local Message = get_string(buffer)
+			print('recv2', tostring(err), tostring(Message))
+			for i, v in ipairs(buffer) do
+				print('  buffer', tostring(i), tostring(v))
+			end
 
 			-- 画面に表示
 			ScreenStringAdd(Message)
@@ -160,11 +197,12 @@ function StateMachine:Chat()
 		-- 文字列の入力が終っている場合は送信する
 		if DxLua.CheckKeyInput(InputHandle) == 1 then
 			-- 入力された文字列を取得する
-			local Message = DxLua.GetKeyInputString(InputHandle)
+			local err, Message = DxLua.GetKeyInputString(InputHandle)
 
 			-- 入力された文字列の長さを送信する
 			-- +1 は終端文字('\0')を含めるため
-			StrLength = #Message + 1
+			StrLength = #Message
+
 			DxLua.NetWorkSend(NetHandle, StrLength, 4)
 
 			-- 文字列を送信

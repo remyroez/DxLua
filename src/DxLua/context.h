@@ -2,6 +2,8 @@
 #define DXLUA_CONTEXT_H_
 
 #include <vector>
+#include <unordered_map>
+#include <memory>
 #include <string>
 #include <filesystem>
 
@@ -69,6 +71,41 @@ public:
 	// ベースパスのクリア
 	void clear_base_path() { _base_path.clear(); }
 
+	// 入力バッファを要求サイズ分確保して返す
+	char *require_input_buffer(size_t size) {
+		_input_buffer.clear();
+		_input_buffer.resize(size);
+		return _input_buffer.data();
+	}
+
+	// 入力バッファのクリア
+	void clear_input_buffer() {
+		_input_buffer.clear();
+	}
+
+	// キー入力情報の登録
+	void register_key_input(int handle, size_t size, bool cancelable, bool ascii_only, bool number_only, bool zenkaku_only = false, bool enable_new_line = false) {
+		_key_inputs.emplace(
+			handle,
+			std::make_unique<key_input>(handle, size, cancelable, ascii_only, number_only, zenkaku_only, enable_new_line)
+		);
+	}
+
+	// キー入力情報の登録解除
+	size_t get_key_input_size(int handle) {
+		return (_key_inputs.find(handle) != _key_inputs.end()) ? _key_inputs[handle]->size : 0;
+	}
+
+	// キー入力情報の登録解除
+	void deregister_key_input(int handle) {
+		_key_inputs.erase(handle);
+	}
+
+	// すべてのキー入力情報の登録解除
+	void clear_key_inputs() {
+		_key_inputs.clear();
+	}
+
 public: // Lua API
 	// 監視
 	bool watch();
@@ -112,6 +149,39 @@ private:
 
 	// ベースパス
 	std::filesystem::path _base_path;
+
+	// 入力バッファ
+	std::string _input_buffer;
+
+	// 入力情報
+	struct key_input {
+		key_input(int _handle, size_t _size, bool _cancelable, bool _ascii_only, bool _number_only, bool _zenkaku_only = false, bool _enable_new_line = false)
+		: handle(_handle), size(_size), cancelable(_cancelable), ascii_only(_ascii_only), number_only(_number_only), zenkaku_only(_zenkaku_only), enable_new_line(_enable_new_line) {}
+
+		// ハンドル
+		int handle = -1;
+
+		// サイズ
+		size_t size = 0;
+
+		// キャンセル可否
+		bool cancelable = true;
+
+		// 半角のみ
+		bool ascii_only = true;
+
+		// 数字のみ
+		bool number_only = true;
+
+		// 全角のみ
+		bool zenkaku_only = false;
+
+		// 改行可否
+		bool enable_new_line = false;
+	};
+
+	// 入力情報マップ
+	std::unordered_map<int, std::unique_ptr<key_input>> _key_inputs;
 };
 
 } // namespace DxLua::detail
