@@ -168,6 +168,7 @@ void port_network(sol::state_view &lua, sol::table &t) {
 			for (auto c : string) {
 				buffer.push_back(std::byte(c));
 			}
+			buffer.push_back(std::byte());
 
 		} else if (object.is<int>()) {
 			auto number = object.as<int>();

@@ -99,9 +99,14 @@ void port_keyinput(sol::state_view &lua, sol::table &t) {
 	t["SetKeyInputString"] = [t](std::string String, int InputHandle) {
 		int result = -1;
 		auto size = DxLua::get_key_input_size(t.as<sol::object>(), InputHandle);
-		if (size > 0) {
-			String.resize(size);
-			String.shrink_to_fit();
+		if (size <= 0) {
+			// 無効なサイズ
+
+		} else {
+			// オーバーしていたら切り詰める
+			if (size > String.size()) {
+				String.resize(size);
+			}
 			result = SetKeyInputString(String.data(), InputHandle);
 		}
 		return result;
@@ -115,7 +120,7 @@ void port_keyinput(sol::state_view &lua, sol::table &t) {
 		if (size > 0) {
 			buffer.resize(size + 1);
 			result = GetKeyInputString(buffer.data(), InputHandle);
-			buffer.shrink_to_fit();
+			buffer = std::string(buffer.c_str());
 		}
 		return std::make_tuple(result, buffer);
 	};

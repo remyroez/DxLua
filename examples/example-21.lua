@@ -174,18 +174,10 @@ function StateMachine:Chat()
 			-- 文字列の長さを得る
 			err, buffer = DxLua.NetWorkRecv(NetHandle, 4)
 			Length = get_int(buffer)
-			print('recv1', tostring(err), tostring(Length))
-			for i, v in ipairs(buffer) do
-				print('  buffer', tostring(i), tostring(v))
-			end
 
 			-- メッセージを受信
 			err, buffer = DxLua.NetWorkRecv(NetHandle, Length)
 			local Message = get_string(buffer)
-			print('recv2', tostring(err), tostring(Message))
-			for i, v in ipairs(buffer) do
-				print('  buffer', tostring(i), tostring(v))
-			end
 
 			-- 画面に表示
 			ScreenStringAdd(Message)
@@ -201,7 +193,7 @@ function StateMachine:Chat()
 
 			-- 入力された文字列の長さを送信する
 			-- +1 は終端文字('\0')を含めるため
-			StrLength = #Message
+			StrLength = #Message + 1
 
 			DxLua.NetWorkSend(NetHandle, StrLength, 4)
 
