@@ -299,26 +299,6 @@ bool application::setup_lua() {
 	// ベースパスの設定
 	DxLua::set_base_path(*_dxLua, _option.base_path);
 
-#ifdef _WIN32
-	// コンソール使用時の設定
-	if (has_console()) {
-		// Lua 関数を C++ stdout に合わせて修正
-		_state->set_function(
-			"print",
-			[](sol::variadic_args va) {
-				int i = 0;
-				for (auto v : va) {
-					auto str = v.as<std::string>();
-					if (i) putchar('\t');
-					fwrite(str.c_str(), 1, str.size(), stdout);
-					i++;
-				}
-				putchar('\n');
-			}
-		);
-	}
-#endif // _WIN32
-
 	return _dxLua->is<sol::table>();
 }
 
