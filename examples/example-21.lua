@@ -14,31 +14,6 @@ ScreenString = ScreenString or {} -- 画面に表示中のチャット文字列
 
 StrBuf = StrBuf or ''
 
-local function get_int(buffer, index)
-	index = index or 1
-	if type(buffer) ~= 'table' then
-		return 0
-	end
-	local num = 0
-	num = bor(num, buffer[index + 0] or 0)
-	num = bor(num, rshift(buffer[index + 1] or 0, 8))
-	num = bor(num, rshift(buffer[index + 2] or 0, 16))
-	num = bor(num, rshift(buffer[index + 3] or 0, 24))
-	return num
-end
-
-local function get_string(buffer, index)
-	index = index or 1
-	if type(buffer) ~= 'table' then
-		return ''
-	end
-	local str = ''
-	for i = index, #buffer do
-		str = str .. string.char(buffer[i])
-	end
-	return str
-end
-
 -- DxLua: 状態が複雑なのでステートマシンで管理する
 local StateMachine = {
 	State = 'Select',
@@ -166,18 +141,18 @@ function StateMachine:Chat()
 	if DxLua.GetNetWorkDataLength(NetHandle) > 4 then
 		-- 受信した文字列の長さを得る
 		local err, buffer = DxLua.NetWorkRecvToPeek(NetHandle, 4)
-		StrLength = get_int(buffer)
+		StrLength = DxLua.Buffer_getInt32(buffer)
 
 		-- 受信するはずの文字列長より受信されている文字数が少ない場合は
 		-- 何もせずもどる
 		if StrLength + 4 <= DxLua.GetNetWorkDataLength(NetHandle) then
 			-- 文字列の長さを得る
 			err, buffer = DxLua.NetWorkRecv(NetHandle, 4)
-			Length = get_int(buffer)
+			Length = DxLua.Buffer_getInt32(buffer)
 
 			-- メッセージを受信
 			err, buffer = DxLua.NetWorkRecv(NetHandle, Length)
-			local Message = get_string(buffer)
+			local Message = DxLua.Buffer_getString(buffer)
 
 			-- 画面に表示
 			ScreenStringAdd(Message)

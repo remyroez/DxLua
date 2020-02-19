@@ -26,8 +26,9 @@ function DxLua.Init(...)
     --print(tostring(VECTOR), tostring(v), tostring(v.x), tostring(v.y), tostring(v.z))
     --local v = DxLua.VECTOR { 123, 456 }
     --print(tostring(VECTOR), tostring(DxLua.VECTOR), tostring(v), tostring(v.x), tostring(v.y), tostring(v.z))
-
-    print(tostring(DxLua.__context__), tostring(DxLua.__context__:watch()))
+    --print(tostring(DxLua.__context__), tostring(DxLua.__context__:watch()))
+    --print(DxLua.Buffer_getInt32{ 0x01, 0x02, 0x03, 0x04 })
+    print(DxLua.Buffer_getString{ 0x65, 0x67, 0x69, 0x6A })
 end
 
 local Speed = 100

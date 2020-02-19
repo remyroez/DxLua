@@ -222,6 +222,44 @@ end)lua"
 	};
 	DXLUA_PORT(library, GetJoypadInputState);
 
+	library["Buffer_getInt32"] = [](sol::table table, sol::variadic_args va) {
+		int result = 0;
+		ptrdiff_t index = va.leftover_count() > 0 ? va[0].as<ptrdiff_t>() : 1;
+		if (index < 1) {
+			// インデックスが１未満
+
+		} else if (table.size() < (index + sizeof(result) - 1)) {
+			// テーブルのサイズがインデックスから４未満
+
+		} else {
+			result |= table.get_or(index + 0, 0) & UCHAR_MAX;
+			result |= (table.get_or(index + 1, 0) & UCHAR_MAX) << 8;
+			result |= (table.get_or(index + 2, 0) & UCHAR_MAX) << 16;
+			result |= (table.get_or(index + 3, 0) & UCHAR_MAX) << 24;
+		}
+
+		return result;
+	};
+
+	library["Buffer_getString"] = [](sol::table table, sol::variadic_args va) {
+		std::string result = "";
+		ptrdiff_t index = va.leftover_count() > 0 ? va[0].as<ptrdiff_t>() : 1;
+
+		if (index < 1) {
+			// インデックスが１未満
+
+		} else if (table.size() < index) {
+			// テーブルのサイズがインデックス初期値未満
+
+		} else {
+			for (auto i = index; i <= table.size(); ++i) {
+				result.push_back(static_cast<char>(table.get_or(i, 0)));
+			}
+		}
+
+		return std::string(result.c_str());
+	};
+
 	return library;
 }
 
