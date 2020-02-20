@@ -195,22 +195,44 @@ end)lua"
 	library["DrawGraph"] = [](float xf, float yf, int GrHandle, bool TransFlag) {
 		return DrawGraph(xf, yf, GrHandle, TransFlag ? TRUE : FALSE);
 	};
-	library["DrawString"] = [](int x, int y, const TCHAR *String, unsigned int Color, sol::variadic_args va) {
-		return DrawString(x, y, String, Color, va.leftover_count() > 0 ? va[0].as<int>() : 0);
+	library["DrawString"] = [](int x, int y, const TCHAR *String, sol::variadic_args va) {
+		unsigned int Color = va.leftover_count() > 0 ? va[0].as<unsigned int>() : 0xFFFFFFFF;
+		unsigned int EdgeColor = va.leftover_count() > 1 ? va[1].as<unsigned int>() : 0;
+		return DrawString(x, y, String, Color, EdgeColor);
 	};
 
-	library["DrawLine"] = [](int x1, int y1, int x2, int y2, unsigned int Color, sol::variadic_args va) {
+	library["DrawLine"] = [](int x1, int y1, int x2, int y2, sol::variadic_args va) {
+		unsigned int Color = va.leftover_count() > 0 ? va[0].as<unsigned int>() : 0xFFFFFFFF;
+		int Thickness = va.leftover_count() > 1 ? va[1].as<int>() : 1;
 		return DrawLine(x1, y1, x2, y2, Color, va.leftover_count() > 0 ? va[0].as<int>() : 1);
 	};
-	library["DrawBox"] = [](int x1, int y1, int x2, int y2, unsigned int Color, bool FillFlag) {
-		return DrawBox(x1, y1, x2, y2, Color, FillFlag ? TRUE : FALSE);
+	library["DrawBox"] = [](int x1, int y1, int x2, int y2, sol::variadic_args va) {
+		unsigned int Color = va.leftover_count() > 0 ? va[0].as<unsigned int>() : 0xFFFFFFFF;
+		int FillFlag = va.leftover_count() > 1 ? (va[1].as<bool>() ? TRUE : FALSE) : TRUE;
+		return DrawBox(x1, y1, x2, y2, Color, FillFlag);
+	};
+	library["DrawCircle"] = [](int x, int y, int r, sol::variadic_args va) {
+		unsigned int Color = va.leftover_count() > 0 ? va[0].as<unsigned int>() : 0xFFFFFFFF;
+		int FillFlag = va.leftover_count() > 1 ? (va[1].as<bool>() ? TRUE : FALSE) : TRUE;
+		int LineThickness = va.leftover_count() > 2 ? va[2].as<int>() : 1;
+		return DrawCircle(x, y, r, Color, FillFlag, LineThickness);
 	};
 	DXLUA_PORT(library, DrawPixel);
+
+	DXLUA_PORT(library, SetDrawBlendMode);
+	library["GetDrawBlendMode"] = []() {
+		int BlendMode = -1;
+		int BlendParam = -1;
+		auto result = GetDrawBlendMode(&BlendMode, &BlendParam);
+		return std::make_tuple(result, BlendMode, BlendParam);
+	};
 
 	DXLUA_PORT(library, GetColor);
 
 	DXLUA_PORT(library, SetFontSize);
 	DXLUA_PORT(library, SetDrawBright);
+
+	DXLUA_PORT(library, ChangeFontType);
 	
 	library["GetCharBytes"] = [](int CharCodeFormat, const char *String) {
 		return GetCharBytes(CharCodeFormat, String);
@@ -221,6 +243,7 @@ end)lua"
 		return CheckHitKeyAll(va.leftover_count() > 0 ? va[0].as<int>() : DX_CHECKINPUT_ALL);
 	};
 	DXLUA_PORT(library, GetJoypadInputState);
+	DXLUA_PORT(library, GetMouseInput);
 
 	library["Buffer_getInt32"] = [](sol::table table, sol::variadic_args va) {
 		int result = 0;
