@@ -195,6 +195,11 @@ end)lua"
 	library["DrawGraph"] = [](float xf, float yf, int GrHandle, bool TransFlag) {
 		return DrawGraph(xf, yf, GrHandle, TransFlag ? TRUE : FALSE);
 	};
+	library["DrawRotaGraph"] = [](int x, int y, double ExRate, double Angle, int GrHandle, bool TransFlag, sol::variadic_args va) {
+		int ReverseXFlag = va.leftover_count() > 0 ? (va[0].as<bool>() ? TRUE : FALSE) : FALSE;
+		int ReverseYFlag = va.leftover_count() > 1 ? (va[1].as<bool>() ? TRUE : FALSE) : FALSE;
+		return DrawRotaGraph(x, y, ExRate, Angle, GrHandle, TransFlag ? TRUE : FALSE, ReverseXFlag, ReverseYFlag);
+	};
 	library["DrawString"] = [](int x, int y, const TCHAR *String, sol::variadic_args va) {
 		unsigned int Color = va.leftover_count() > 0 ? va[0].as<unsigned int>() : 0xFFFFFFFF;
 		unsigned int EdgeColor = va.leftover_count() > 1 ? va[1].as<unsigned int>() : 0;
