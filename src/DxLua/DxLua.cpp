@@ -168,6 +168,10 @@ end)lua"
 		return SetDoubleStartValidFlag(Flag.as<bool>() ? TRUE : FALSE);
 	};
 
+	library["SetWaitVSyncFlag"] = [](sol::object Flag) {
+		return SetWaitVSyncFlag(Flag.as<bool>() ? TRUE : FALSE);
+	};
+
 	//DXLUA_PORT(library, SetGraphMode);
 	library["SetGraphMode"] = [](int ScreenSizeX, int ScreenSizeY, int ColorBitDepth, sol::variadic_args va) {
 		return SetGraphMode(ScreenSizeX, ScreenSizeY, ColorBitDepth, va.leftover_count() > 0 ? va[0].as<int>() : 60);
