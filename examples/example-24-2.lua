@@ -1,10 +1,10 @@
--- ホーミングレーザー１と２
+-- ホーミングレーザー２
 local band = bit.band
 
-local MAX_L = 100		-- レーザーの最大数定義
+local MAX_L = 20		-- レーザーの最大数定義
 local PI = 3.14159		-- 円周率
 
-local LINE_MAXNUM = 3000				-- 描画する線の最大数
+local LINE_MAXNUM = 1000				-- 描画する線の最大数
 
 -- データ型宣言
 
@@ -25,6 +25,10 @@ function LASER(t)
         Angle = t.Angle or 0,
         -- 追尾をはじめてから経過した時間
         Counter = t.Counter or 0,
+        -- レーザーのラインデータ
+        Line = t.Line or {},
+        -- 表示されているラインの数
+        LineNum = t.LineNum or 0,
         -- このデータが使用中かフラグ
         ValidFlag = t.ValidFlag or 0,
     }
@@ -35,14 +39,12 @@ function LINE(t)
     t = t or {}
     return {
         -- 描くラインの座標
-        x1 = t.x1 or 0,
-        y1 = t.y1 or 0,
-        x2 = t.x2 or 0,
-        y2 = t.y2 or 0,
+        x = t.x or 0,
+        y = t.y or 0,
+        -- ラインの向き
+        Angle = t.Angle or 0,
         -- 描くラインの色決定用値
         Counter = t.Counter or 0,
-        -- このデータが使用中かフラグ
-        ValidFlag = t.ValidFlag or 0,
     }
 end
 
@@ -54,7 +56,7 @@ local Hsc = 0						-- 砲台のショット間隔カウンタ
 local Px, Py = 0, 0					-- 自機の座標
 
 local Ld = {}				-- ホーミングレーザーのデータ
-local Line = {}				-- ライン描画用データ
+local Lg = 0				-- レーザーのグラフィックハンドル
 
 local Key = 0
 local Time = 0
@@ -69,6 +71,9 @@ function DxLua.Init()
 
 	-- 初期化処理
 	do
+		-- レーザーグラフィックのロード
+        Lg = DxLua.LoadGraph("Laser.bmp")
+
 		-- 自機の座標セット
 		Px = 320
         Py = 200
@@ -86,11 +91,11 @@ function DxLua.Init()
 		-- レーザーデータの初期化
         for i = 1, MAX_L do
             Ld[i] = LASER()
-        end
 
-        -- DxLua: ライン描画データの初期化
-        for i = 1, LINE_MAXNUM do
-            Line[i] = LINE()
+            -- DxLua: ライン描画データの初期化
+            for j = 1, LINE_MAXNUM do
+                Ld[i].Line[j] = LINE()
+            end
         end
 	end
 
@@ -141,16 +146,20 @@ function DxLua.Update()
                 ax = Px - Ld[i].x + 16
                 ay = Py - Ld[i].y + 16
 
+				-- ベクトルb と aの絶対値を求める
+				local br = math.sqrt(bx * bx + by * by)
+				local ar = math.sqrt(ax * ax + ay * ay)
+
                 -- 外積を利用し向きを照準側に向ける
-                Ld[i].Angle = Ld[i].Angle + ((ax * by - ay * bx < 0.0) and (math.pi / 180 * 15) or (-math.pi / 180 * 15))
+				Ld[i].Angle = Ld[i].Angle + (PI / 180 * ((bx * ay - by * ax) / (br * ar)) * 5)
             end
 
             -- 追尾カウンタ加算
             Ld[i].Counter = Ld[i].Counter + 1
 
             -- 速度を変更する
-            Ld[i].sx = Ld[i].sx + (math.cos(Ld[i].Angle) * 30)
-            Ld[i].sy = Ld[i].sy + (math.sin(Ld[i].Angle) * 30)
+			Ld[i].sx = math.cos(Ld[i].Angle) * 1000
+			Ld[i].sy = math.sin(Ld[i].Angle) * 1000
 
             -- 移動前のアドレスを保存
             xb = Ld[i].x
@@ -164,29 +173,25 @@ function DxLua.Update()
             do
                 local j = LINE_MAXNUM
 
-                -- 使われていないラインデータを探す
-                for k = 1, LINE_MAXNUM do
-                    if Line[k].ValidFlag == 0 then
-                        j = k
-                        break
-                    end
-                end
-
-                -- もし空のデータがあった場合のみラインデータ追加
-                if j ~= LINE_MAXNUM then
+                if Ld[i].LineNum ~= LINE_MAXNUM then
                     -- ライン情報をセットする
+                    j = Ld[i].LineNum + 1
 
                     -- 座標のセット
-                    Line[j].x1 = xb
-                    Line[j].y1 = yb
-                    Line[j].x2 = Ld[i].x
-                    Line[j].y2 = Ld[i].y
+                    Ld[i].Line[j].x = xb
+                    Ld[i].Line[j].y = yb
+
+					-- 角度をセット
+					do
+						local r = math.sqrt(Ld[i].sx * Ld[i].sx + Ld[i].sy * Ld[i].sy)
+						Ld[i].Line[j].Angle = math.atan2(Ld[i].sy, Ld[i].sx)
+                    end
 
                     -- 色決定カウンタを初期化
-                    Line[j].Counter = 0
+                    Ld[i].Line[j].Counter = 0
 
-                    -- データを使用中にセット
-                    Line[j].ValidFlag = 1
+                    -- ラインの数を増やす
+                    Ld[i].LineNum = Ld[i].LineNum + 1
                 end
             end
 
@@ -215,7 +220,7 @@ function DxLua.Update()
             local i = MAX_L
             -- 使われていないレーザーデータを探す
             for j = 1, MAX_L do
-                if Ld[j].ValidFlag == 0 then
+                if Ld[j].ValidFlag == 0 and Ld[j].LineNum == 0 then
                     i = j
                     break
                 end
@@ -248,34 +253,48 @@ function DxLua.Update()
 
     -- 描画処理
     do
+        local DeleteNum = 0
+
         -- 画面の初期化
         DxLua.ClearDrawScreen()
 
-        -- 描画ブレンドモードを加算半透明にセット
-        DxLua.SetDrawBlendMode(DxLua.DX_BLENDMODE_ADD, 255)
-
         -- ラインの描画
-        for i = 1, LINE_MAXNUM do
-            if (Line[i].ValidFlag == 0) then
-                -- ラインデータが有効でない場合は次に移る
-            else
-                -- ラインの描画
-                DxLua.DrawLine(Line[i].x1, Line[i].y1,
-                    Line[i].x2, Line[i].y2,
-                    DxLua.GetColor(0, 255 - Line[i].Counter * 4, 0))
+        for j = 1, MAX_L do
+            DeleteNum = 0
+            for i = 1 , Ld[j].LineNum - DeleteNum do
+                -- もしカウンタが規定値に達していたら普段と１８０度回転したグラフィックを
+                -- 描画し、その後ラインデータを無効にする
+                if Ld[j].Line[i].Counter == 64 then
+                    -- ラインの描画
+                    DxLua.DrawRotaGraph(Ld[j].Line[i].x, Ld[j].Line[i].y,
+                        1.0, Ld[j].Line[i].Angle + PI, Lg, true)
 
-                -- カウンタを加算する
-                Line[i].Counter = Line[i].Counter + 1
+                    -- 削除するデータの数を一つ増やす
+                    DeleteNum = DeleteNum + 1
 
-                -- もし規定値に達していたらラインデータを無効にする
-                if Line[i].Counter == 64 then
-                    Line[i].ValidFlag = 0
+                    -- データを詰める
+                    -- DxLua: メモリ操作関数は無いので、代わりにテーブル操作を行う
+                    table.remove(Ld[j].Line, 1)
+                    table.insert(Ld[j].Line, LINE())
+
+                    -- 詰めたので次のデータが今の配列番号 i と同じなる
+                    -- ので、の処理
+                    i = i - 1
+
+                else
+                    -- ラインの描画
+                    DxLua.DrawRotaGraph(Ld[j].Line[i].x, Ld[j].Line[i].y,
+                        1.0, Ld[j].Line[i].Angle, Lg, true)
+
+                    -- カウンタを加算する
+                    Ld[j].Line[i].Counter = Ld[j].Line[i].Counter + 1
                 end
             end
+            Ld[j].LineNum = Ld[j].LineNum - DeleteNum
         end
 
-        -- 描画ブレンドモードを通常描画モードにセット
-        DxLua.SetDrawBlendMode(DxLua.DX_BLENDMODE_NOBLEND, 255)
+        -- 描画輝度をセット
+        DxLua.SetDrawBright(255, 255, 255)
 
         -- プレーヤーの描画
         DxLua.DrawBox(Px, Py, Px + 32, Py + 32, DxLua.GetColor(255, 255, 255), true)
