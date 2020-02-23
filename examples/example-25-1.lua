@@ -226,7 +226,6 @@ function StateMachine:RecAfter()
 
         -- 次に保存した動作データを書き出す
         for i, data in ipairs(RecData) do
-            print('write', i, data.InputKey)
             write_word(fp, data.InputKey)
         end
 
@@ -291,7 +290,6 @@ function StateMachine:Replay()
     do
         -- 保存したキー入力状態を代入
         Key = RecData[RePlayFrame].InputKey
-        print(RePlayFrame, string.format('%08x', Key))
     end
 
     self:UpdatePlayer()
