@@ -254,6 +254,13 @@ end)lua"
 	DXLUA_PORT(library, GetJoypadInputState);
 	DXLUA_PORT(library, GetMouseInput);
 
+	library["GetInputChar"] = [](sol::object DeleteFlag) {
+		return (unsigned int)GetInputChar(DeleteFlag.as<bool>() ? TRUE : FALSE);
+	};
+	library["GetInputCharWait"] = [](sol::object DeleteFlag) {
+		return (unsigned int)GetInputCharWait(DeleteFlag.as<bool>() ? TRUE : FALSE);
+	};
+
 	library["Buffer_getInt32"] = [](sol::table table, sol::variadic_args va) {
 		int result = 0;
 		ptrdiff_t index = va.leftover_count() > 0 ? va[0].as<ptrdiff_t>() : 1;
