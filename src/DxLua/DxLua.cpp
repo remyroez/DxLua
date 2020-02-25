@@ -88,33 +88,33 @@ sol::table solopen_dxlua(sol::this_state s) {
     end
 
     -- ループ
-    if DxLua.Update then
-        local BeforeTime = DxLua.GetNowHiPerformanceCount()
-        local Watchable = watch ~= 'none';
-        local WatchTimer = Watchable and (interval / 1000) or -1
+    local BeforeTime = DxLua.GetNowHiPerformanceCount()
+    local Watchable = watch ~= 'none';
+    local WatchTimer = Watchable and (interval / 1000) or -1
 
-        while (DxLua.ProcessMessage() == 0) do
-            -- 経過時間の計測
-            local NowTime = DxLua.GetNowHiPerformanceCount()
-            local DeltaTime = (NowTime - BeforeTime) / 1000000
-            BeforeTime = NowTime;
+    while (DxLua.ProcessMessage() == 0) do
+        -- 経過時間の計測
+        local NowTime = DxLua.GetNowHiPerformanceCount()
+        local DeltaTime = (NowTime - BeforeTime) / 1000000
+        BeforeTime = NowTime;
 
-            -- ファイルの監視
-            if WatchTimer >= 0 then
-                WatchTimer = WatchTimer - DeltaTime
-                if WatchTimer <= 0 then
-                    WatchTimer = interval / 1000
-                    if DxLua.__context__:watch() then
-                        return watch
-                    end
+        -- ファイルの監視
+        if WatchTimer >= 0 then
+            WatchTimer = WatchTimer - DeltaTime
+            if WatchTimer <= 0 then
+                WatchTimer = interval / 1000
+                if DxLua.__context__:watch() then
+                    return watch
                 end
             end
+        end
 
-            -- 更新
-            local result = DxLua.Update(DeltaTime) or QuitCode
-            if result then
-                return result -- エラーが起きたら直ちに終了
-            end
+        -- 更新
+		if DxLua.Update then
+			local result = DxLua.Update(DeltaTime) or QuitCode
+			if result then
+				return result -- エラーが起きたら直ちに終了
+			end
         end
     end
 

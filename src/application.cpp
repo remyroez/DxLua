@@ -34,7 +34,13 @@ application::done_code call_luafn(sol::object &dxLua, std::string_view name, std
 
 	} else if (sol::object function = dxLua.as<sol::table>()[name]; !function.is<sol::function>()) {
 		// オブジェクトが関数ではなかった
-		done = application::done_code::error;
+		if (function.is<sol::nil_t>()) {
+			// nil の場合は呼ばなかったことにする
+			done = application::done_code::none;
+
+		} else {
+			done = application::done_code::error;
+		}
 
 	} else if (auto protected_result = function.as<sol::protected_function>().call(std::forward<T>(args)...); !protected_result.valid()) {
 		// 関数の呼び出しに失敗した
@@ -282,7 +288,7 @@ bool application::setup_lua() {
 		sol::lib::os,
 		sol::lib::math,
 		sol::lib::table,
-		//sol::lib::debug,
+		sol::lib::debug,
 		sol::lib::bit32,
 		sol::lib::io,
 		sol::lib::ffi
