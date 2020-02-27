@@ -226,6 +226,11 @@ end)lua"
 		int LineThickness = va.leftover_count() > 2 ? va[2].as<int>() : 1;
 		return DrawCircle(x, y, r, Color, FillFlag, LineThickness);
 	};
+	library["DrawTriangle"] = [](int x1, int y1, int x2, int y2, int x3, int y3, sol::variadic_args va) {
+		unsigned int Color = va.leftover_count() > 0 ? va[0].as<unsigned int>() : 0xFFFFFFFF;
+		int FillFlag = va.leftover_count() > 1 ? (va[1].as<bool>() ? TRUE : FALSE) : TRUE;
+		return DrawTriangle(x1, y1, x2, y2, x3, y3, Color, FillFlag);
+	};
 	DXLUA_PORT(library, DrawPixel);
 
 	DXLUA_PORT(library, SetDrawBlendMode);
