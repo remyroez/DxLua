@@ -63,6 +63,66 @@ void port_type(sol::state_view &lua, sol::table &t) {
 		DXLUA_PORT_EX(t, FLOAT3, VECTOR);
 	}
 
+	// DINPUT_JOYSTATE
+	{
+		// ユーザー型定義
+		auto DINPUT_JOYSTATE = t.new_usertype<DxLib::DINPUT_JOYSTATE>(
+			"DINPUT_JOYSTATE",
+			"X", &DxLib::DINPUT_JOYSTATE::X,
+			"Y", &DxLib::DINPUT_JOYSTATE::Y,
+			"Z", &DxLib::DINPUT_JOYSTATE::Z,
+			"Rx", &DxLib::DINPUT_JOYSTATE::Rx,
+			"Ry", &DxLib::DINPUT_JOYSTATE::Ry,
+			"Rz", &DxLib::DINPUT_JOYSTATE::Rz,
+			"Slider", sol::property([](DxLib::DINPUT_JOYSTATE &self) { return std::ref(self.Slider); }),
+			"POV", sol::property([](DxLib::DINPUT_JOYSTATE &self) { return std::ref(self.POV); }),
+			"Buttons", sol::property([](DxLib::DINPUT_JOYSTATE &self) { return std::ref(self.Buttons); })
+		);
+
+		// ユーザー型をテーブルとして取得
+		sol::table table = t["DINPUT_JOYSTATE"];
+
+		// メタテーブルの作成
+		sol::table metatable = table[sol::metatable_key] = lua.create_table();
+
+		// 専用の new 関数を用意
+		table["new"] = [](sol::table arg) {
+			DxLib::DINPUT_JOYSTATE instance{
+				arg["X"].get_or(0),
+				arg["Y"].get_or(0),
+				arg["Z"].get_or(0),
+				arg["Rx"].get_or(0),
+				arg["Ry"].get_or(0),
+				arg["Rz"].get_or(0),
+				{0, 0},
+				{0 ,0, 0, 0},
+				{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+			};
+			if (sol::object obj = arg["Slider"]; obj.is<sol::table>()) {
+				sol::table t = obj;
+				for (int i = 0; i < 2; ++i) {
+					instance.Slider[i] = t[i + 1].get_or(0);
+				}
+			}
+			if (sol::object obj = arg["POV"]; obj.is<sol::table>()) {
+				sol::table t = obj;
+				for (int i = 0; i < 4; ++i) {
+					instance.POV[i] = t[i + 1].get_or(0U);
+				}
+			}
+			if (sol::object obj = arg["Buttons"]; obj.is<sol::table>()) {
+				sol::table t = obj;
+				for (int i = 0; i < 32; ++i) {
+					instance.Buttons[i] = t[i + 1].get_or(0U);
+				}
+			}
+			return instance;
+		};
+
+		// ユーザー型テーブルの呼び出しで new を呼ぶように対応
+		metatable["__call"] = [](sol::stack_object self, sol::variadic_args va) { return sol::table(self)["new"](va); };
+	}
+
 	// IPDATA
 	{
 		// ユーザー型定義
