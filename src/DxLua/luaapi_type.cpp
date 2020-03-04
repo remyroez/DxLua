@@ -86,34 +86,45 @@ void port_type(sol::state_view &lua, sol::table &t) {
 		sol::table metatable = table[sol::metatable_key] = lua.create_table();
 
 		// 専用の new 関数を用意
-		table["new"] = [](sol::table arg) {
-			DxLib::DINPUT_JOYSTATE instance{
-				arg["X"].get_or(0),
-				arg["Y"].get_or(0),
-				arg["Z"].get_or(0),
-				arg["Rx"].get_or(0),
-				arg["Ry"].get_or(0),
-				arg["Rz"].get_or(0),
-				{0, 0},
-				{0 ,0, 0, 0},
-				{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-			};
-			if (sol::object obj = arg["Slider"]; obj.is<sol::table>()) {
-				sol::table t = obj;
-				for (int i = 0; i < 2; ++i) {
-					instance.Slider[i] = t[i + 1].get_or(0);
+		table["new"] = [](sol::object arg) {
+			// 空インスタンス
+			DxLib::DINPUT_JOYSTATE instance;
+			memset(&instance, 0, sizeof(instance));
+
+			if (!arg.is<sol::table>()) {
+				// テーブルではない
+
+			} else if (sol::table argt = arg.as<sol::table>()) {
+				// テーブルからコピー
+				instance.X = argt["X"].get_or(0);
+				instance.Y = argt["Y"].get_or(0);
+				instance.Z = argt["Z"].get_or(0);
+				instance.Rx = argt["Rx"].get_or(0);
+				instance.Ry = argt["Ry"].get_or(0);
+				instance.Rz = argt["Rz"].get_or(0);
+
+				// Slider
+				if (sol::object obj = argt["Slider"]; obj.is<sol::table>()) {
+					sol::table t = obj;
+					for (int i = 0; i < 2; ++i) {
+						instance.Slider[i] = t[i + 1].get_or(0);
+					}
 				}
-			}
-			if (sol::object obj = arg["POV"]; obj.is<sol::table>()) {
-				sol::table t = obj;
-				for (int i = 0; i < 4; ++i) {
-					instance.POV[i] = t[i + 1].get_or(0U);
+
+				// POV
+				if (sol::object obj = argt["POV"]; obj.is<sol::table>()) {
+					sol::table t = obj;
+					for (int i = 0; i < 4; ++i) {
+						instance.POV[i] = t[i + 1].get_or(0U);
+					}
 				}
-			}
-			if (sol::object obj = arg["Buttons"]; obj.is<sol::table>()) {
-				sol::table t = obj;
-				for (int i = 0; i < 32; ++i) {
-					instance.Buttons[i] = t[i + 1].get_or(0U);
+
+				// Buttons
+				if (sol::object obj = argt["Buttons"]; obj.is<sol::table>()) {
+					sol::table t = obj;
+					for (int i = 0; i < 32; ++i) {
+						instance.Buttons[i] = t[i + 1].get_or(0U);
+					}
 				}
 			}
 			return instance;

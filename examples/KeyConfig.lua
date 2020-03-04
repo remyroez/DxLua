@@ -82,9 +82,9 @@ local function KEYCONFIGSYSTEMDATA(t)
     return {
         KeyConfigInfo = t.KeyConfigInfo or NewArray(KEYCONFIG_INPUT_NUM, KEYCONFIGINFO), -- ゲーム中の入力とキーやパッドなどの入力との対応情報
         -- DirectInput のパッドの初期入力状態
-        NeutralDirectInputState = t.NeutralDirectInputState or NewArray(MAX_GAMEPAD_NUM, DxLua.DINPUT_JOYSTATE),
+        NeutralDirectInputState = t.NeutralDirectInputState or NewArray(MAX_GAMEPAD_NUM, DxLua.DINPUT_JOYSTATE.new),
         -- DirectInput のパッドの入力状態
-        DirectInputState = t.DirectInputState or NewArray(MAX_GAMEPAD_NUM, DxLua.DINPUT_JOYSTATE),
+        DirectInputState = t.DirectInputState or NewArray(MAX_GAMEPAD_NUM, DxLua.DINPUT_JOYSTATE.new),
         -- キーの初期入力状態
         NeutralKeyInput = t.NeutralKeyInput or NewValueArray(KEY_STATE_BUFFER_SIZE, 0),
         -- キーの入力状態
