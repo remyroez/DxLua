@@ -1,4 +1,6 @@
 -- キーコンフィグ
+-- DxLua: KeyConfig.cpp/h のＡＰＩ類をモジュールとして取得
+local KeyConfig = require 'KeyConfig'
 
 local KEYCONFIG_FILE_NAME = "KeyConfig.txt" -- キーコンフィグデータのファイル名
 local INFO_X = (10) -- 描画開始座標
@@ -111,7 +113,7 @@ function StateMachine:Screen()
 
     -- 項目の数だけ繰り返し
     DrawY = INFO_Y
-    for i = 1, KEYCONFIG_INPUT_NUM do
+    for i = 1, KeyConfig.KEYCONFIG_INPUT_NUM do
         local DrawColor
         local InputString = ''
 
@@ -122,7 +124,7 @@ function StateMachine:Screen()
         DxLua.DrawString(INFO_X, DrawY, g_KeyConfigMenuTable[i], DrawColor)
 
         -- 入力に割り当てられている入力名を取得する
-        KeyConfig_GetInputTypeString(i, InputString)
+        InputString = KeyConfig_GetInputTypeString(i)
 
         -- 割り当てられている入力名を描画する
         DxLua.DrawString(INFO_NAME_X, DrawY, InputString, DrawColor)
@@ -135,7 +137,7 @@ function StateMachine:Screen()
     DxLua.ScreenFlip()
 
     -- 全ての入力の設定が終わったらループを抜ける
-    if TargetIndex == KEYCONFIG_INPUT_NUM then
+    if TargetIndex == KeyConfig.KEYCONFIG_INPUT_NUM then
         -- キーコンフィグ設定を保存する
         KeyConfig_Save(KEYCONFIG_FILE_NAME)
 
@@ -156,14 +158,14 @@ function StateMachine:Test()
 
     -- 項目の数だけ繰り返し
     DrawY = INFO_Y
-    for i = 1, KEYCONFIG_INPUT_NUM do
+    for i = 1, KeyConfig.KEYCONFIG_INPUT_NUM do
         local InputString = ''
 
         -- 項目名の描画
         DxLua.DrawString(INFO_X, DrawY, g_KeyConfigMenuTable[i], DxLua.GetColor(255, 255, 255))
 
         -- 入力に割り当てられている入力名を取得する
-        KeyConfig_GetInputTypeString(i, InputString)
+        InputString = KeyConfig_GetInputTypeString(i)
 
         -- 割り当てられている入力名を描画する
         DxLua.DrawString(INFO_NAME_X, DrawY, InputString, DxLua.GetColor(255, 255, 255))

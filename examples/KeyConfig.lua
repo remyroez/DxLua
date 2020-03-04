@@ -1,4 +1,4 @@
-
+-- モジュール用テーブル
 local KeyConfig = {}
 
 -- 入力情報タイプ
@@ -331,7 +331,7 @@ function KeyConfig_InputProcess()
 	-- ゲームで使用する入力情報を構築する
 	for i = 1, KEYCONFIG_INPUT_NUM do
         KCInfo = g_KeyConfSys.KeyConfigInfo[i]
-        
+
 		-- 『入力なし』状態にしておく
 		InputState[i] = 0
 
@@ -342,46 +342,46 @@ function KeyConfig_InputProcess()
 
         elseif KCInfo.DirectInputType == DIRECTINPUT_TYPE_X then
 		    -- 方向入力のＸ軸の場合
-            KeyConfig_InputProcess_Assist(InputState[i], KCInfo.SubInfo[1], DIJState.X)
+            InputState[i] = KeyConfig_InputProcess_Assist(InputState[i], KCInfo.SubInfo[1], DIJState.X)
 
         elseif KCInfo.DirectInputType == DIRECTINPUT_TYPE_Y then
             -- 方向入力のＹ軸の場合
-			KeyConfig_InputProcess_Assist(InputState[i], KCInfo.SubInfo[1], DIJState.Y)
+			InputState[i] = KeyConfig_InputProcess_Assist(InputState[i], KCInfo.SubInfo[1], DIJState.Y)
 
         elseif KCInfo.DirectInputType == DIRECTINPUT_TYPE_Z then
             -- 方向入力のＺ軸の場合
-			KeyConfig_InputProcess_Assist(InputState[i], KCInfo.SubInfo[1], DIJState.Z)
+			InputState[i] = KeyConfig_InputProcess_Assist(InputState[i], KCInfo.SubInfo[1], DIJState.Z)
 
         elseif KCInfo.DirectInputType == DIRECTINPUT_TYPE_RX then
             -- 方向入力のＸ軸回転の場合
-			KeyConfig_InputProcess_Assist(InputState[i], KCInfo.SubInfo[1], DIJState.Rx)
+			InputState[i] = KeyConfig_InputProcess_Assist(InputState[i], KCInfo.SubInfo[1], DIJState.Rx)
 
         elseif KCInfo.DirectInputType == DIRECTINPUT_TYPE_RY then
             -- 方向入力のＹ軸回転の場合
-			KeyConfig_InputProcess_Assist(InputState[i], KCInfo.SubInfo[1], DIJState.Ry)
+			InputState[i] = KeyConfig_InputProcess_Assist(InputState[i], KCInfo.SubInfo[1], DIJState.Ry)
 
         elseif KCInfo.DirectInputType == DIRECTINPUT_TYPE_RZ then
             -- 方向入力のＺ軸回転の場合
-			KeyConfig_InputProcess_Assist(InputState[i], KCInfo.SubInfo[1], DIJState.Rz)
+			InputState[i] = KeyConfig_InputProcess_Assist(InputState[i], KCInfo.SubInfo[1], DIJState.Rz)
 
         elseif KCInfo.DirectInputType == DIRECTINPUT_TYPE_POV then
             -- 方向コントローラの場合
 			-- 設定されている方向に入力されていたら『入力あり』にする
-			if DIJState.POV[KCInfo.SubInfo[1]] == KCInfo.SubInfo[2] then
+			if DIJState.POV[KCInfo.SubInfo[1] + 1] == KCInfo.SubInfo[2] then
 				InputState[i] = DIRECTINPUT_MAX_VALUE
 			end
 
         elseif KCInfo.DirectInputType == DIRECTINPUT_TYPE_BUTTON then
             -- ボタンの場合
 			-- 設定されているボタンが押されていたら『入力あり』にする
-			if DIJState.Buttons[KCInfo.SubInfo[1]] == 128 then
+			if DIJState.Buttons[KCInfo.SubInfo[1] + 1] == 128 then
 				InputState[i] = DIRECTINPUT_MAX_VALUE
 			end
 
         elseif KCInfo.DirectInputType == DIRECTINPUT_TYPE_KEY then
             -- キーボードのキーの場合
 			-- 設定されているキーが押されていたら『入力あり』にする
-			if g_KeyConfSys.KeyInput[KCInfo.SubInfo[1]] then
+			if g_KeyConfSys.KeyInput[KCInfo.SubInfo[1] + 1] then
 				InputState[i] = DIRECTINPUT_MAX_VALUE
 			end
 		end
@@ -599,7 +599,7 @@ function KeyConfig_UpdateInputTypeInfo(UpdateInputType)
 				-- 情報を保存する
 				KCInfo.PadNo = i
 				KCInfo.DirectInputType = DIRECTINPUT_TYPE_POV
-				KCInfo.SubInfo[1] = j
+				KCInfo.SubInfo[1] = j - 1
 				KCInfo.SubInfo[2] = DIJState.POV[j]
 
 				-- 戻り値を『入力があった』にする
@@ -615,7 +615,7 @@ function KeyConfig_UpdateInputTypeInfo(UpdateInputType)
 				-- 情報を保存する
 				KCInfo.PadNo = i
 				KCInfo.DirectInputType = DIRECTINPUT_TYPE_BUTTON
-				KCInfo.SubInfo[1] = j
+				KCInfo.SubInfo[1] = j - 1
 				KCInfo.SubInfo[2] = 0
 
 				-- 戻り値を『入力があった』にする
@@ -636,7 +636,7 @@ function KeyConfig_UpdateInputTypeInfo(UpdateInputType)
 			-- 情報を保存する
 			KCInfo.PadNo = -1
 			KCInfo.DirectInputType = DIRECTINPUT_TYPE_KEY
-			KCInfo.SubInfo[1] = i
+			KCInfo.SubInfo[1] = i - 1
 
 			-- 戻り値を『入力があった』にする
 			Result = true
@@ -691,7 +691,7 @@ function KeyConfig_GetInputTypeString(InputType, InputString)
 
         -- 一致するキーコード情報をテーブルから探す
         for KInfo in ipairs(g_KeyInfoTable) do
-			if KInfo.KeyInput == KCInfo.SubInfo[0] then
+			if KInfo.KeyInput == KCInfo.SubInfo[1] then
 				InputString = "Key " .. KInfo.Name
 				break
 			end
@@ -734,7 +734,7 @@ function KeyConfig_GetInputTypeString(InputType, InputString)
 			InputString = String .. ' BUTTON ' .. KCInfo.SubInfo[1]
 		end
     end
-    
+
     return InputString
 end
 
