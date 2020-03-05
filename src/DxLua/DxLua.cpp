@@ -142,13 +142,17 @@ end)lua"
 	detail::port_type(lua, library);
 	detail::port_network(lua, library);
 	detail::port_keyinput(lua, library);
+	detail::port_input(lua, library);
 
 	// 以下、ポーティング
 
 	DXLUA_PORT(library, ProcessMessage);
 
 	DXLUA_PORT(library, WaitTimer);
+
+#ifndef DX_NON_INPUT
 	DXLUA_PORT(library, WaitKey);
+#endif // DX_NON_INPUT
 
 	library["GetNowCount"] = [](sol::variadic_args va) {
 		return GetNowCount(va.leftover_count() > 0 ? (va[0].as<bool>() ? TRUE : FALSE) : FALSE);
@@ -247,17 +251,10 @@ end)lua"
 	DXLUA_PORT(library, SetDrawBright);
 
 	DXLUA_PORT(library, ChangeFontType);
-	
+
 	library["GetCharBytes"] = [](int CharCodeFormat, const char *String) {
 		return GetCharBytes(CharCodeFormat, String);
 	};
-
-	DXLUA_PORT(library, CheckHitKey);
-	library["CheckHitKeyAll"] = [](sol::variadic_args va) {
-		return CheckHitKeyAll(va.leftover_count() > 0 ? va[0].as<int>() : DX_CHECKINPUT_ALL);
-	};
-	DXLUA_PORT(library, GetJoypadInputState);
-	DXLUA_PORT(library, GetMouseInput);
 
 	library["GetInputChar"] = [](sol::object DeleteFlag) {
 		return (unsigned int)GetInputChar(DeleteFlag.as<bool>() ? TRUE : FALSE);
