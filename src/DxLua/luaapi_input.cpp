@@ -15,10 +15,13 @@ void port_input(sol::state_view &lua, sol::table &t) {
 	t["CheckHitKeyAll"] = [](sol::variadic_args va) {
 		return CheckHitKeyAll(va.leftover_count() > 0 ? va[0].as<int>() : DX_CHECKINPUT_ALL);
 	};
-	t["GetHitKeyStateAll"] = []() {
+	t["GetHitKeyStateAll"] = [](sol::table KeyStateArray) {
 		std::array<DX_CHAR, 256> keystates;
 		auto result = GetHitKeyStateAll(keystates.data());
-		return std::make_tuple(result, sol::as_table(keystates));
+		for (int i = 0; i < keystates.size(); ++i) {
+			KeyStateArray[i + 1] = (int)keystates[i];
+		}
+		return result;
 	};
 	DXLUA_PORT(t, GetJoypadNum);
 	DXLUA_PORT(t, GetJoypadButtonNum);
