@@ -76,7 +76,20 @@ void port_type(sol::state_view &lua, sol::table &t) {
 			"Rz", &DxLib::DINPUT_JOYSTATE::Rz,
 			"Slider", sol::property([](DxLib::DINPUT_JOYSTATE &self) { return std::ref(self.Slider); }),
 			"POV", sol::property([](DxLib::DINPUT_JOYSTATE &self) { return std::ref(self.POV); }),
-			"Buttons", sol::property([](DxLib::DINPUT_JOYSTATE &self) { return std::ref(self.Buttons); })
+			"Buttons", sol::property([](DxLib::DINPUT_JOYSTATE &self) { return std::ref(self.Buttons); }),
+			sol::meta_function::equal_to, [](const DxLib::DINPUT_JOYSTATE &self, const DxLib::DINPUT_JOYSTATE &other) {
+				return
+					self.X == other.X
+					&& self.Y == other.Y
+					&& self.Z == other.Z
+					&& self.Rx == other.Rx
+					&& self.Ry == other.Ry
+					&& self.Rz == other.Rz
+					&& (memcmp(self.Slider, other.Slider, sizeof(DxLib::DINPUT_JOYSTATE::Slider)) == 0)
+					&& (memcmp(self.POV, other.POV, sizeof(DxLib::DINPUT_JOYSTATE::POV)) == 0)
+					&& (memcmp(self.Buttons, other.Buttons, sizeof(DxLib::DINPUT_JOYSTATE::Buttons)) == 0)
+				;
+			}
 		);
 
 		// ユーザー型をテーブルとして取得

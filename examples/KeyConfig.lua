@@ -2,16 +2,16 @@
 local KeyConfig = {}
 
 -- 入力情報タイプ
-KeyConfig.KEYCONFIG_INPUT_LEFT = (0) -- 方向入力左
-KeyConfig.KEYCONFIG_INPUT_RIGHT = (1) -- 方向入力右
-KeyConfig.KEYCONFIG_INPUT_UP = (2) -- 方向入力上
-KeyConfig.KEYCONFIG_INPUT_DOWN = (3) -- 方向入力下
-KeyConfig.KEYCONFIG_INPUT_CAMERA_LEFT = (4) -- カメラ用方向入力左
-KeyConfig.KEYCONFIG_INPUT_CAMERA_RIGHT = (5) -- カメラ用方向入力右
-KeyConfig.KEYCONFIG_INPUT_CAMERA_UP = (6) -- カメラ用方向入力上
-KeyConfig.KEYCONFIG_INPUT_CAMERA_DOWN = (7) -- カメラ用方向入力下
-KeyConfig.KEYCONFIG_INPUT_ATTACK = (8) -- 攻撃ボタン
-KeyConfig.KEYCONFIG_INPUT_JUMP = (9) -- ジャンプボタン
+KeyConfig.KEYCONFIG_INPUT_LEFT = (1) -- 方向入力左
+KeyConfig.KEYCONFIG_INPUT_RIGHT = (2) -- 方向入力右
+KeyConfig.KEYCONFIG_INPUT_UP = (3) -- 方向入力上
+KeyConfig.KEYCONFIG_INPUT_DOWN = (4) -- 方向入力下
+KeyConfig.KEYCONFIG_INPUT_CAMERA_LEFT = (5) -- カメラ用方向入力左
+KeyConfig.KEYCONFIG_INPUT_CAMERA_RIGHT = (6) -- カメラ用方向入力右
+KeyConfig.KEYCONFIG_INPUT_CAMERA_UP = (7) -- カメラ用方向入力上
+KeyConfig.KEYCONFIG_INPUT_CAMERA_DOWN = (8) -- カメラ用方向入力下
+KeyConfig.KEYCONFIG_INPUT_ATTACK = (9) -- 攻撃ボタン
+KeyConfig.KEYCONFIG_INPUT_JUMP = (10) -- ジャンプボタン
 KeyConfig.KEYCONFIG_INPUT_NUM = (10) -- 入力タイプの数
 
 local KEYCONFIG_INPUT_LEFT = KeyConfig.KEYCONFIG_INPUT_LEFT
@@ -273,6 +273,10 @@ function KeyConfig_Initialize()
 
 	-- キー入力の初期状態を取得する
 	DxLua.GetHitKeyStateAll(g_KeyConfSys.NeutralKeyInput)
+
+	for i = 1, #g_KeyConfSys.NeutralKeyInput do
+		g_KeyConfSys.NeutralKeyInput[i] = 0
+	end
 end
 
 -- KeyConfig_InputProcess 用の軸入力タイプの処理を行う補助関数
@@ -294,7 +298,7 @@ local function KeyConfig_InputProcess_Assist(
 			InputState = InputValue
 		end
 
-    elseif SubInfo == 1 then -- -1の場合は InputValue がプラスの場合のみ入力ありとする
+    elseif SubInfo == -1 then -- -1の場合は InputValue がプラスの場合のみ入力ありとする
 		if InputValue < 0 then
 			InputState = -InputValue
 		end
@@ -336,7 +340,7 @@ function KeyConfig_InputProcess()
 		InputState[i] = 0
 
 		-- 対応する DirectInput の情報タイプによって処理を分岐
-        DIJState = KCInfo.PadNo < 0 and nil or g_KeyConfSys.DirectInputState[KCInfo.PadNo]
+        DIJState = KCInfo.PadNo < 0 and nil or g_KeyConfSys.DirectInputState[KCInfo.PadNo + 1]
         if not DIJState then
             -- パッド情報が取得できなかった
 
@@ -439,6 +443,7 @@ function KeyConfig_Save(FilePath)
 		-- 開けなかったら何もせずに終了
 		return false
 	end
+	print('KeyConfig_Save')
 
 	-- ゲームの各入力とキーやパッドなどの入力との対応情報をファイルに書き出す
 	for i = 1, KEYCONFIG_INPUT_NUM do
@@ -449,6 +454,7 @@ function KeyConfig_Save(FilePath)
 			KCInfo.SubInfo[1],
 			KCInfo.SubInfo[2]
         ))
+		print(i, KCInfo.PadNo, KCInfo.DirectInputType, KCInfo.SubInfo[1], KCInfo.SubInfo[2])
 	end
 
 	-- ファイルを閉じる
@@ -469,7 +475,7 @@ function KeyConfig_Load(FilePath)
 		-- 開けなかった場合は何もせずに終了
 		return false
 	end
-
+print('KeyConfig_Load')
 	-- ゲームの各入力とキーやパッドなどの入力との対応情報をファイルから読み込む
 	for i = 1, KEYCONFIG_INPUT_NUM do
         KCInfo = g_KeyConfSys.KeyConfigInfo[i]
@@ -480,11 +486,12 @@ function KeyConfig_Load(FilePath)
 
         -- 正規表現で各数字を文字列として取得
         local a, b, c, d
-            = string.match(line, 'PadNo = (%d+)  DirectInputType = (%d+)  SubInfo0 = (%d+)  SubInfo1 = (%d+)')
+            = string.match(line, 'PadNo = (-?%d+)  DirectInputType = (-?%d+)  SubInfo0 = (-?%d+)  SubInfo1 = (-?%d+)')
 
         -- それぞれ数値に変換して情報に格納
         KCInfo.PadNo, KCInfo.DirectInputType, KCInfo.SubInfo[1], KCInfo.SubInfo[2]
-             = tonumber(a or 0), tonumber(b or 0), tonumber(c or 0), tonumber(d or 0)
+			 = tonumber(a or 0), tonumber(b or 0), tonumber(c or 0), tonumber(d or 0)
+		print(i, KCInfo.PadNo, KCInfo.DirectInputType, KCInfo.SubInfo[1], KCInfo.SubInfo[2])
 	end
 
 	-- ファイルを閉じる
@@ -523,7 +530,7 @@ local function UpdateInputTypeInfo_Assist(
 		-- 又は MaxDirectInputValue の値よりも DirectInputValue の値が大きいかをチェック
 		if ValidMaxDInput == false or MaxDInput < -DirectInputValue then
 			-- 情報を保存する
-			KCInfo.PadNo = PadNo
+			KCInfo.PadNo = PadNo - 1
 			KCInfo.DirectInputType = DirectInputType
 			KCInfo.SubInfo[1] = -1
 			KCInfo.SubInfo[2] = 0
@@ -537,7 +544,7 @@ local function UpdateInputTypeInfo_Assist(
 			-- 又は MaxDirectInputValue の値よりも DirectInputValue の値が大きいかをチェック
 			if ValidMaxDInput == false or MaxDInput < DirectInputValue then
 				-- 情報を保存する
-				KCInfo.PadNo = PadNo
+				KCInfo.PadNo = PadNo - 1
 				KCInfo.DirectInputType = DirectInputType
 				KCInfo.SubInfo[1] = 1
 				KCInfo.SubInfo[2] = 0
@@ -597,7 +604,7 @@ function KeyConfig_UpdateInputTypeInfo(UpdateInputType)
 			if DIJState.POV[j] ~= -1 and
 				DIJState.POV[j] ~= NDIJState.POV[j] then
 				-- 情報を保存する
-				KCInfo.PadNo = i
+				KCInfo.PadNo = i - 1
 				KCInfo.DirectInputType = DIRECTINPUT_TYPE_POV
 				KCInfo.SubInfo[1] = j - 1
 				KCInfo.SubInfo[2] = DIJState.POV[j]
@@ -613,7 +620,7 @@ function KeyConfig_UpdateInputTypeInfo(UpdateInputType)
 			if DIJState.Buttons[j] == 128 and
 				DIJState.Buttons[j] ~= NDIJState.Buttons[j] then
 				-- 情報を保存する
-				KCInfo.PadNo = i
+				KCInfo.PadNo = i - 1
 				KCInfo.DirectInputType = DIRECTINPUT_TYPE_BUTTON
 				KCInfo.SubInfo[1] = j - 1
 				KCInfo.SubInfo[2] = 0
@@ -669,8 +676,10 @@ function KeyConfig_CheckInput()
 	end
 
 	-- キーの入力状態が初期状態と異なる場合はキーの入力があるということなので true を返す
-	if g_KeyConfSys.NeutralKeyInput ~= g_KeyConfSys.KeyInput then
-		return true
+	for i = 1, math.min(#g_KeyConfSys.NeutralKeyInput, #g_KeyConfSys.KeyInput) do
+		if g_KeyConfSys.NeutralKeyInput[i] ~= g_KeyConfSys.KeyInput[i] then
+			return true
+		end
 	end
 
 	-- ここに来たということは何も入力が無かったということなので false を返す
@@ -690,7 +699,7 @@ function KeyConfig_GetInputTypeString(InputType, InputString)
 		InputString = "Key UNKNOWN"
 
         -- 一致するキーコード情報をテーブルから探す
-        for KInfo in ipairs(g_KeyInfoTable) do
+		for i, KInfo in ipairs(g_KeyInfoTable) do
 			if KInfo.KeyInput == KCInfo.SubInfo[1] then
 				InputString = "Key " .. KInfo.Name
 				break
@@ -731,7 +740,7 @@ function KeyConfig_GetInputTypeString(InputType, InputString)
 
         elseif KCInfo.DirectInputType == DIRECTINPUT_TYPE_BUTTON then
             -- ボタン入力の場合は BUTTON とボタン番号を付ける
-			InputString = String .. ' BUTTON ' .. KCInfo.SubInfo[1]
+			InputString = String .. 'BUTTON ' .. KCInfo.SubInfo[1]
 		end
     end
 

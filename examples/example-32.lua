@@ -10,7 +10,7 @@ local INFO_NAME_X = (140) -- 入力名を描画するＸ座標
 local INFO_INPUT_X = (320) -- 入力状態を描画するＸ座標
 
 -- キーコンフィグ対象の項目
-local TargetIndex = 0
+local TargetIndex = 1
 
 -- キーコンフィグ各項目の名前
 local g_KeyConfigMenuTable =
@@ -42,18 +42,6 @@ DxLua.SetGraphMode(640, 480, 16)
 function DxLua.Init()
 	-- 描画先を裏画面にする
 	DxLua.SetDrawScreen(DxLua.DX_SCREEN_BACK)
-
-	-- キーコンフィグ処理を初期化
-	KeyConfig_Initialize()
-
-	-- キーコンフィグファイルを読み込む
-	if KeyConfig_Load(KEYCONFIG_FILE_NAME) == false then
-		-- コンフィグファイルが読み込めなかったらデフォルト設定にする
-		KeyConfig_SetDefault()
-    end
-
-	-- 「何か入力があったら何もしない」フラグを倒す
-	InputWait = false
 end
 
 -- ループ
@@ -80,10 +68,35 @@ function StateMachine:Select()
 
     -- キーボードで選択
     if DxLua.CheckHitKey(DxLua.KEY_INPUT_1) ~= 0 or DxLua.CheckHitKey(DxLua.KEY_INPUT_NUMPAD1) ~= 0 then
-        self.State = 'Screen'
+        self.State = 'PreScreen'
     elseif DxLua.CheckHitKey(DxLua.KEY_INPUT_2) ~= 0 or DxLua.CheckHitKey(DxLua.KEY_INPUT_NUMPAD2) ~= 0 then
-        self.State = 'Test'
+        self.State = 'PreTest'
     end
+end
+
+-- 共通の前処理
+function StateMachine:PreCommon()
+	-- キーコンフィグ処理を初期化
+	KeyConfig_Initialize()
+
+	-- キーコンフィグファイルを読み込む
+	if KeyConfig_Load(KEYCONFIG_FILE_NAME) == false then
+		-- コンフィグファイルが読み込めなかったらデフォルト設定にする
+		KeyConfig_SetDefault()
+    end
+
+	-- 「何か入力があったら何もしない」フラグを倒す
+	InputWait = false
+end
+
+-- キーコンフィグ画面（前処理）
+function StateMachine:PreScreen()
+    self:PreCommon()
+
+    TargetIndex = 1
+    InputWait = true
+
+    self.State = 'Screen'
 end
 
 -- キーコンフィグ画面
@@ -137,12 +150,21 @@ function StateMachine:Screen()
     DxLua.ScreenFlip()
 
     -- 全ての入力の設定が終わったらループを抜ける
-    if TargetIndex == KeyConfig.KEYCONFIG_INPUT_NUM then
+    if TargetIndex > KeyConfig.KEYCONFIG_INPUT_NUM then
         -- キーコンフィグ設定を保存する
         KeyConfig_Save(KEYCONFIG_FILE_NAME)
 
         self.State = 'Select'
+    elseif DxLua.CheckHitKey(DxLua.KEY_INPUT_ESCAPE) ~= 0 then
+        -- DxLua: 戻る
+        self.State = 'Select'
     end
+end
+
+-- キーコンフィグのテスト（前処理）
+function StateMachine:PreTest()
+    self:PreCommon()
+    self.State = 'Test'
 end
 
 -- キーコンフィグのテスト
@@ -183,4 +205,9 @@ function StateMachine:Test()
 
     -- 裏画面の内容を表画面に反映
     DxLua.ScreenFlip()
+
+    if DxLua.CheckHitKey(DxLua.KEY_INPUT_ESCAPE) ~= 0 then
+        -- DxLua: 戻る
+        self.State = 'Select'
+    end
 end

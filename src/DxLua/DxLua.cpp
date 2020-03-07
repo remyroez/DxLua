@@ -213,6 +213,15 @@ end)lua"
 		unsigned int EdgeColor = va.leftover_count() > 1 ? va[1].as<unsigned int>() : 0;
 		return DrawString(x, y, String, Color, EdgeColor);
 	};
+	library["DrawFormatString"] = [lua, library](int x, int y, unsigned int Color, const TCHAR *String, sol::variadic_args va) {
+		int Result = -1;
+		if (sol::function fn = lua["string"]["format"]; fn.valid()) {
+			if (sol::object result = fn.call(String, va); result.valid()) {
+				Result = DrawFormatString(x, y, Color, result.as<const char *>());
+			}
+		}
+		return Result;
+	};
 
 	library["DrawLine"] = [](int x1, int y1, int x2, int y2, sol::variadic_args va) {
 		unsigned int Color = va.leftover_count() > 0 ? va[0].as<unsigned int>() : 0xFFFFFFFF;
