@@ -143,6 +143,7 @@ end)lua"
 	detail::port_network(lua, library);
 	detail::port_keyinput(lua, library);
 	detail::port_input(lua, library);
+	detail::port_draw(lua, library);
 
 	// 以下、ポーティング
 
@@ -172,42 +173,11 @@ end)lua"
 		return SetDoubleStartValidFlag(Flag.as<bool>() ? TRUE : FALSE);
 	};
 
-	library["SetWaitVSyncFlag"] = [](sol::object Flag) {
-		return SetWaitVSyncFlag(Flag.as<bool>() ? TRUE : FALSE);
-	};
+	DXLUA_PORT(library, SetFontSize);
+	DXLUA_PORT(library, SetDrawBright);
 
-	//DXLUA_PORT(library, SetGraphMode);
-	library["SetGraphMode"] = [](int ScreenSizeX, int ScreenSizeY, int ColorBitDepth, sol::variadic_args va) {
-		return SetGraphMode(ScreenSizeX, ScreenSizeY, ColorBitDepth, va.leftover_count() > 0 ? va[0].as<int>() : 60);
-	};
+	DXLUA_PORT(library, ChangeFontType);
 
-	DXLUA_PORT(library, ScreenFlip);
-	library["ClearDrawScreen"] = [](sol::variadic_args va) {
-		return ClearDrawScreen();
-	};
-	DXLUA_PORT(library, SetDrawScreen);
-	DXLUA_PORT(library, SetDrawArea);
-#if 0
-	library["GetDrawArea"] = [lua]() {
-		RECT rect;
-		GetDrawArea(&rect);
-		return rect;
-	};
-#endif
-	DXLUA_PORT(library, SetDrawAreaFull);
-	DXLUA_PORT(library, SetDraw3DScale);
-
-	library["LoadGraph"] = [library](const TCHAR *FileName, sol::variadic_args va) {
-		return LoadGraph(to_data_path(library, FileName).c_str(), va.leftover_count() > 0 ? va[0].as<bool>() : false);
-	};
-	library["DrawGraph"] = [](float xf, float yf, int GrHandle, bool TransFlag) {
-		return DrawGraph(xf, yf, GrHandle, TransFlag ? TRUE : FALSE);
-	};
-	library["DrawRotaGraph"] = [](int x, int y, double ExRate, double Angle, int GrHandle, bool TransFlag, sol::variadic_args va) {
-		int ReverseXFlag = va.leftover_count() > 0 ? (va[0].as<bool>() ? TRUE : FALSE) : FALSE;
-		int ReverseYFlag = va.leftover_count() > 1 ? (va[1].as<bool>() ? TRUE : FALSE) : FALSE;
-		return DrawRotaGraph(x, y, ExRate, Angle, GrHandle, TransFlag ? TRUE : FALSE, ReverseXFlag, ReverseYFlag);
-	};
 	library["DrawString"] = [](int x, int y, const TCHAR *String, sol::variadic_args va) {
 		unsigned int Color = va.leftover_count() > 0 ? va[0].as<unsigned int>() : 0xFFFFFFFF;
 		unsigned int EdgeColor = va.leftover_count() > 1 ? va[1].as<unsigned int>() : 0;
@@ -222,44 +192,7 @@ end)lua"
 		}
 		return Result;
 	};
-
-	library["DrawLine"] = [](int x1, int y1, int x2, int y2, sol::variadic_args va) {
-		unsigned int Color = va.leftover_count() > 0 ? va[0].as<unsigned int>() : 0xFFFFFFFF;
-		int Thickness = va.leftover_count() > 1 ? va[1].as<int>() : 1;
-		return DrawLine(x1, y1, x2, y2, Color, va.leftover_count() > 0 ? va[0].as<int>() : 1);
-	};
-	library["DrawBox"] = [](int x1, int y1, int x2, int y2, sol::variadic_args va) {
-		unsigned int Color = va.leftover_count() > 0 ? va[0].as<unsigned int>() : 0xFFFFFFFF;
-		int FillFlag = va.leftover_count() > 1 ? (va[1].as<bool>() ? TRUE : FALSE) : TRUE;
-		return DrawBox(x1, y1, x2, y2, Color, FillFlag);
-	};
-	library["DrawCircle"] = [](int x, int y, int r, sol::variadic_args va) {
-		unsigned int Color = va.leftover_count() > 0 ? va[0].as<unsigned int>() : 0xFFFFFFFF;
-		int FillFlag = va.leftover_count() > 1 ? (va[1].as<bool>() ? TRUE : FALSE) : TRUE;
-		int LineThickness = va.leftover_count() > 2 ? va[2].as<int>() : 1;
-		return DrawCircle(x, y, r, Color, FillFlag, LineThickness);
-	};
-	library["DrawTriangle"] = [](int x1, int y1, int x2, int y2, int x3, int y3, sol::variadic_args va) {
-		unsigned int Color = va.leftover_count() > 0 ? va[0].as<unsigned int>() : 0xFFFFFFFF;
-		int FillFlag = va.leftover_count() > 1 ? (va[1].as<bool>() ? TRUE : FALSE) : TRUE;
-		return DrawTriangle(x1, y1, x2, y2, x3, y3, Color, FillFlag);
-	};
-	DXLUA_PORT(library, DrawPixel);
-
-	DXLUA_PORT(library, SetDrawBlendMode);
-	library["GetDrawBlendMode"] = []() {
-		int BlendMode = -1;
-		int BlendParam = -1;
-		auto result = GetDrawBlendMode(&BlendMode, &BlendParam);
-		return std::make_tuple(result, BlendMode, BlendParam);
-	};
-
 	DXLUA_PORT(library, GetColor);
-
-	DXLUA_PORT(library, SetFontSize);
-	DXLUA_PORT(library, SetDrawBright);
-
-	DXLUA_PORT(library, ChangeFontType);
 
 	library["GetCharBytes"] = [](int CharCodeFormat, const char *String) {
 		return GetCharBytes(CharCodeFormat, String);

@@ -9,4 +9,5 @@ target_sources(DxLua PRIVATE
     luaapi_network.cpp
     luaapi_keyinput.cpp
     luaapi_input.cpp
+    luaapi_draw.cpp
 )
