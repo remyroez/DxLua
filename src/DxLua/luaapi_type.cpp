@@ -10,7 +10,7 @@ void port_type(sol::state_view &lua, sol::table &t) {
 	// VECTOR
 	{
 		// ユーザー型定義
-		auto VECTOR = lua.new_usertype<DxLib::VECTOR>(
+		auto VECTOR = t.new_usertype<DxLib::VECTOR>(
 			"VECTOR",
 			"x", &DxLib::VECTOR::x,
 			"y", &DxLib::VECTOR::y,
@@ -23,7 +23,7 @@ void port_type(sol::state_view &lua, sol::table &t) {
 		);
 
 		// ユーザー型をテーブルとして取得
-		sol::table tableVECTOR = lua["VECTOR"];
+		sol::table tableVECTOR = t["VECTOR"];
 
 		// メタテーブルの作成
 		sol::table metaVECTOR = tableVECTOR[sol::metatable_key] = lua.create_table();
@@ -60,11 +60,129 @@ void port_type(sol::state_view &lua, sol::table &t) {
 		metaVECTOR["__call"] = [](sol::stack_object self, sol::variadic_args va) { return sol::table(self)["new"](va); };
 
 		// ライブラリに追加
-		DXLUA_PORT(t, VECTOR);
 		DXLUA_PORT_EX(t, FLOAT3, VECTOR);
+	}
 
-		// グローバルから削除
-		DXLUA_REMOVE(lua, VECTOR);
+	// DINPUT_JOYSTATE
+	{
+		// ユーザー型定義
+		auto DINPUT_JOYSTATE = t.new_usertype<DxLib::DINPUT_JOYSTATE>(
+			"DINPUT_JOYSTATE",
+			"X", &DxLib::DINPUT_JOYSTATE::X,
+			"Y", &DxLib::DINPUT_JOYSTATE::Y,
+			"Z", &DxLib::DINPUT_JOYSTATE::Z,
+			"Rx", &DxLib::DINPUT_JOYSTATE::Rx,
+			"Ry", &DxLib::DINPUT_JOYSTATE::Ry,
+			"Rz", &DxLib::DINPUT_JOYSTATE::Rz,
+			"Slider", sol::property([](DxLib::DINPUT_JOYSTATE &self) { return std::ref(self.Slider); }),
+			"POV", sol::property([](DxLib::DINPUT_JOYSTATE &self) { return std::ref(self.POV); }),
+			"Buttons", sol::property([](DxLib::DINPUT_JOYSTATE &self) { return std::ref(self.Buttons); }),
+			sol::meta_function::equal_to, [](const DxLib::DINPUT_JOYSTATE &self, const DxLib::DINPUT_JOYSTATE &other) {
+				return
+					self.X == other.X
+					&& self.Y == other.Y
+					&& self.Z == other.Z
+					&& self.Rx == other.Rx
+					&& self.Ry == other.Ry
+					&& self.Rz == other.Rz
+					&& (memcmp(self.Slider, other.Slider, sizeof(DxLib::DINPUT_JOYSTATE::Slider)) == 0)
+					&& (memcmp(self.POV, other.POV, sizeof(DxLib::DINPUT_JOYSTATE::POV)) == 0)
+					&& (memcmp(self.Buttons, other.Buttons, sizeof(DxLib::DINPUT_JOYSTATE::Buttons)) == 0)
+				;
+			}
+		);
+
+		// ユーザー型をテーブルとして取得
+		sol::table table = t["DINPUT_JOYSTATE"];
+
+		// メタテーブルの作成
+		sol::table metatable = table[sol::metatable_key] = lua.create_table();
+
+		// 専用の new 関数を用意
+		table["new"] = [](sol::object arg) {
+			// 空インスタンス
+			DxLib::DINPUT_JOYSTATE instance;
+			memset(&instance, 0, sizeof(instance));
+
+			if (!arg.is<sol::table>()) {
+				// テーブルではない
+
+			} else if (sol::table argt = arg.as<sol::table>()) {
+				// テーブルからコピー
+				instance.X = argt["X"].get_or(0);
+				instance.Y = argt["Y"].get_or(0);
+				instance.Z = argt["Z"].get_or(0);
+				instance.Rx = argt["Rx"].get_or(0);
+				instance.Ry = argt["Ry"].get_or(0);
+				instance.Rz = argt["Rz"].get_or(0);
+
+				// Slider
+				if (sol::object obj = argt["Slider"]; obj.is<sol::table>()) {
+					sol::table t = obj;
+					for (int i = 0; i < 2; ++i) {
+						instance.Slider[i] = t[i + 1].get_or(0);
+					}
+				}
+
+				// POV
+				if (sol::object obj = argt["POV"]; obj.is<sol::table>()) {
+					sol::table t = obj;
+					for (int i = 0; i < 4; ++i) {
+						instance.POV[i] = t[i + 1].get_or(0U);
+					}
+				}
+
+				// Buttons
+				if (sol::object obj = argt["Buttons"]; obj.is<sol::table>()) {
+					sol::table t = obj;
+					for (int i = 0; i < 32; ++i) {
+						instance.Buttons[i] = t[i + 1].get_or(0U);
+					}
+				}
+			}
+			return instance;
+		};
+
+		// ユーザー型テーブルの呼び出しで new を呼ぶように対応
+		metatable["__call"] = [](sol::stack_object self, sol::variadic_args va) { return sol::table(self)["new"](va); };
+	}
+
+	// IPDATA
+	{
+		// ユーザー型定義
+		auto IPDATA = t.new_usertype<DxLib::IPDATA>(
+			"IPDATA",
+			"d1", &DxLib::IPDATA::d1,
+			"d2", &DxLib::IPDATA::d2,
+			"d3", &DxLib::IPDATA::d3,
+			"d4", &DxLib::IPDATA::d4,
+			sol::meta_function::to_string, [](const DxLib::IPDATA &ipdata) {
+				std::ostringstream ost;
+				ost
+					<< "{ d1 = " << ipdata.d1
+					<< ", d2 = " << ipdata.d2
+					<< ", d3 = " << ipdata.d3
+					<< ", d4 = " << ipdata.d4
+					<< " }";
+				return ost.str();
+			}
+		);
+	}
+
+	// IPDATA_IPv6
+	{
+		// ユーザー型定義
+		auto IPDATA_IPv6 = t.new_usertype<DxLib::IPDATA_IPv6>(
+			"IPDATA_IPv6",
+			"ScopeID", &DxLib::IPDATA_IPv6::ScopeID,
+			sol::meta_function::to_string, [](const DxLib::IPDATA_IPv6 &ipdata) {
+				std::ostringstream ost;
+				ost
+					<< "{ ScopeID = " << ipdata.ScopeID
+					<< " }";
+				return ost.str();
+			}
+		);
 	}
 }
 
