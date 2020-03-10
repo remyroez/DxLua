@@ -35,10 +35,10 @@ end
 
 -- どちらのキーが押されるか監視する
 function StateMachine:Select()
-	if DxLua.CheckHitKey(DxLua.KEY_INPUT_Z) ~= 0 then
+	if dx.CheckHitKey(dx.KEY_INPUT_Z) ~= 0 then
 		Key = 'Z'
 		self:ChangeState 'Host'
-	elseif DxLua.CheckHitKey(DxLua.KEY_INPUT_X) ~= 0 then
+	elseif dx.CheckHitKey(dx.KEY_INPUT_X) ~= 0 then
 		Key = 'X'
 		self:ChangeState 'Client'
 	end
@@ -47,7 +47,7 @@ end
 -- 接続を待つ場合
 function StateMachine:Host()
 	-- 接続待ち状態にする
-	DxLua.PreparationListenNetWork(9850)
+	dx.PreparationListenNetWork(9850)
 
 	-- 接続があるまで待つ表示
 	ScreenStringAdd("接続があるまで待ちます")
@@ -58,12 +58,12 @@ end
 -- 接続があるまでここでループ
 function StateMachine:WaitAccess()
 	-- 新しい接続があった場合はそのネットハンドルを保存する
-	NetHandle = DxLua.GetNewAcceptNetWork()
+	NetHandle = dx.GetNewAcceptNetWork()
 
 	-- 新しい接続があった場合はループを出る
 	if NetHandle ~= -1 then
 		-- 接続待ちを解除
-		DxLua.StopListenNetWork()
+		dx.StopListenNetWork()
 		self:ChangeState 'PreChat'
 	end
 end
@@ -76,7 +76,7 @@ function StateMachine:Client()
 
 	-- ＩＰの入力を行う
 	-- DxLua: 使用方法が C と異なる
-	local err, ip = DxLua.KeyInputSingleCharString(0, INPUT_LINE * FONT_SIZE + 2, 80, false)
+	local err, ip = dx.KeyInputSingleCharString(0, INPUT_LINE * FONT_SIZE + 2, 80, false)
 	StrBuf = type(ip) == 'string' and ip or ''
 
 	-- 文字列からＩＰを抜き出す
@@ -105,7 +105,7 @@ function StateMachine:Connect()
 	ScreenStringAdd("接続中")
 
 	-- 接続を試みる
-	NetHandle = DxLua.ConnectNetWork(self.IP, 9850)
+	NetHandle = dx.ConnectNetWork(self.IP, 9850)
 
 	-- 接続に成功したらループから抜ける
 	if NetHandle ~= -1 then
@@ -122,10 +122,10 @@ function StateMachine:PreChat()
 	ScreenStringAdd("接続しました")
 
 	-- 文字列入力ハンドルを作成する
-	InputHandle = DxLua.MakeKeyInput(80, false, false, false)
+	InputHandle = dx.MakeKeyInput(80, false, false, false)
 
 	-- 作成した入力ハンドルをアクティブにする
-	DxLua.SetActiveKeyInput(InputHandle)
+	dx.SetActiveKeyInput(InputHandle)
 
 	self:ChangeState 'Chat'
 end
@@ -133,26 +133,26 @@ end
 -- チャットループ
 function StateMachine:Chat()
 	-- 切断確認
-	if DxLua.GetLostNetWork() == NetHandle then
+	if dx.GetLostNetWork() == NetHandle then
 		return 'exit'
 	end
 
 	-- 受信した文字列がある場合は受信する
-	if DxLua.GetNetWorkDataLength(NetHandle) > 4 then
+	if dx.GetNetWorkDataLength(NetHandle) > 4 then
 		-- 受信した文字列の長さを得る
-		local err, buffer = DxLua.NetWorkRecvToPeek(NetHandle, 4)
-		StrLength = DxLua.Buffer_getInt32(buffer)
+		local err, buffer = dx.NetWorkRecvToPeek(NetHandle, 4)
+		StrLength = dx.Buffer_getInt32(buffer)
 
 		-- 受信するはずの文字列長より受信されている文字数が少ない場合は
 		-- 何もせずもどる
-		if StrLength + 4 <= DxLua.GetNetWorkDataLength(NetHandle) then
+		if StrLength + 4 <= dx.GetNetWorkDataLength(NetHandle) then
 			-- 文字列の長さを得る
-			err, buffer = DxLua.NetWorkRecv(NetHandle, 4)
-			Length = DxLua.Buffer_getInt32(buffer)
+			err, buffer = dx.NetWorkRecv(NetHandle, 4)
+			Length = dx.Buffer_getInt32(buffer)
 
 			-- メッセージを受信
-			err, buffer = DxLua.NetWorkRecv(NetHandle, Length)
-			local Message = DxLua.Buffer_getString(buffer)
+			err, buffer = dx.NetWorkRecv(NetHandle, Length)
+			local Message = dx.Buffer_getString(buffer)
 
 			-- 画面に表示
 			ScreenStringAdd(Message)
@@ -162,62 +162,62 @@ function StateMachine:Chat()
 	-- 文字列入力
 	do
 		-- 文字列の入力が終っている場合は送信する
-		if DxLua.CheckKeyInput(InputHandle) == 1 then
+		if dx.CheckKeyInput(InputHandle) == 1 then
 			-- 入力された文字列を取得する
-			local err, Message = DxLua.GetKeyInputString(InputHandle)
+			local err, Message = dx.GetKeyInputString(InputHandle)
 
 			-- 入力された文字列の長さを送信する
 			-- +1 は終端文字('\0')を含めるため
 			StrLength = #Message + 1
 
-			DxLua.NetWorkSend(NetHandle, StrLength, 4)
+			dx.NetWorkSend(NetHandle, StrLength, 4)
 
 			-- 文字列を送信
-			DxLua.NetWorkSend(NetHandle, Message, StrLength)
+			dx.NetWorkSend(NetHandle, Message, StrLength)
 
 			-- 自分のとこにも表示する
 			ScreenStringAdd(Message)
 
 			-- 入力文字列を初期化する
-			DxLua.SetKeyInputString("", InputHandle)
+			dx.SetKeyInputString("", InputHandle)
 
 			-- 再度インプットハンドルをアクティブにする
-			DxLua.SetActiveKeyInput(InputHandle)
+			dx.SetActiveKeyInput(InputHandle)
 		end
 
 		-- 画面に入力中の文字列を描画する
-		DxLua.DrawBox(0, INPUT_LINE * FONT_SIZE + 2, 640, 480, 0, true)
-		DxLua.DrawKeyInputString(0, INPUT_LINE * FONT_SIZE + 2, InputHandle)
-		DxLua.DrawKeyInputModeString(640, 480)
+		dx.DrawBox(0, INPUT_LINE * FONT_SIZE + 2, 640, 480, 0, true)
+		dx.DrawKeyInputString(0, INPUT_LINE * FONT_SIZE + 2, InputHandle)
+		dx.DrawKeyInputModeString(640, 480)
 	end
 
 	-- 時間待ち
-	DxLua.WaitTimer(32)
+	dx.WaitTimer(32)
 end
 
-DxLua.SetDoubleStartValidFlag(true)
+dx.SetDoubleStartValidFlag(true)
 
 -- ＤＸライブラリ初期化処理
-function DxLua.Init()
+function dx.Init()
 	-- 入力領域と文字出力領域との境界線を引く
-	DxLua.DrawLine(0, CHAT_LINENUM * FONT_SIZE, 640, CHAT_LINENUM * FONT_SIZE, DxLua.GetColor(255, 255, 255))
+	dx.DrawLine(0, CHAT_LINENUM * FONT_SIZE, 640, CHAT_LINENUM * FONT_SIZE, dx.GetColor(255, 255, 255))
 
 	-- 接続を待つか接続をするか入力してもらう
 	ScreenStringAdd("接続を待つ場合はＺキーを、接続をする場合はＸキーを押してください")
 end
 
 -- ループ
-function DxLua.Update()
+function dx.Update()
 	return StateMachine:Update()
 end
 
 -- ＤＸライブラリ使用の終了処理
-function DxLua.End()
+function dx.End()
 	-- 切断確認処理
 	ScreenStringAdd("切断しました")
 
 	-- 時間待ち
-	DxLua.WaitTimer(3000)
+	dx.WaitTimer(3000)
 end
 
 -- チャット文字列を追加する
@@ -249,11 +249,11 @@ end
 -- チャットの現在の状態を画面に表示する
 function ScreenStringDraw()
 	-- 文字列表示域を黒で塗りつぶす
-	DxLua.DrawBox(0, 0, 640, CHAT_LINENUM * FONT_SIZE, 0, true)
+	dx.DrawBox(0, 0, 640, CHAT_LINENUM * FONT_SIZE, 0, true)
 
 	-- すべてのチャット文字列を描画する
 	for i, str in ipairs(ScreenString) do
-		DxLua.DrawString(0, (i - 1) * FONT_SIZE, str, DxLua.GetColor(255, 255, 255))
+		dx.DrawString(0, (i - 1) * FONT_SIZE, str, dx.GetColor(255, 255, 255))
 	end
 
 	-- 終了

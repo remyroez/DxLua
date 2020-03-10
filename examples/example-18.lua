@@ -30,41 +30,41 @@ local SkillCommand =
 {
 	-- 波動拳
 	{
-		DxLua.PAD_INPUT_DOWN,
-		bor(DxLua.PAD_INPUT_RIGHT, DxLua.PAD_INPUT_DOWN),
-		DxLua.PAD_INPUT_RIGHT,
+		dx.PAD_INPUT_DOWN,
+		bor(dx.PAD_INPUT_RIGHT, dx.PAD_INPUT_DOWN),
+		dx.PAD_INPUT_RIGHT,
 	},
 
 	-- 昇竜拳
 	{
-		DxLua.PAD_INPUT_RIGHT,
-		bor(DxLua.PAD_INPUT_RIGHT, DxLua.PAD_INPUT_DOWN),
-		DxLua.PAD_INPUT_DOWN,
-		bor(DxLua.PAD_INPUT_RIGHT, DxLua.PAD_INPUT_DOWN),
+		dx.PAD_INPUT_RIGHT,
+		bor(dx.PAD_INPUT_RIGHT, dx.PAD_INPUT_DOWN),
+		dx.PAD_INPUT_DOWN,
+		bor(dx.PAD_INPUT_RIGHT, dx.PAD_INPUT_DOWN),
 	},
 	{
-		DxLua.PAD_INPUT_RIGHT,
-		DxLua.PAD_INPUT_DOWN,
-		bor(DxLua.PAD_INPUT_RIGHT, DxLua.PAD_INPUT_DOWN),
+		dx.PAD_INPUT_RIGHT,
+		dx.PAD_INPUT_DOWN,
+		bor(dx.PAD_INPUT_RIGHT, dx.PAD_INPUT_DOWN),
 	},
 }
 
 OldTime = OldTime or 0 -- 前フレーム時の時間
 
-DxLua.SetGraphMode(640, 480, 16) -- 画面設定
+dx.SetGraphMode(640, 480, 16) -- 画面設定
 
 -- ＤＸライブラリ初期化処理
-function DxLua.Init()
+function dx.Init()
 	-- 描画先を裏画面に設定
-	DxLua.SetDrawScreen(DxLua.DX_SCREEN_BACK)
+	dx.SetDrawScreen(dx.DX_SCREEN_BACK)
 
 	-- 時間の取得
-	NowTime = DxLua.GetNowCount()
+	NowTime = dx.GetNowCount()
 end
 
 -- ループ
-function DxLua.Update()
-	if band(DxLua.GetJoypadInputState(DxLua.DX_INPUT_KEY_PAD1), DxLua.PAD_INPUT_START) ~= 0 then
+function dx.Update()
+	if band(dx.GetJoypadInputState(dx.DX_INPUT_KEY_PAD1), dx.PAD_INPUT_START) ~= 0 then
 		return 'exit'
 	end
 
@@ -72,11 +72,11 @@ function DxLua.Update()
 	CommandInput()
 
 	-- 画面を初期化
-	DxLua.ClearDrawScreen()
+	dx.ClearDrawScreen()
 
 	-- 技名の表示
 	if DrawTime > 0 then
-		DxLua.DrawString(200, 200, DrawSkillName, 0xffffff)
+		dx.DrawString(200, 200, DrawSkillName, 0xffffff)
 
 		-- 残り表示時間を減らす
 		DrawTime = DrawTime - (NowTime - OldTime)
@@ -84,14 +84,14 @@ function DxLua.Update()
 
 	-- DxLua: デバッグ用
 	for i, command in ipairs(InputBuf) do
-		DxLua.DrawString(200 + i * 20, 300, tostring(command), 0xffffff)
+		dx.DrawString(200 + i * 20, 300, tostring(command), 0xffffff)
 	end
 
 	-- 裏画面の内容を表画面に反映させる
-	DxLua.ScreenFlip()
+	dx.ScreenFlip()
 
 	OldTime = NowTime		-- 前フレームの時間を保存
-	NowTime = DxLua.GetNowCount()	-- 現在の時間を取得
+	NowTime = dx.GetNowCount()	-- 現在の時間を取得
 end
 
 -- キー入力処理を行う
@@ -99,20 +99,20 @@ function CommandInput()
 	local InputData, OldCursorData, CursorData
 
 	-- 現在の入力状態を取得
-	InputData = DxLua.GetJoypadInputState(DxLua.DX_INPUT_KEY_PAD1)
+	InputData = dx.GetJoypadInputState(dx.DX_INPUT_KEY_PAD1)
 
 	-- カーソルキー入力のみのデータにする
 	CursorData = InputData
 	CursorData = band(
 		CursorData,
-		bor(DxLua.PAD_INPUT_LEFT, DxLua.PAD_INPUT_RIGHT, DxLua.PAD_INPUT_UP, DxLua.PAD_INPUT_DOWN)
+		bor(dx.PAD_INPUT_LEFT, dx.PAD_INPUT_RIGHT, dx.PAD_INPUT_UP, dx.PAD_INPUT_DOWN)
 	)
 
 	-- 前回のキー入力からカーソルキー入力のみを抽出
 	OldCursorData = OldInputData
 	OldCursorData = band(
 		OldCursorData,
-		bor(DxLua.PAD_INPUT_LEFT, DxLua.PAD_INPUT_RIGHT, DxLua.PAD_INPUT_UP, DxLua.PAD_INPUT_DOWN)
+		bor(dx.PAD_INPUT_LEFT, dx.PAD_INPUT_RIGHT, dx.PAD_INPUT_UP, dx.PAD_INPUT_DOWN)
 	)
 
 	-- 前フレームとキー入力に違いがあり、更にカーソルキーを押していた場合のみ記録する
@@ -138,7 +138,7 @@ function CommandInput()
 	end
 
 	-- もしＺボタンが押されていたら対応した技を検索する
-	if band(band(InputData, bnot(CursorData), bnot(OldInputData)), DxLua.PAD_INPUT_A) ~= 0 then
+	if band(band(InputData, bnot(CursorData), bnot(OldInputData)), dx.PAD_INPUT_A) ~= 0 then
 		local SkillNum
 
 		-- 対応している技を取得

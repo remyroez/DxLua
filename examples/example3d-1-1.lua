@@ -35,13 +35,13 @@ local NowInput = 0		-- 現在のフレームの入力
 local BackInput = 0		-- 一つ前のフレームの入力
 local EdgeInput = 0		-- 入力のエッジ
 local FrameNo = 0		-- フレーム番号
-CamPos = DxLua.VECTOR()		-- カメラの座標
-CamTarg = DxLua.VECTOR()	-- カメラの注視点
+CamPos = dx.VECTOR()		-- カメラの座標
+CamTarg = dx.VECTOR()	-- カメラの注視点
 
 -- ＤＸライブラリ初期化処理
-function DxLua.Init()
+function dx.Init()
 	-- 壁モデルの読みこみ
-	KabeModel = DxLua.MV1LoadModel("Kabe.mqo")
+	KabeModel = dx.MV1LoadModel("Kabe.mqo")
 
 	-- 位置と向きと入力状態の初期化
 	x = 2
@@ -50,30 +50,30 @@ function DxLua.Init()
 	NowInput = 0
 
 	-- 描画先を裏画面にする
-	DxLua.SetDrawScreen(DxLua.DX_SCREEN_BACK)
+	dx.SetDrawScreen(dx.DX_SCREEN_BACK)
 end
 
 -- ループ
-function DxLua.Update()
+function dx.Update()
     -- DxLua: ESC で終了
-    if DxLua.CheckHitKey(DxLua.KEY_INPUT_ESCAPE) ~= 0 then
+    if dx.CheckHitKey(dx.KEY_INPUT_ESCAPE) ~= 0 then
         return 'exit'
     end
 
     -- 画面をクリアする
-    DxLua.ClearDrawScreen()
+    dx.ClearDrawScreen()
 
     -- 入力情報を一つ前のフレームの入力に代入する
     BackInput = NowInput
 
     -- 現在の入力を取得する
-    NowInput = DxLua.GetJoypadInputState(DxLua.DX_INPUT_KEY_PAD1)
+    NowInput = dx.GetJoypadInputState(dx.DX_INPUT_KEY_PAD1)
 
     -- 現在のフレームで初めて押されたボタンを算出する
     EdgeInput = bit.band(NowInput, bit.bnot(BackInput))
 
     -- 上が押されたら向いている方向に移動する
-    if bit.band(EdgeInput, DxLua.PAD_INPUT_UP) ~= 0 then
+    if bit.band(EdgeInput, dx.PAD_INPUT_UP) ~= 0 then
         -- 向きによって移動方向が変わる
         if Muki == 0 then
             -- Ｘ軸プラス方向
@@ -101,7 +101,7 @@ function DxLua.Update()
     end
 
     -- 下が押されたら向いている方向と逆方向に移動する
-    if bit.band(EdgeInput, DxLua.PAD_INPUT_DOWN) ~= 0 then
+    if bit.band(EdgeInput, dx.PAD_INPUT_DOWN) ~= 0 then
         -- 向きによって移動方向が変わる
         if Muki == 0 then
             -- Ｘ軸プラス方向
@@ -129,7 +129,7 @@ function DxLua.Update()
     end
 
     -- 左が押されていたら向いている方向を左に９０度変更する
-    if bit.band(EdgeInput, DxLua.PAD_INPUT_LEFT) ~= 0 then
+    if bit.band(EdgeInput, dx.PAD_INPUT_LEFT) ~= 0 then
         if Muki == 0 then
             Muki = 3
         else
@@ -138,7 +138,7 @@ function DxLua.Update()
     end
 
     -- 右が押されていたら向いている方向を右に９０度変更する
-    if bit.band(EdgeInput, DxLua.PAD_INPUT_RIGHT) ~= 0 then
+    if bit.band(EdgeInput, dx.PAD_INPUT_RIGHT) ~= 0 then
         if Muki == 3 then
             Muki = 0
         else
@@ -147,26 +147,26 @@ function DxLua.Update()
     end
 
     -- カメラの座標をセット
-    CamPos = DxLua.VECTOR { x * BLOCK_SIZE, CAMERA_Y, z * BLOCK_SIZE }
+    CamPos = dx.VECTOR { x * BLOCK_SIZE, CAMERA_Y, z * BLOCK_SIZE }
 
     -- カメラの注視点をセット
     if Muki == 0 then
         -- Ｘ軸プラス方向
-        CamTarg = DxLua.VECTOR { 1.0, 0.0, 0.0 }
+        CamTarg = dx.VECTOR { 1.0, 0.0, 0.0 }
     elseif Muki == 1 then
         -- Ｚ軸マイナス方向
-        CamTarg = DxLua.VECTOR { 0.0, 0.0, -1.0 }
+        CamTarg = dx.VECTOR { 0.0, 0.0, -1.0 }
     elseif Muki == 2 then
         -- Ｘ軸マイナス方向
-        CamTarg = DxLua.VECTOR { -1.0, 0.0, 0.0 }
+        CamTarg = dx.VECTOR { -1.0, 0.0, 0.0 }
     elseif Muki == 3 then
         -- Ｚ軸プラス方向
-        CamTarg = DxLua.VECTOR { 0.0, 0.0, 1.0 }
+        CamTarg = dx.VECTOR { 0.0, 0.0, 1.0 }
     end
-    CamTarg = DxLua.VAdd(CamPos, CamTarg)
+    CamTarg = dx.VAdd(CamPos, CamTarg)
 
     -- カメラの位置と向きをセットする
-    DxLua.SetCameraPositionAndTarget_UpVecY(CamPos, CamTarg)
+    dx.SetCameraPositionAndTarget_UpVecY(CamPos, CamTarg)
 
     -- マップを描画する
     for i = 1, BLOCK_NUM_Z do
@@ -176,7 +176,7 @@ function DxLua.Update()
                 -- DxLua: Lua に continue は無い
             else
                 -- 壁モデルの座標を変更する
-                DxLua.MV1SetPosition(KabeModel, DxLua.VECTOR { j * BLOCK_SIZE, 0.0, i * BLOCK_SIZE })
+                dx.MV1SetPosition(KabeModel, dx.VECTOR { j * BLOCK_SIZE, 0.0, i * BLOCK_SIZE })
 
                 -- ４方の壁の状態で描画するフレーム番号を変更する
                 FrameNo = 0
@@ -186,11 +186,11 @@ function DxLua.Update()
                 if Map[i - 1][j] == 0 then FrameNo = FrameNo + 8 end
 
                 -- 割り出した番号のフレームを描画する
-                DxLua.MV1DrawFrame(KabeModel, FrameNo)
+                dx.MV1DrawFrame(KabeModel, FrameNo)
             end
         end
     end
 
     -- 裏画面の内容を表画面に反映する
-    DxLua.ScreenFlip()
+    dx.ScreenFlip()
 end

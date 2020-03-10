@@ -22,17 +22,17 @@ local Time = 0
 local Mode = 1
 
 -- 画面モードのセット
-DxLua.SetGraphMode(640, 480, 16)
+dx.SetGraphMode(640, 480, 16)
 
 -- ＤＸライブラリ初期化処理
-function DxLua.Init()
+function dx.Init()
 	-- 描画先を裏画面にセット
-	DxLua.SetDrawScreen(DxLua.DX_SCREEN_BACK)
+	dx.SetDrawScreen(dx.DX_SCREEN_BACK)
 
 	-- 初期化処理
 	do
 		-- ミサイルのグラフィックロード
-		Mg = DxLua.LoadGraph("MGraph.png")
+		Mg = dx.LoadGraph("MGraph.png")
 
 		-- 自機の座標セット
 		Px = 320
@@ -62,26 +62,26 @@ function DxLua.Init()
 	end
 
 	-- ゲームループ
-	Time = DxLua.GetNowHiPerformanceCount() + 1000000 / 60
+	Time = dx.GetNowHiPerformanceCount() + 1000000 / 60
 end
 
 -- ループ
-function DxLua.Update()
+function dx.Update()
     -- プレイヤーの移動処理
     do
         -- 入力取得
-        Key = DxLua.GetJoypadInputState(DxLua.DX_INPUT_KEY_PAD1)
+        Key = dx.GetJoypadInputState(dx.DX_INPUT_KEY_PAD1)
 
-        if band(Key, DxLua.PAD_INPUT_RIGHT) ~= 0 then Px = Px + 5 end	-- 右を押していたら右に進む
-        if band(Key, DxLua.PAD_INPUT_LEFT) ~= 0 then Px = Px - 5 end	-- 左を押していたら左に進む
+        if band(Key, dx.PAD_INPUT_RIGHT) ~= 0 then Px = Px + 5 end	-- 右を押していたら右に進む
+        if band(Key, dx.PAD_INPUT_LEFT) ~= 0 then Px = Px - 5 end	-- 左を押していたら左に進む
 
-        if band(Key, DxLua.PAD_INPUT_UP) ~= 0 then Py = Py - 5 end	-- 上を押していたら上に進む
-        if band(Key, DxLua.PAD_INPUT_DOWN) ~= 0 then Py = Py + 5 end	-- 下を押していたら下に進む
+        if band(Key, dx.PAD_INPUT_UP) ~= 0 then Py = Py - 5 end	-- 上を押していたら上に進む
+        if band(Key, dx.PAD_INPUT_DOWN) ~= 0 then Py = Py + 5 end	-- 下を押していたら下に進む
 
         -- DxLua: 数字キーでモードを変える
-        if DxLua.CheckHitKey(DxLua.KEY_INPUT_1) ~= 0 or DxLua.CheckHitKey(DxLua.KEY_INPUT_NUMPAD1) ~= 0 then
+        if dx.CheckHitKey(dx.KEY_INPUT_1) ~= 0 or dx.CheckHitKey(dx.KEY_INPUT_NUMPAD1) ~= 0 then
             Mode = 1
-        elseif DxLua.CheckHitKey(DxLua.KEY_INPUT_2) ~= 0 or DxLua.CheckHitKey(DxLua.KEY_INPUT_NUMPAD2) ~= 0 then
+        elseif dx.CheckHitKey(dx.KEY_INPUT_2) ~= 0 or dx.CheckHitKey(dx.KEY_INPUT_NUMPAD2) ~= 0 then
             Mode = 2
         end
 
@@ -195,7 +195,7 @@ function DxLua.Update()
     -- 描画処理
     do
         -- 画面の初期化
-        DxLua.ClearDrawScreen()
+        dx.ClearDrawScreen()
 
         -- ミサイルの描画
         for i = 1, MAX_M do
@@ -203,25 +203,25 @@ function DxLua.Update()
                 -- ミサイルデータが有効でない場合は次に移る
             else
                 -- ミサイルの描画
-                DxLua.DrawRotaGraph(Mx[i], My[i], 1.0, Ma[i], Mg, true)
+                dx.DrawRotaGraph(Mx[i], My[i], 1.0, Ma[i], Mg, true)
             end
         end
 
         -- プレーヤーの描画
-        DxLua.DrawBox(Px, Py, Px + 32, Py + 32, DxLua.GetColor(255, 255, 255), true)
+        dx.DrawBox(Px, Py, Px + 32, Py + 32, dx.GetColor(255, 255, 255), true)
 
         -- 砲台の描画
-        DxLua.DrawBox(Hx - 8, Hy - 8, Hx + 8, Hy + 8, DxLua.GetColor(255, 255, 0), true)
+        dx.DrawBox(Hx - 8, Hy - 8, Hx + 8, Hy + 8, dx.GetColor(255, 255, 0), true)
 
         -- DxLua: 現在のモード
-        DxLua.DrawString(0, 0, 'モード: ' .. Mode, DxLua.GetColor(0xFF, 0xFF, 0))
-        DxLua.DrawString(0, 0, '\n１か２を入力してください')
+        dx.DrawString(0, 0, 'モード: ' .. Mode, dx.GetColor(0xFF, 0xFF, 0))
+        dx.DrawString(0, 0, '\n１か２を入力してください')
 
         -- 裏画面の内容を表画面に反映
-        DxLua.ScreenFlip()
+        dx.ScreenFlip()
 
         -- 時間待ち
-        while (DxLua.GetNowHiPerformanceCount() < Time) do end
+        while (dx.GetNowHiPerformanceCount() < Time) do end
         Time = Time + 1000000 / 60
     end
 end

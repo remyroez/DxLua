@@ -65,10 +65,10 @@ local OldTime, NowTime = 0, 0
 -- DxLua: イテレータ関数
 local chars
 
-DxLua.SetGraphMode(640, 480, 16)
+dx.SetGraphMode(640, 480, 16)
 
 -- ＤＸライブラリ初期化処理
-function DxLua.Init()
+function dx.Init()
 	-- マップ移動プログラム関連データの初期化
 	do
 		-- マップ移動キャラのプレイヤーの初期位置をセット
@@ -83,39 +83,39 @@ function DxLua.Init()
 		DrawPointY = 0
 
 		-- フォントのサイズセット
-		DxLua.SetFontSize(MOJI_SIZE)
+		dx.SetFontSize(MOJI_SIZE)
 
 		-- 終了フラグを倒す
 		EndFlag = 0
 	end
 
 	-- 現在時間を初期化
-	NowTime = DxLua.GetNowCount()
+	NowTime = dx.GetNowCount()
 
     -- DxLua: UTF-8 文字を１文字ずつ返すイテレータ関数を使う
     chars = String:gmatch("[%z\1-\127\194-\244][\128-\191]*")
 end
 
 -- ループ
-function DxLua.Update()
-	if DxLua.CheckHitKey(DxLua.KEY_INPUT_ESCAPE) ~= 0 then
+function dx.Update()
+	if dx.CheckHitKey(dx.KEY_INPUT_ESCAPE) ~= 0 then
 		return 'exit'
 	end
 
 	-- マップ移動処理をする(画面左側のみ描画出来るようにする)
-	DxLua.SetDrawArea(0, 0, 320, 480)
+	dx.SetDrawArea(0, 0, 320, 480)
 	MapShred()
 
 	-- サウンドノベル風文字列描画処理を行う(画面右側のみ描画出きるようにする)
-	DxLua.SetDrawArea(320, 0, 640, 480)
+	dx.SetDrawArea(320, 0, 640, 480)
 	StringShred()
 
 	-- 時間待ち
-	DxLua.WaitTimer(17)
+	dx.WaitTimer(17)
 
 	-- 今フレームでの経過時間を計測
 	OldTime = NowTime
-	NowTime = DxLua.GetNowCount()
+	NowTime = dx.GetNowCount()
 	FrameTime = NowTime - OldTime
 end
 
@@ -130,17 +130,17 @@ function MapShred()
 	-- 時間計測用変数が０以上だった場合はキー入力をしない
 	if (TimeCounter2 < 0) then
 		-- キー入力を得る
-		Key = DxLua.GetJoypadInputState(DxLua.DX_INPUT_KEY_PAD1)
+		Key = dx.GetJoypadInputState(dx.DX_INPUT_KEY_PAD1)
 
 		-- 移動する前のプレイヤーの位置を保存
 		OldX = PlayerX
 		OldY = PlayerY
 
 		-- キー入力に応じてプレイヤーの座標を移動
-		if band(Key, DxLua.PAD_INPUT_LEFT) ~= 0 then PlayerX = PlayerX - 1 end
-		if band(Key, DxLua.PAD_INPUT_RIGHT) ~= 0 then PlayerX = PlayerX + 1 end
-		if band(Key, DxLua.PAD_INPUT_UP) ~= 0 then PlayerY = PlayerY - 1 end
-		if band(Key, DxLua.PAD_INPUT_DOWN) ~= 0 then PlayerY = PlayerY + 1 end
+		if band(Key, dx.PAD_INPUT_LEFT) ~= 0 then PlayerX = PlayerX - 1 end
+		if band(Key, dx.PAD_INPUT_RIGHT) ~= 0 then PlayerX = PlayerX + 1 end
+		if band(Key, dx.PAD_INPUT_UP) ~= 0 then PlayerY = PlayerY - 1 end
+		if band(Key, dx.PAD_INPUT_DOWN) ~= 0 then PlayerY = PlayerY + 1 end
 
 		-- 進入不可能なマップだった場合は移動できない
 		if (MapData[PlayerY][PlayerX] == 0) then
@@ -154,7 +154,7 @@ function MapShred()
 			local DrawMapChipNumX, DrawMapChipNumY	-- 描画するマップチップの数
 
 			-- 画面を初期化
-			DxLua.DrawBox(0, 0, 640, 480, 0, true)
+			dx.DrawBox(0, 0, 640, 480, 0, true)
 
 			-- 描画するマップチップの数をセット
 			DrawMapChipNumX = math.floor(320 / MAP_SIZE)
@@ -176,17 +176,17 @@ function MapShred()
 						-- DxLua: Lua に continue は無い
 					-- マップデータが０だったら四角を描画する
 					elseif MapData[y + MapDrawPointY][x + MapDrawPointX] == 0 then
-						DxLua.DrawBox(x * MAP_SIZE, y * MAP_SIZE,
+						dx.DrawBox(x * MAP_SIZE, y * MAP_SIZE,
 							x * MAP_SIZE + MAP_SIZE, y * MAP_SIZE + MAP_SIZE,
-							DxLua.GetColor(255, 0, 0), true)
+							dx.GetColor(255, 0, 0), true)
 					end
 				end
 			end
 
 			-- プレイヤーの描画
-			DxLua.DrawBox((PlayerX - MapDrawPointX) * MAP_SIZE, (PlayerY - MapDrawPointY) * MAP_SIZE,
+			dx.DrawBox((PlayerX - MapDrawPointX) * MAP_SIZE, (PlayerY - MapDrawPointY) * MAP_SIZE,
 				(PlayerX - MapDrawPointX + 1) * MAP_SIZE, (PlayerY - MapDrawPointY + 1) * MAP_SIZE,
-				DxLua.GetColor(255, 255, 255), true)
+				dx.GetColor(255, 255, 255), true)
 		end
 
 		-- 時間計測用変数に待ち時間を代入
@@ -207,7 +207,7 @@ function StringShred()
 
 		-- ボタン押し待ちフラグがたっていた場合はボタンが押されるまでここで終了
 		if KeyWaitFlag == 1 then
-			if DxLua.CheckHitKeyAll() ~= 0 then
+			if dx.CheckHitKeyAll() ~= 0 then
 				-- ボタンが押されていたら解除
 				KeyWaitFlag = 0
 			end
@@ -231,7 +231,7 @@ function StringShred()
 
 			elseif Moji == 'C' then	-- クリア文字
 				-- 画面を初期化して描画文字位置を初期位置に戻すおよび参照文字位置を一つ進める
-				DxLua.DrawBox(0, 0, 640, 480, 0, true)
+				dx.DrawBox(0, 0, 640, 480, 0, true)
 				DrawPointY = 0
 				DrawPointX = 0
 
@@ -240,8 +240,8 @@ function StringShred()
 				OneMojiBuf = Moji
 
 				-- １文字描画
-				DxLua.DrawString(320 + DrawPointX * MOJI_SIZE, DrawPointY * MOJI_SIZE,
-					OneMojiBuf, DxLua.GetColor(255, 255, 255))
+				dx.DrawString(320 + DrawPointX * MOJI_SIZE, DrawPointY * MOJI_SIZE,
+					OneMojiBuf, dx.GetColor(255, 255, 255))
 
 				-- カーソルを一文字分進める
 				DrawPointX = DrawPointX + 1
@@ -269,21 +269,21 @@ function Kaigyou()
 	-- もし画面からはみ出るなら画面をスクロールさせる
 	if DrawPointY * MOJI_SIZE + MOJI_SIZE > 480 then
 		-- テンポラリグラフィックの作成
-		TempGraph = DxLua.MakeGraph(320, 480)
+		TempGraph = dx.MakeGraph(320, 480)
 
 		-- 画面の内容を丸々コピーする
-		DxLua.GetDrawScreenGraph(320, 0, 640, 480, TempGraph)
+		dx.GetDrawScreenGraph(320, 0, 640, 480, TempGraph)
 
 		-- 一行分上に貼り付ける
-		DxLua.DrawGraph(320, -MOJI_SIZE, TempGraph, false)
+		dx.DrawGraph(320, -MOJI_SIZE, TempGraph, false)
 
 		-- 一番下の行の部分を黒で埋める
-		DxLua.DrawBox(320, 480 - MOJI_SIZE, 640, 480, 0, true)
+		dx.DrawBox(320, 480 - MOJI_SIZE, 640, 480, 0, true)
 
 		-- 描画行位置を一つあげる
 		DrawPointY = DrawPointY - 1
 
 		-- グラフィックを削除する
-		DxLua.DeleteGraph(TempGraph)
+		dx.DeleteGraph(TempGraph)
 	end
 end

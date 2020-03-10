@@ -9,7 +9,7 @@ GraphHandle1, GraphHandle2 = GraphHandle1 or -1, GraphHandle2 or -1
 local InitialState = 'Enter'
 
 -- カラーコード
-local Yellow = DxLua.GetColor(0xFF, 0xFF, 0)
+local Yellow = dx.GetColor(0xFF, 0xFF, 0)
 
 -- 共通の更新関数
 local UpdateFn = function (self, parent, ...)
@@ -22,12 +22,12 @@ end
 
 -- 共通の待機関数
 local WaitFn = function (self, parent, dt)
-    DxLua.DrawString(0, 0, '\n左クリックで再実行\n右クリックで戻る')
-    DxLua.ScreenFlip()
-    local mouse = DxLua.GetMouseInput()
-    if band(mouse, DxLua.MOUSE_INPUT_LEFT) ~= 0 then
+    dx.DrawString(0, 0, '\n左クリックで再実行\n右クリックで戻る')
+    dx.ScreenFlip()
+    local mouse = dx.GetMouseInput()
+    if band(mouse, dx.MOUSE_INPUT_LEFT) ~= 0 then
         self.State = InitialState
-    elseif band(mouse, DxLua.MOUSE_INPUT_RIGHT) ~= 0 then
+    elseif band(mouse, dx.MOUSE_INPUT_RIGHT) ~= 0 then
         parent.State = InitialState
     end
 end
@@ -50,31 +50,31 @@ local StateMachine = {
 }
 
 -- 画面モードのセット
-DxLua.SetGraphMode(640, 480, 16)
+dx.SetGraphMode(640, 480, 16)
 
 -- ＤＸライブラリ初期化処理
-function DxLua.Init()
+function dx.Init()
 	-- グラフィックのロード
-	GraphHandle1 = DxLua.LoadGraph("Scene1.jpg")
-	GraphHandle2 = DxLua.LoadGraph("Scene2.jpg")
+	GraphHandle1 = dx.LoadGraph("Scene1.jpg")
+	GraphHandle2 = dx.LoadGraph("Scene2.jpg")
 
 	-- 描画先を裏画面にします
-    DxLua.SetDrawScreen(DxLua.DX_SCREEN_BACK)
+    dx.SetDrawScreen(dx.DX_SCREEN_BACK)
 
-    DxLua.ChangeFontType(DxLua.DX_FONTTYPE_EDGE)
+    dx.ChangeFontType(dx.DX_FONTTYPE_EDGE)
 end
 
 -- ループ
-function DxLua.Update(dt)
+function dx.Update(dt)
     StateMachine:Update(dt)
 end
 
 -- 開始
 function StateMachine:Enter(parent, dt)
-    DxLua.ClearDrawScreen()
-    DxLua.DrawString(0, 0, 'ワイプ選択', Yellow)
-    DxLua.DrawString(0, 0, '\n１～５を入力してください')
-    DxLua.ScreenFlip()
+    dx.ClearDrawScreen()
+    dx.DrawString(0, 0, 'ワイプ選択', Yellow)
+    dx.DrawString(0, 0, '\n１～５を入力してください')
+    dx.ScreenFlip()
     self.State = 'Select'
 end
 
@@ -100,15 +100,15 @@ function StateMachine:Select(dt)
     local before = self.State
 
     -- キーボードでワイプ選択
-    if DxLua.CheckHitKey(DxLua.KEY_INPUT_1) ~= 0 or DxLua.CheckHitKey(DxLua.KEY_INPUT_NUMPAD1) ~= 0 then
+    if dx.CheckHitKey(dx.KEY_INPUT_1) ~= 0 or dx.CheckHitKey(dx.KEY_INPUT_NUMPAD1) ~= 0 then
         self.State = 'Wipe1'
-    elseif DxLua.CheckHitKey(DxLua.KEY_INPUT_2) ~= 0 or DxLua.CheckHitKey(DxLua.KEY_INPUT_NUMPAD2) ~= 0 then
+    elseif dx.CheckHitKey(dx.KEY_INPUT_2) ~= 0 or dx.CheckHitKey(dx.KEY_INPUT_NUMPAD2) ~= 0 then
         self.State = 'Wipe2'
-    elseif DxLua.CheckHitKey(DxLua.KEY_INPUT_3) ~= 0 or DxLua.CheckHitKey(DxLua.KEY_INPUT_NUMPAD3) ~= 0 then
+    elseif dx.CheckHitKey(dx.KEY_INPUT_3) ~= 0 or dx.CheckHitKey(dx.KEY_INPUT_NUMPAD3) ~= 0 then
         self.State = 'Wipe3'
-    elseif DxLua.CheckHitKey(DxLua.KEY_INPUT_4) ~= 0 or DxLua.CheckHitKey(DxLua.KEY_INPUT_NUMPAD4) ~= 0 then
+    elseif dx.CheckHitKey(dx.KEY_INPUT_4) ~= 0 or dx.CheckHitKey(dx.KEY_INPUT_NUMPAD4) ~= 0 then
         self.State = 'Wipe4'
-    elseif DxLua.CheckHitKey(DxLua.KEY_INPUT_5) ~= 0 or DxLua.CheckHitKey(DxLua.KEY_INPUT_NUMPAD5) ~= 0 then
+    elseif dx.CheckHitKey(dx.KEY_INPUT_5) ~= 0 or dx.CheckHitKey(dx.KEY_INPUT_NUMPAD5) ~= 0 then
         self.State = 'Wipe5'
     end
 
@@ -130,30 +130,30 @@ end
 -- ワイプ実行
 function Wipe1:Wipe(parent, dt)
     -- 画面を初期化
-    DxLua.ClearDrawScreen()
+    dx.ClearDrawScreen()
 
     -- グラフィック１を描画します
-    DxLua.DrawGraph(0, 0, GraphHandle1, false)
+    dx.DrawGraph(0, 0, GraphHandle1, false)
 
     -- グラフィック２を描画します
     for j = 0, math.floor(480 / 16) do
         -- 描画範囲を指定します
-        DxLua.SetDrawArea(0, j * 16, 640, j * 16 + self.count)
+        dx.SetDrawArea(0, j * 16, 640, j * 16 + self.count)
 
         -- グラフィック２を描画します
-        DxLua.DrawGraph(0, 0, GraphHandle2, false)
+        dx.DrawGraph(0, 0, GraphHandle2, false)
     end
 
-    DxLua.SetDrawArea(0, 0, 640, 480)
+    dx.SetDrawArea(0, 0, 640, 480)
 
     -- DxLua: 現在のワイプ
-    DxLua.DrawString(0, 0, 'ワイプ１', Yellow)
+    dx.DrawString(0, 0, 'ワイプ１', Yellow)
 
     -- 裏画面の内容を表画面に反映させます
-    DxLua.ScreenFlip()
+    dx.ScreenFlip()
 
     -- 時間待ち
-    DxLua.WaitTimer(15)
+    dx.WaitTimer(15)
 
     self.count = self.count - 1
 
@@ -175,10 +175,10 @@ function Wipe2:Wipe(parent, dt)
     local i = self.count
 
     -- 画面を初期化
-    DxLua.ClearDrawScreen()
+    dx.ClearDrawScreen()
 
     -- グラフィック１を描画します
-    DxLua.DrawGraph(0, 0, GraphHandle1, false)
+    dx.DrawGraph(0, 0, GraphHandle1, false)
 
     -- グラフィック２を描画します
     for j = 0, math.floor(640 / 16) do
@@ -189,27 +189,27 @@ function Wipe2:Wipe(parent, dt)
 
             -- 描画可能領域を指定します
             if self.Mode == 0 then
-                DxLua.SetDrawArea(624 - j * 16, 0, 624 - (j * 16 - k), 480)
+                dx.SetDrawArea(624 - j * 16, 0, 624 - (j * 16 - k), 480)
             else
-                DxLua.SetDrawArea(j * 16, 0, j * 16 - k, 480)
+                dx.SetDrawArea(j * 16, 0, j * 16 - k, 480)
             end
 
             -- グラフィック２を描画します
-            DxLua.DrawGraph(0, 0, GraphHandle2, false)
+            dx.DrawGraph(0, 0, GraphHandle2, false)
         end
     end
 
     -- 描画可能領域を元に戻します
-    DxLua.SetDrawArea(0, 0, 640, 480)
+    dx.SetDrawArea(0, 0, 640, 480)
 
     -- DxLua: 現在のワイプ
-    DxLua.DrawString(0, 0, 'ワイプ２', Yellow)
+    dx.DrawString(0, 0, 'ワイプ２', Yellow)
 
     -- 裏画面の内容を表画面に反映させます
-    DxLua.ScreenFlip()
+    dx.ScreenFlip()
 
     -- 時間待ち
-    DxLua.WaitTimer(32)
+    dx.WaitTimer(32)
 
     self.count = self.count - 1
 
@@ -231,10 +231,10 @@ function Wipe3:Wipe(parent, dt)
     local i = 640 + 256 - self.count
 
     -- 画面を初期化
-    DxLua.ClearDrawScreen()
+    dx.ClearDrawScreen()
 
     -- グラフィック１を描画します
-    DxLua.DrawGraph(0, 0, GraphHandle1, false)
+    dx.DrawGraph(0, 0, GraphHandle1, false)
 
     -- グラフィック２を描画します
     for j = 0, 256 do
@@ -244,21 +244,21 @@ function Wipe3:Wipe(parent, dt)
         -- 描画可能領域を指定します
         if k >= 0 then
             if self.Mode == 0 then
-                DxLua.SetDrawArea(k, 0, k + 1, 480)
+                dx.SetDrawArea(k, 0, k + 1, 480)
             else
-                DxLua.SetDrawArea(640 - k, 0, 640 - (k + 1), 480)
+                dx.SetDrawArea(640 - k, 0, 640 - (k + 1), 480)
             end
 
             -- アルファブレンド値をセット
-            DxLua.SetDrawBlendMode(DxLua.DX_BLENDMODE_ALPHA, 255 - j)
+            dx.SetDrawBlendMode(dx.DX_BLENDMODE_ALPHA, 255 - j)
 
             -- グラフィック２を描画します
-            DxLua.DrawGraph(0, 0, GraphHandle2, false)
+            dx.DrawGraph(0, 0, GraphHandle2, false)
         end
     end
 
     -- ブレンドモードを元に戻す
-    DxLua.SetDrawBlendMode(DxLua.DX_BLENDMODE_NOBLEND, 0)
+    dx.SetDrawBlendMode(dx.DX_BLENDMODE_NOBLEND, 0)
 
     -- グラフィック２のアルファブレンド描画以外の部分の描画
     do
@@ -266,22 +266,22 @@ function Wipe3:Wipe(parent, dt)
         local k = i - 256
         if k > 0 then
             if self.Mode == 0 then
-                DxLua.SetDrawArea(0, 0, k, 480)
+                dx.SetDrawArea(0, 0, k, 480)
             else
-                DxLua.SetDrawArea(640 - k, 0, 640, 480)
+                dx.SetDrawArea(640 - k, 0, 640, 480)
             end
 
-            DxLua.DrawGraph(0, 0, GraphHandle2, false)
+            dx.DrawGraph(0, 0, GraphHandle2, false)
         end
         -- 描画領域を元に戻す
-        DxLua.SetDrawArea(0, 0, 640, 480)
+        dx.SetDrawArea(0, 0, 640, 480)
     end
 
     -- DxLua: 現在のワイプ
-    DxLua.DrawString(0, 0, 'ワイプ３', Yellow)
+    dx.DrawString(0, 0, 'ワイプ３', Yellow)
 
     -- 裏画面の内容を表画面に反映させます
-    DxLua.ScreenFlip()
+    dx.ScreenFlip()
 
     self.count = self.count - 8
 
@@ -305,19 +305,19 @@ function Wipe4:Wipe(parent, dt)
     local i = 400 - self.count
 
     -- 画面を初期化
-    DxLua.ClearDrawScreen()
+    dx.ClearDrawScreen()
 
     -- グラフィック１を描画します
-    DxLua.DrawGraph(0, 0, GraphHandle1, false)
+    dx.DrawGraph(0, 0, GraphHandle1, false)
 
     -- 描画したグラフィックの上に反転円を描きます
     DrawReversalCircle(320, 240, self.Mode == 0 and i or 399 - i, 0)
 
     -- DxLua: 現在のワイプ
-    DxLua.DrawString(0, 0, 'ワイプ４', Yellow)
+    dx.DrawString(0, 0, 'ワイプ４', Yellow)
 
     -- 裏画面の内容を表画面に反映させます
-    DxLua.ScreenFlip()
+    dx.ScreenFlip()
 
     self.count = self.count - 8
 
@@ -339,34 +339,34 @@ function Wipe5:Wipe(parent, dt)
     local i = self.count
 
     -- 画面を初期化
-    DxLua.ClearDrawScreen()
+    dx.ClearDrawScreen()
 
     -- グラフィック１を描画します
-    DxLua.DrawGraph(0, 0, GraphHandle1, false)
+    dx.DrawGraph(0, 0, GraphHandle1, false)
 
     -- 描画したグラフィックの上に円を描きます
-    DxLua.DrawCircle(320, 240, i + 100, 0);
+    dx.DrawCircle(320, 240, i + 100, 0);
 
     -- その上からグラフィック２描きます
     if 0 < i then
         -- 直後に描いた円の中に描画可能領域をセット
-        DxLua.SetDrawArea(320 - i, 240 - i, 320 + i, 240 + i);
+        dx.SetDrawArea(320 - i, 240 - i, 320 + i, 240 + i);
 
         -- グラフィック２を描画
-        DxLua.DrawGraph(0, 0, GraphHandle2, false);
+        dx.DrawGraph(0, 0, GraphHandle2, false);
 
         -- 反転円を描画
         DrawReversalCircle(320, 240, i, 0);
 
         -- 描画可能領域を元に戻す
-        DxLua.SetDrawArea(0, 0, 640, 480);
+        dx.SetDrawArea(0, 0, 640, 480);
     end
 
     -- DxLua: 現在のワイプ
-    DxLua.DrawString(0, 0, 'ワイプ５', Yellow)
+    dx.DrawString(0, 0, 'ワイプ５', Yellow)
 
     -- 裏画面の内容を表画面に反映させます
-    DxLua.ScreenFlip()
+    dx.ScreenFlip()
 
     self.count = self.count + 4
 
@@ -378,10 +378,10 @@ end
 -- 反転円の描画
 function DrawReversalCircle(x, y, r, Color)
 	-- 円反転描画領域の外側を描画
-	DxLua.DrawBox(0, 0, 640, y - r, Color, true)
-	DxLua.DrawBox(0, y - r, x - r, 480, Color, true)
-	DxLua.DrawBox(x - r, y + r + 1, 640, 480, Color, true)
-	DxLua.DrawBox(x + r, y - r, 640, y + r + 1, Color, true)
+	dx.DrawBox(0, 0, 640, y - r, Color, true)
+	dx.DrawBox(0, y - r, x - r, 480, Color, true)
+	dx.DrawBox(x - r, y + r + 1, 640, 480, Color, true)
+	dx.DrawBox(x + r, y - r, 640, y + r + 1, Color, true)
 
 	-- 描画処理
 	do
@@ -401,13 +401,13 @@ function DrawReversalCircle(x, y, r, Color)
                 x2 = Dy + x
                 x1 = -Dy + x
                 y1 = Dx + y
-				DxLua.DrawLine(0, y1, x1, y1, Color)
-				DxLua.DrawLine(x2, y1, 640, y1, Color)
+				dx.DrawLine(0, y1, x1, y1, Color)
+				dx.DrawLine(x2, y1, 640, y1, Color)
                 x2 = Dy + x
                 x1 = -Dy + x
                 y1 = -Dx + y
-				DxLua.DrawLine(0, y1, x1, y1, Color)
-				DxLua.DrawLine(x2, y1, 640, y1, Color)
+				dx.DrawLine(0, y1, x1, y1, Color)
+				dx.DrawLine(x2, y1, 640, y1, Color)
 
 				Dx = Dx - 1
 				F = F - 4 * Dx
@@ -422,26 +422,26 @@ function DrawReversalCircle(x, y, r, Color)
                 x2 = Dx + x
                 x1 = -Dx + x
                 y1 = Dy + y
-				DxLua.DrawLine(0, y1, x1, y1, Color)
-				DxLua.DrawLine(x2, y1, 640, y1, Color)
+				dx.DrawLine(0, y1, x1, y1, Color)
+				dx.DrawLine(x2, y1, 640, y1, Color)
                 x2 = Dx + x
                 x1 = -Dx + x
                 y1 = -Dy + y
-				DxLua.DrawLine(0, y1, x1, y1, Color)
-				DxLua.DrawLine(x2, y1, 640, y1, Color)
+				dx.DrawLine(0, y1, x1, y1, Color)
+				dx.DrawLine(x2, y1, 640, y1, Color)
 
 				-- 座標データを進める
 				if F >= 0 then
                     x2 = Dy + x
                     x1 = -Dy + x
                     y1 = Dx + y
-					DxLua.DrawLine(0, y1, x1, y1, Color)
-					DxLua.DrawLine(x2, y1, 640, y1, Color)
+					dx.DrawLine(0, y1, x1, y1, Color)
+					dx.DrawLine(x2, y1, 640, y1, Color)
                     x2 = Dy + x
                     x1 = -Dy + x
                     y1 = -Dx + y
-					DxLua.DrawLine(0, y1, x1, y1, Color)
-					DxLua.DrawLine(x2, y1, 640, y1, Color)
+					dx.DrawLine(0, y1, x1, y1, Color)
+					dx.DrawLine(x2, y1, 640, y1, Color)
 
 					Dx = Dx - 1
 					F = F - 4 * Dx

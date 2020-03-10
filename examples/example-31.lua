@@ -132,12 +132,12 @@ local Key = 0
 local ScrollX, ScrollY = 0, 0
 
 -- 画面モードのセット
-DxLua.SetGraphMode(640, 480, 16)
+dx.SetGraphMode(640, 480, 16)
 
 -- ＤＸライブラリ初期化処理
-function DxLua.Init()
+function dx.Init()
 	-- 描画先画面を裏画面にする
-	DxLua.SetDrawScreen(DxLua.DX_SCREEN_BACK)
+	dx.SetDrawScreen(dx.DX_SCREEN_BACK)
 
 	-- プレイヤーの初期位置をセット
 	PlayerX = 1
@@ -148,16 +148,16 @@ function DxLua.Init()
 end
 
 -- ループ
-function DxLua.Update()
-    if DxLua.CheckHitKey(DxLua.KEY_INPUT_ESCAPE) ~= 0 then
+function dx.Update()
+    if dx.CheckHitKey(dx.KEY_INPUT_ESCAPE) ~= 0 then
         return 'exit'
     end
 
     -- 画面を初期化
-    DxLua.ClearDrawScreen()
+    dx.ClearDrawScreen()
 
     -- スペースキーが押されたらマップ番号を切り変える
-    if DxLua.GetInputChar(true) == string.byte(' ') then
+    if dx.GetInputChar(true) == string.byte(' ') then
         -- プレイヤーの位置を初期化
         PlayerX = 1
         PlayerY = 1
@@ -175,25 +175,25 @@ function DxLua.Update()
     -- 移動中ではない場合キー入力を受け付ける
     if Move == 0 then
         -- キー入力を得る
-        Key = DxLua.GetJoypadInputState(DxLua.DX_INPUT_KEY_PAD1)
+        Key = dx.GetJoypadInputState(dx.DX_INPUT_KEY_PAD1)
 
         -- キー入力に応じてプレイヤーの座標を移動
-        if bit.band(Key, DxLua.PAD_INPUT_LEFT) ~= 0 then
+        if bit.band(Key, dx.PAD_INPUT_LEFT) ~= 0 then
             Move = 1
             MoveX = -1
             MoveY = 0
         end
-        if bit.band(Key, DxLua.PAD_INPUT_RIGHT) ~= 0 then
+        if bit.band(Key, dx.PAD_INPUT_RIGHT) ~= 0 then
             Move = 1
             MoveX = 1
             MoveY = 0
         end
-        if bit.band(Key, DxLua.PAD_INPUT_UP) ~= 0 then
+        if bit.band(Key, dx.PAD_INPUT_UP) ~= 0 then
             Move = 1
             MoveX = 0
             MoveY = -1
         end
-        if bit.band(Key, DxLua.PAD_INPUT_DOWN) ~= 0 then
+        if bit.band(Key, dx.PAD_INPUT_DOWN) ~= 0 then
             Move = 1
             MoveX = 0
             MoveY = 1
@@ -239,7 +239,7 @@ function DxLua.Update()
     GraphDraw(ScrollX, ScrollY)
 
     -- 裏画面の内容を表画面に映す
-    DxLua.ScreenFlip()
+    dx.ScreenFlip()
 end
 
 -- マップとプレイヤーの描画関数
@@ -264,15 +264,15 @@ function GraphDraw(ScrollX, ScrollY)
                 -- DxLua: Lua に continue は無い
             elseif MapData[MapNo].Data[i + MapDrawPointY + 1][j + MapDrawPointX + 1] == 0 then
 			    -- マップデータが０だったら四角を描画する
-				DxLua.DrawBox(j * MAP_SIZE + ScrollX, i * MAP_SIZE + ScrollY,
+				dx.DrawBox(j * MAP_SIZE + ScrollX, i * MAP_SIZE + ScrollY,
 					j * MAP_SIZE + MAP_SIZE + ScrollX, i * MAP_SIZE + MAP_SIZE + ScrollY,
-					DxLua.GetColor(255, 0, 0), true)
+					dx.GetColor(255, 0, 0), true)
 			end
 		end
 	end
 
 	-- プレイヤーの描画
-	DxLua.DrawBox((PlayerX - MapDrawPointX) * MAP_SIZE, (PlayerY - MapDrawPointY) * MAP_SIZE,
+	dx.DrawBox((PlayerX - MapDrawPointX) * MAP_SIZE, (PlayerY - MapDrawPointY) * MAP_SIZE,
 		(PlayerX - MapDrawPointX + 1) * MAP_SIZE, (PlayerY - MapDrawPointY + 1) * MAP_SIZE,
-		DxLua.GetColor(255, 255, 255), true)
+		dx.GetColor(255, 255, 255), true)
 end

@@ -31,7 +31,7 @@ local MapData =
 }
 
 -- 画面モードのセット
-DxLua.SetGraphMode(640, 480, 16)
+dx.SetGraphMode(640, 480, 16)
 
 -- プレイヤーの位置
 local PlayerX, PlayerY
@@ -72,26 +72,26 @@ function GraphDraw(ScrollX, ScrollY)
 
 			elseif MapData[i + MapDrawPointY][j + MapDrawPointX] == 0 then
 				-- マップデータが０だったら四角を描画する
-				DxLua.DrawBox(x * MAP_SIZE + ScrollX, y * MAP_SIZE + ScrollY,
+				dx.DrawBox(x * MAP_SIZE + ScrollX, y * MAP_SIZE + ScrollY,
 					x * MAP_SIZE + MAP_SIZE + ScrollX, y * MAP_SIZE + MAP_SIZE + ScrollY,
-					DxLua.GetColor(255, 0, 0), true)
+					dx.GetColor(255, 0, 0), true)
 			end
 		end
 	end
 
 	-- プレイヤーの描画
-	DxLua.DrawBox((PlayerX - MapDrawPointX - 1) * MAP_SIZE, (PlayerY - MapDrawPointY - 1) * MAP_SIZE,
+	dx.DrawBox((PlayerX - MapDrawPointX - 1) * MAP_SIZE, (PlayerY - MapDrawPointY - 1) * MAP_SIZE,
 		(PlayerX - MapDrawPointX) * MAP_SIZE, (PlayerY - MapDrawPointY) * MAP_SIZE,
-		DxLua.GetColor(255, 255, 255), true)
+		dx.GetColor(255, 255, 255), true)
 end
 
 local Key
 local ScrollX, ScrollY
 
 -- ＤＸライブラリ初期化処理
-function DxLua.Init()
+function dx.Init()
 	-- 描画先画面を裏画面にする
-	DxLua.SetDrawScreen(DxLua.DX_SCREEN_BACK)
+	dx.SetDrawScreen(dx.DX_SCREEN_BACK)
 
 	-- プレイヤーの初期位置をセット
 	-- DxLua: Lua の配列のインデックスは 1 からのため調整
@@ -103,36 +103,36 @@ function DxLua.Init()
 end
 
 -- ループ
-function DxLua.Update()
+function dx.Update()
 	-- 画面を初期化
-	DxLua.ClearDrawScreen()
+	dx.ClearDrawScreen()
 
 	-- 移動中ではない場合キー入力を受け付ける
 	if Move == 0 then
 		-- キー入力を得る
-		Key = DxLua.GetJoypadInputState(DxLua.DX_INPUT_KEY_PAD1)
+		Key = dx.GetJoypadInputState(dx.DX_INPUT_KEY_PAD1)
 
 		-- 移動する前のプレイヤーの位置を保存
 		OldX = PlayerX
 		OldY = PlayerY
 
 		-- キー入力に応じてプレイヤーの座標を移動
-		if band(Key, DxLua.PAD_INPUT_LEFT) ~= 0 then
+		if band(Key, dx.PAD_INPUT_LEFT) ~= 0 then
 			Move = 1
 			MoveX = -1
 			MoveY = 0
 		end
-		if band(Key, DxLua.PAD_INPUT_RIGHT) ~= 0 then
+		if band(Key, dx.PAD_INPUT_RIGHT) ~= 0 then
 			Move = 1
 			MoveX = 1
 			MoveY = 0
 		end
-		if band(Key, DxLua.PAD_INPUT_UP) ~= 0 then
+		if band(Key, dx.PAD_INPUT_UP) ~= 0 then
 			Move = 1
 			MoveX = 0
 			MoveY = -1
 		end
-		if band(Key, DxLua.PAD_INPUT_DOWN) ~= 0 then
+		if band(Key, dx.PAD_INPUT_DOWN) ~= 0 then
 			Move = 1
 			MoveX = 0
 			MoveY = 1
@@ -178,5 +178,5 @@ function DxLua.Update()
 	GraphDraw(ScrollX, ScrollY)
 
 	-- 裏画面の内容を表画面に映す
-	DxLua.ScreenFlip()
+	dx.ScreenFlip()
 end

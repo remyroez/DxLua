@@ -75,12 +75,12 @@ local EnemyShred = {}
 -- プログラム部 ===============================================
 
 -- 画面モードのセット
-DxLua.SetGraphMode(640, 480, 16)
+dx.SetGraphMode(640, 480, 16)
 
 -- ＤＸライブラリ初期化処理
-function DxLua.Init()
+function dx.Init()
 	-- 裏画面を使用
-	DxLua.SetDrawScreen(DxLua.DX_SCREEN_BACK)
+	dx.SetDrawScreen(dx.DX_SCREEN_BACK)
 
 	-- 弾の数の初期化
 	EnemyShotNum = 0
@@ -101,26 +101,26 @@ function DxLua.Init()
 end
 
 -- ループ
-function DxLua.Update()
-    if DxLua.CheckHitKey(DxLua.KEY_INPUT_ESCAPE) ~= 0 then
+function dx.Update()
+    if dx.CheckHitKey(dx.KEY_INPUT_ESCAPE) ~= 0 then
         return 'exit'
     end
 
     -- 画面の初期化
-    DxLua.ClearDrawScreen()
+    dx.ClearDrawScreen()
 
     -- 自機の処理
     do
         local Input
 
         -- 入力取得
-        Input = DxLua.GetJoypadInputState(DxLua.DX_INPUT_KEY_PAD1)
+        Input = dx.GetJoypadInputState(dx.DX_INPUT_KEY_PAD1)
 
         -- 自機移動
-        if bit.band(Input, DxLua.PAD_INPUT_LEFT) ~= 0 and (Player.x > 10) then Player.x = Player.x - 2 end
-        if bit.band(Input, DxLua.PAD_INPUT_RIGHT) ~= 0 and (Player.x < 630) then Player.x = Player.x + 2 end
-        if bit.band(Input, DxLua.PAD_INPUT_UP) ~= 0 and (Player.y > 10) then Player.y = Player.y - 2 end
-        if bit.band(Input, DxLua.PAD_INPUT_DOWN) ~= 0 and (Player.y < 470) then Player.y = Player.y + 2 end
+        if bit.band(Input, dx.PAD_INPUT_LEFT) ~= 0 and (Player.x > 10) then Player.x = Player.x - 2 end
+        if bit.band(Input, dx.PAD_INPUT_RIGHT) ~= 0 and (Player.x < 630) then Player.x = Player.x + 2 end
+        if bit.band(Input, dx.PAD_INPUT_UP) ~= 0 and (Player.y > 10) then Player.y = Player.y - 2 end
+        if bit.band(Input, dx.PAD_INPUT_DOWN) ~= 0 and (Player.y < 470) then Player.y = Player.y + 2 end
 
         -- 自機の描画
         do
@@ -128,7 +128,7 @@ function DxLua.Update()
 
             x = Player.x
             y = Player.y
-            DxLua.DrawBox(x - 5, y - 5, x + 5, y + 5, DxLua.GetColor(255, 255, 0), false)
+            dx.DrawBox(x - 5, y - 5, x + 5, y + 5, dx.GetColor(255, 255, 0), false)
         end
     end
 
@@ -165,7 +165,7 @@ function DxLua.Update()
                     x = EnemyShot[i].x
                     y = EnemyShot[i].y
 
-                    DxLua.DrawCircle(x, y, EnemyShot[i].Size, DxLua.GetColor(255, 255, 255), false)
+                    dx.DrawCircle(x, y, EnemyShot[i].Size, dx.GetColor(255, 255, 255), false)
                 end
 
                 -- 処理した弾の数をインクリメント
@@ -189,7 +189,7 @@ function DxLua.Update()
             x = Enemy.x
             y = Enemy.y
 
-            DxLua.DrawCircle(x, y, 10, DxLua.GetColor(255, 255, 255), false)
+            dx.DrawCircle(x, y, 10, dx.GetColor(255, 255, 255), false)
         end
     end
 
@@ -198,7 +198,7 @@ function DxLua.Update()
         local C
 
         -- 入力された文字を取得
-        C = DxLua.GetInputChar(true)
+        C = dx.GetInputChar(true)
 
         -- Ｃキーが押されたら敵のショットモードを変更する
         if C == string.byte('C') or C == string.byte('c') then
@@ -212,11 +212,11 @@ function DxLua.Update()
 	end
 	
 	-- DxLua: ショット名を表示する
-	DxLua.DrawString(0, 0, 'ショット' .. ShotMode .. ': ' .. ShotNames[ShotMode], DxLua.GetColor(0xFF, 0xFF, 0))
-	DxLua.DrawString(0, 0, '\nC で切り替えます')
+	dx.DrawString(0, 0, 'ショット' .. ShotMode .. ': ' .. ShotNames[ShotMode], dx.GetColor(0xFF, 0xFF, 0))
+	dx.DrawString(0, 0, '\nC で切り替えます')
 
     -- 画面の更新
-    DxLua.ScreenFlip()
+    dx.ScreenFlip()
 end
 
 -- ショットの追加関数
@@ -304,7 +304,7 @@ function ShotType4()
 			local Angle
 
 			-- 飛ばす方向にぶれをつける
-			Angle = Enemy.Angle + (PI / 3600 * (DxLua.GetRand(800) - 400))
+			Angle = Enemy.Angle + (PI / 3600 * (dx.GetRand(800) - 400))
 
 			-- ショット
 			ShotAdd(Enemy.x, Enemy.y, 5, Angle, 3)

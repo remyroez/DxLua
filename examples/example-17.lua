@@ -6,24 +6,24 @@ local Counter = 0
 local HiScore = 0
 
 -- 画面モードのセット
-DxLua.SetGraphMode(640, 480, 16)
+dx.SetGraphMode(640, 480, 16)
 
 -- ＤＸライブラリ初期化処理
-function DxLua.Init()
+function dx.Init()
 	-- ハイスコアをロード
 	HiScoreLoad()
 end
 
 -- ループ
-function DxLua.Update()
+function dx.Update()
 	-- 連射計測処理
 	Rennsya()
 
 	-- 時間待ち
-	DxLua.WaitTimer(1000)
+	dx.WaitTimer(1000)
 
 	-- キー入力待ち
-	DxLua.WaitKey()
+	dx.WaitKey()
 end
 
 -- 連射計測関数
@@ -36,48 +36,48 @@ function Rennsya()
 	local NowTime	-- 現在の経過時間
 
 	-- 白色コードを取得
-	Color = DxLua.GetColor(255, 255, 255)
+	Color = dx.GetColor(255, 255, 255)
 
 	-- 画面構成を創る
 	do
 		-- 画面初期化
-		DxLua.ClearDrawScreen()
+		dx.ClearDrawScreen()
 
 		-- メッセージ表示
-		DxLua.DrawString(0, 0, "ジョイパッドのＡボタンか、Ｚキーを連射してください", Color)
+		dx.DrawString(0, 0, "ジョイパッドのＡボタンか、Ｚキーを連射してください", Color)
 
 		-- カウント値表示
-		DxLua.DrawString(10, 120, "COUNT", Color)
+		dx.DrawString(10, 120, "COUNT", Color)
 		DrawNum(100, 120, 0)
 
 		-- ハイスコア表示
-		DxLua.DrawString(100, 30, "HI SCORE", Color)
+		dx.DrawString(100, 30, "HI SCORE", Color)
 		DrawNum(200, 30, HiScore)
 
 		-- 残り秒数の表示
-		DxLua.DrawString(10, 80, "TIME", Color)
+		dx.DrawString(10, 80, "TIME", Color)
 		DrawNum(100, 80, 10)
 	end
 
 	-- キー入力待ち
-	DxLua.WaitKey()
+	dx.WaitKey()
 
-	StartTime = DxLua.GetNowCount()	-- 連射開始時の時間を保存
+	StartTime = dx.GetNowCount()	-- 連射開始時の時間を保存
 	Counter = 0			-- 連射カウンターを初期化
 	OldKey = 0			-- 前回のキー入力を初期化
 	NowTime = 0			-- 現在の経過時間初期化
 	OldTime = 0			-- 前回の経過時間を初期化
 
 	-- １０秒経つまで連射計測処理
-	while DxLua.ProcessMessage() == 0 and NowTime < 10000 do
+	while dx.ProcessMessage() == 0 and NowTime < 10000 do
 		-- 今回の経過タイムを取得
-		NowTime = DxLua.GetNowCount() - StartTime
+		NowTime = dx.GetNowCount() - StartTime
 
 		-- キー入力を取得
-		Key = DxLua.GetJoypadInputState(DxLua.DX_INPUT_KEY_PAD1)
+		Key = dx.GetJoypadInputState(dx.DX_INPUT_KEY_PAD1)
 
 		-- もし前回押していない状態で今回押していたらカウンタをインクリメントする
-		if band(band(Key, bnot(OldKey)), DxLua.PAD_INPUT_A) ~= 0 then
+		if band(band(Key, bnot(OldKey)), dx.PAD_INPUT_A) ~= 0 then
 			Counter = Counter + 1
 
 			-- カウンタ値を表示
@@ -156,6 +156,6 @@ function DrawNum(x, y, Num)
 	StrBuf = tostring(Num)
 
 	-- 画面に描画
-	DxLua.DrawBox(x, y, x + #StrBuf * 20, y + 20, 0, true)
-	DxLua.DrawString(x, y, StrBuf, DxLua.GetColor(255, 255, 255))
+	dx.DrawBox(x, y, x + #StrBuf * 20, y + 20, 0, true)
+	dx.DrawString(x, y, StrBuf, dx.GetColor(255, 255, 255))
 end
