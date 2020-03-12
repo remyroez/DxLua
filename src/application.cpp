@@ -230,16 +230,9 @@ application::done_code application::run() {
 			break;
 		}
 
-		// エラーメッセージ
+		// エラー画面へ
 		if (auto message_string = message.str(); !message_string.empty()) {
-			DxLib::clsDx();
-			DxLib::printfDx(u8"%s\n", message_string.c_str());
-			DxLib::printfDx(u8"\nＦ５キーを押すとリロード、それ以外のキーを押すと終了します\n");
-			DxLib::ScreenFlip();
-			auto Key = DxLib::WaitKey();
-			if (Key == KEY_INPUT_F5) {
-				done = done_code::reload;
-			}
+			done = error(message_string, done);
 		}
 
 		teardown_engine();
@@ -249,6 +242,31 @@ application::done_code application::run() {
 	if (done == done_code::reload) {
 		std::cout << u8"スクリプトをリロードしています…" << std::endl;
 	}
+
+	return done;
+}
+
+// エラー画面
+application::done_code application::error(std::string_view message, done_code done) {
+	// エラー出力
+	DxLib::clsDx();
+	DxLib::printfDx(u8"%s\n", message.data());
+	DxLib::printfDx(u8"\nＦ５キーを押すとリロード、それ以外のキーを押すと終了します\n");
+	DxLib::ScreenFlip();
+
+	// 入力待ち
+#if 0
+	while (DxLib::ProcessMessage() == 0) {
+		if (DxLua::watch(*_dxLua)) {
+			done = done_code::reload;
+		}
+	}
+#else
+	auto Key = DxLib::WaitKey();
+	if (Key == KEY_INPUT_F5) {
+		done = done_code::reload;
+	}
+#endif
 
 	return done;
 }

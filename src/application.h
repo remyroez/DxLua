@@ -73,6 +73,9 @@ protected:
 	// 実行処理
 	done_code run();
 
+	// エラー画面
+	done_code error(std::string_view message, done_code done);
+
 	// スクリプトの初期化関数を呼ぶ
 	application::done_code call_init(std::ostringstream &message);
 
