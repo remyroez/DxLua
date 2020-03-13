@@ -251,22 +251,47 @@ application::done_code application::error(std::string_view message, done_code do
 	// エラー出力
 	DxLib::clsDx();
 	DxLib::printfDx(u8"%s\n", message.data());
-	DxLib::printfDx(u8"\nＦ５キーを押すとリロード、それ以外のキーを押すと終了します\n");
+	DxLib::printfDx(u8"\nＦ５キーを押すとリロード、ＥＳＣキーを押すと終了します\n");
 	DxLib::ScreenFlip();
 
-	// 入力待ち
-#if 0
+	// 監視用のタイマー
+	// NOTE: オプションでウォッチモードが指定されていなければ監視しない
+	const auto interval = (_option.watch != watch_mode::none) ? _option.watch_interval * 1000LL : -1LL;
+	auto timer = interval;
+	auto before = DxLib::GetNowHiPerformanceCount();
+
+	// エラー画面ループ
 	while (DxLib::ProcessMessage() == 0) {
-		if (DxLua::watch(*_dxLua)) {
+		// スクリプト監視
+		if (timer > 0) {
+			// 時間経過
+			auto now = DxLib::GetNowHiPerformanceCount();
+			auto dt = now - before;
+			before = now;
+			timer -= dt;
+
+			// 監視
+			if (timer <= 0) {
+				// スクリプトが変更されていればリロード
+				if (DxLua::watch(*_dxLua)) {
+					done = done_code::reload;
+					break;
+				}
+				timer = interval;
+			}
+		}
+
+		// F5 でリロード
+		if (DxLib::CheckHitKey(KEY_INPUT_F5)) {
 			done = done_code::reload;
+			break;
+		}
+
+		// ESC で終了
+		if (DxLib::CheckHitKey(KEY_INPUT_ESCAPE)) {
+			break;
 		}
 	}
-#else
-	auto Key = DxLib::WaitKey();
-	if (Key == KEY_INPUT_F5) {
-		done = done_code::reload;
-	}
-#endif
 
 	return done;
 }
