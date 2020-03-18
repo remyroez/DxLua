@@ -428,50 +428,50 @@ function Player_Move(MoveVector)
                     Poly.Position[1], Poly.Position[2], Poly.Position[3]
                 ) == false then
                     -- continue
-                end
+                else
+                    -- ここにきたらポリゴンとプレイヤーが当たっているということなので、ポリゴンに当たったフラグを立てる
+                    HitFlag = 1;
 
-				-- ここにきたらポリゴンとプレイヤーが当たっているということなので、ポリゴンに当たったフラグを立てる
-				HitFlag = 1;
+                    -- 壁に当たったら壁に遮られない移動成分分だけ移動する
+                    do
+                        local SlideVec = dx.VECTOR{};	-- プレイヤーをスライドさせるベクトル
 
-				-- 壁に当たったら壁に遮られない移動成分分だけ移動する
-				do
-					local SlideVec = dx.VECTOR{};	-- プレイヤーをスライドさせるベクトル
+                        -- 進行方向ベクトルと壁ポリゴンの法線ベクトルに垂直なベクトルを算出
+                        SlideVec = dx.VCross(MoveVector, Poly.Normal);
 
-					-- 進行方向ベクトルと壁ポリゴンの法線ベクトルに垂直なベクトルを算出
-					SlideVec = dx.VCross(MoveVector, Poly.Normal);
+                        -- 算出したベクトルと壁ポリゴンの法線ベクトルに垂直なベクトルを算出、これが
+                        -- 元の移動成分から壁方向の移動成分を抜いたベクトル
+                        SlideVec = dx.VCross(Poly.Normal, SlideVec);
 
-					-- 算出したベクトルと壁ポリゴンの法線ベクトルに垂直なベクトルを算出、これが
-					-- 元の移動成分から壁方向の移動成分を抜いたベクトル
-					SlideVec = dx.VCross(Poly.Normal, SlideVec);
+                        -- それを移動前の座標に足したものを新たな座標とする
+                        NowPos = dx.VAdd(OldPos, SlideVec);
+                    end
 
-					-- それを移動前の座標に足したものを新たな座標とする
-					NowPos = dx.VAdd(OldPos, SlideVec);
-				end
+                    -- 新たな移動座標で壁ポリゴンと当たっていないかどうかを判定する
+                    local jndex = KabeNum
+                    for j = 1, KabeNum do
+                        -- j番目の壁ポリゴンのアドレスを壁ポリゴンポインタ配列から取得
+                        Poly = Kabe[j];
 
-                -- 新たな移動座標で壁ポリゴンと当たっていないかどうかを判定する
-                local jndex = KabeNum
-				for j = 1, KabeNum do
-					-- j番目の壁ポリゴンのアドレスを壁ポリゴンポインタ配列から取得
-					Poly = Kabe[j];
+                        -- 当たっていたらループから抜ける
+                        if dx.HitCheck_Capsule_Triangle(
+                            NowPos,
+                            dx.VAdd(NowPos, dx.VGet(0.0, PLAYER_HIT_HEIGHT, 0.0)),
+                            PLAYER_HIT_WIDTH,
+                            Poly.Position[1], Poly.Position[2], Poly.Position[3]
+                        ) then
+                            jndex = j
+                            break;
+                        end
+                    end
 
-					-- 当たっていたらループから抜ける
-					if dx.HitCheck_Capsule_Triangle(
-                        NowPos,
-                        dx.VAdd(NowPos, dx.VGet(0.0, PLAYER_HIT_HEIGHT, 0.0)),
-                        PLAYER_HIT_WIDTH,
-                        Poly.Position[1], Poly.Position[2], Poly.Position[3]
-                    ) then
-                        jndex = j
+                    -- j が KabeNum だった場合はどのポリゴンとも当たらなかったということなので
+                    -- 壁に当たったフラグを倒した上でループから抜ける
+                    if jndex == KabeNum then
+                        HitFlag = 0;
                         break;
                     end
-				end
-
-				-- j が KabeNum だった場合はどのポリゴンとも当たらなかったということなので
-				-- 壁に当たったフラグを倒した上でループから抜ける
-				if jndex == KabeNum then
-					HitFlag = 0;
-					break;
-				end
+                end
 			end
 		else
 			-- 移動していない場合の処理
@@ -569,21 +569,19 @@ function Player_Move(MoveVector)
                     Poly.Position[1], Poly.Position[2], Poly.Position[3]
                 );
 
-				-- 接触していなかったら何もしない
                 if LineRes.HitFlag == false then
+				    -- 接触していなかったら何もしない
                     --continue;
-                end
-
-				-- 既にポリゴンに当たっていて、且つ今まで検出した天井ポリゴンより高い場合は何もしない
-                if HitFlag == 1 and MinY < LineRes.Position.y then
+                elseif HitFlag == 1 and MinY < LineRes.Position.y then
+				    -- 既にポリゴンに当たっていて、且つ今まで検出した天井ポリゴンより高い場合は何もしない
                     --continue;
+                else
+                    -- ポリゴンに当たったフラグを立てる
+                    HitFlag = 1;
+
+                    -- 接触したＹ座標を保存する
+                    MinY = LineRes.Position.y;
                 end
-
-				-- ポリゴンに当たったフラグを立てる
-				HitFlag = 1;
-
-				-- 接触したＹ座標を保存する
-				MinY = LineRes.Position.y;
 			end
 
 			-- 接触したポリゴンがあったかどうかで処理を分岐
@@ -627,21 +625,19 @@ function Player_Move(MoveVector)
                     );
 				end
 
-				-- 当たっていなかったら何もしない
                 if (LineRes.HitFlag == false) then
+				    -- 当たっていなかったら何もしない
                     -- continue;
-                end
-
-				-- 既に当たったポリゴンがあり、且つ今まで検出した床ポリゴンより低い場合は何もしない
-                if (HitFlag == 1 and MaxY > LineRes.Position.y) then
+                elseif (HitFlag == 1 and MaxY > LineRes.Position.y) then
+				    -- 既に当たったポリゴンがあり、且つ今まで検出した床ポリゴンより低い場合は何もしない
                     --continue;
+                else
+                    -- ポリゴンに当たったフラグを立てる
+                    HitFlag = 1;
+
+                    -- 接触したＹ座標を保存する
+                    MaxY = LineRes.Position.y;
                 end
-
-				-- ポリゴンに当たったフラグを立てる
-				HitFlag = 1;
-
-				-- 接触したＹ座標を保存する
-				MaxY = LineRes.Position.y;
 			end
 
 			-- 床ポリゴンに当たったかどうかで処理を分岐
