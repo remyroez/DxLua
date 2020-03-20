@@ -146,6 +146,7 @@ end)lua"
 	detail::port_keyinput(lua, library);
 	detail::port_input(lua, library);
 	detail::port_draw(lua, library);
+	detail::port_model(lua, library);
 
 	// 以下、ポーティング
 
@@ -178,10 +179,6 @@ end)lua"
 	DXLUA_PORT(library, VSquareSize);
 	DXLUA_PORT(library, VCos);
 	DXLUA_PORT(library, VRad);
-
-	DXLUA_PORT(library, MV1LoadModel);
-	DXLUA_PORT(library, MV1SetPosition);
-	DXLUA_PORT(library, MV1DrawFrame);
 
 	DXLUA_PORT(library, SetCameraPositionAndTarget_UpVecY);
 

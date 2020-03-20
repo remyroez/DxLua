@@ -16,6 +16,7 @@ void port_network(sol::state_view &lua, sol::table &t);
 void port_keyinput(sol::state_view &lua, sol::table &t);
 void port_input(sol::state_view &lua, sol::table &t);
 void port_draw(sol::state_view &lua, sol::table &t);
+void port_model(sol::state_view &lua, sol::table &t);
 
 } // namespace DxLua::detail
 
