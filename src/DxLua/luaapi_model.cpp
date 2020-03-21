@@ -65,14 +65,13 @@ void port_model(sol::state_view &lua, sol::table &t) {
 	//extern	MATRIX		MV1GetLocalWorldMatrix(int MHandle);														// モデルのローカル座標からワールド座標に変換する行列を得る
 	//extern	MATRIX_D	MV1GetLocalWorldMatrixD(int MHandle);														// モデルのローカル座標からワールド座標に変換する行列を得る
 	DXLUA_PORT(t, MV1SetPosition);
-	//extern	int			MV1SetPosition(int MHandle, VECTOR   Position);									// モデルの座標をセット
 	//extern	int			MV1SetPositionD(int MHandle, VECTOR_D Position);									// モデルの座標をセット
 	//extern	VECTOR		MV1GetPosition(int MHandle);														// モデルの座標を取得
 	//extern	VECTOR_D	MV1GetPositionD(int MHandle);														// モデルの座標を取得
 	//extern	int			MV1SetScale(int MHandle, VECTOR Scale);										// モデルの拡大値をセット
 	//extern	VECTOR		MV1GetScale(int MHandle);														// モデルの拡大値を取得
-	//extern	int			MV1SetRotationXYZ(int MHandle, VECTOR Rotate);										// モデルの回転値をセット( X軸回転→Y軸回転→Z軸回転方式 )
-	//extern	VECTOR		MV1GetRotationXYZ(int MHandle);														// モデルの回転値を取得( X軸回転→Y軸回転→Z軸回転方式 )
+	DXLUA_PORT(t, MV1SetRotationXYZ);
+	DXLUA_PORT(t, MV1GetRotationXYZ);
 	//extern	int			MV1SetRotationZYAxis(int MHandle, VECTOR ZAxisDirection, VECTOR YAxisDirection, float ZAxisTwistRotate);	// モデルのＺ軸とＹ軸の向きをセットする
 	//extern	int			MV1SetRotationYUseDir(int MHandle, VECTOR Direction, float OffsetYAngle);				// モデルのＹ軸の回転値を指定のベクトルの向きを元に設定する、モデルはZ軸のマイナス方向を向いていることを想定するので、そうではない場合は OffsetYAngle で補正する、Ｘ軸回転、Ｚ軸回転は０で固定
 	//extern	int			MV1SetRotationMatrix(int MHandle, MATRIX Matrix);										// モデルの回転用行列をセットする
@@ -116,7 +115,7 @@ void port_model(sol::state_view &lua, sol::table &t) {
 
 	// アニメーション関係
 	//extern	int			MV1AttachAnim(int MHandle, int AnimIndex, int AnimSrcMHandle = -1, int NameCheck = TRUE);		// アニメーションをアタッチする( 戻り値  -1:エラー  0以上:アタッチインデックス )
-	//extern	int			MV1DetachAnim(int MHandle, int AttachIndex);													// アニメーションをデタッチする
+	DXLUA_PORT(t, MV1DetachAnim);
 	//extern	int			MV1SetAttachAnimTime(int MHandle, int AttachIndex, float Time);										// アタッチしているアニメーションの再生時間を設定する
 	//extern	float		MV1GetAttachAnimTime(int MHandle, int AttachIndex);													// アタッチしているアニメーションの再生時間を取得する
 	//extern	float		MV1GetAttachAnimTotalTime(int MHandle, int AttachIndex);													// アタッチしているアニメーションの総時間を得る
@@ -369,11 +368,14 @@ void port_model(sol::state_view &lua, sol::table &t) {
 	//extern	int							MV1RefreshCollInfo(int MHandle, int FrameIndex = -1, int MeshIndex = -1);																// コリジョン情報を更新する
 	//extern	MV1_COLL_RESULT_POLY		MV1CollCheck_Line(int MHandle, int FrameIndex, VECTOR PosStart, VECTOR PosEnd, int MeshIndex = -1);									// 線とモデルの当たり判定
 	//extern	MV1_COLL_RESULT_POLY_DIM	MV1CollCheck_LineDim(int MHandle, int FrameIndex, VECTOR PosStart, VECTOR PosEnd, int MeshIndex = -1);									// 線とモデルの当たり判定( 戻り値が MV1_COLL_RESULT_POLY_DIM )
-	//extern	MV1_COLL_RESULT_POLY_DIM	MV1CollCheck_Sphere(int MHandle, int FrameIndex, VECTOR CenterPos, float r, int MeshIndex = -1);											// 球とモデルの当たり判定
+	t["MV1CollCheck_Sphere"] = [](int MHandle, int FrameIndex, VECTOR CenterPos, float r, sol::variadic_args va) {
+		int MeshIndex = va.leftover_count() > 0 ? va[0].as<int>() : -1;
+		return MV1CollCheck_Sphere(MHandle, FrameIndex, CenterPos, r, MeshIndex);
+	};
 	//extern	MV1_COLL_RESULT_POLY_DIM	MV1CollCheck_Capsule(int MHandle, int FrameIndex, VECTOR Pos1, VECTOR Pos2, float r, int MeshIndex = -1);									// カプセルとモデルの当たり判定
 	//extern	MV1_COLL_RESULT_POLY_DIM	MV1CollCheck_Triangle(int MHandle, int FrameIndex, VECTOR Pos1, VECTOR Pos2, VECTOR Pos3, int MeshIndex = -1);								// 三角形とモデルの当たり判定
 	//extern	MV1_COLL_RESULT_POLY		MV1CollCheck_GetResultPoly(MV1_COLL_RESULT_POLY_DIM ResultPolyDim, int PolyNo);																	// コリジョン結果ポリゴン配列から指定番号のポリゴン情報を取得する
-	//extern	int							MV1CollResultPolyDimTerminate(MV1_COLL_RESULT_POLY_DIM ResultPolyDim);																				// コリジョン結果ポリゴン配列の後始末をする
+	DXLUA_PORT(t, MV1CollResultPolyDimTerminate);
 
 	// 参照用メッシュ関係
 	//extern	int					MV1SetupReferenceMesh(int MHandle, int FrameIndex, int IsTransform, int IsPositionOnly = FALSE, int MeshIndex = -1);						// 参照用メッシュのセットアップ
