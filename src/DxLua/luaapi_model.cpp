@@ -115,6 +115,7 @@ void port_model(sol::state_view &lua, sol::table &t) {
 
 	// アニメーション関係
 	//extern	int			MV1AttachAnim(int MHandle, int AnimIndex, int AnimSrcMHandle = -1, int NameCheck = TRUE);		// アニメーションをアタッチする( 戻り値  -1:エラー  0以上:アタッチインデックス )
+	DXLUA_PORT(t, MV1AttachAnim);
 	DXLUA_PORT(t, MV1DetachAnim);
 	//extern	int			MV1SetAttachAnimTime(int MHandle, int AttachIndex, float Time);										// アタッチしているアニメーションの再生時間を設定する
 	//extern	float		MV1GetAttachAnimTime(int MHandle, int AttachIndex);													// アタッチしているアニメーションの再生時間を取得する
