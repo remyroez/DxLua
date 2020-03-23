@@ -811,7 +811,7 @@ end
 
 -- プレイヤーの影を描画
 function Player_ShadowRender()
-    local HitResDim = dx.MV1_COLL_RESULT_POLY_DIM;
+    local HitResDim = dx.MV1_COLL_RESULT_POLY_DIM{};
     local HitRes;
     local Vertex = { dx.VERTEX3D{}, dx.VERTEX3D{}, dx.VERTEX3D{} }
     local SlideVec = dx.VECTOR{};

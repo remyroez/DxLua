@@ -13,8 +13,8 @@ void port_model(sol::state_view &lua, sol::table &t) {
 
 	// モデルの読み込み・複製関係
 	DXLUA_PORT(t, MV1LoadModel);
-	//DXLUA_PORT(t, MV1LoadModelWithStrLen);
-	//DXLUA_PORT(t, MV1LoadModelFromMem);
+	//extern	int			MV1LoadModelWithStrLen(const TCHAR * FileName, size_t FileNameLength);					// モデルの読み込み( -1:エラー  0以上:モデルハンドル )
+	//extern	int			MV1LoadModelFromMem(const void *FileImage, int FileSize, int (*FileReadFunc)(const TCHAR * FilePath, void **FileImageAddr, int *FileSize, void *FileReadFuncData), int (*FileReleaseFunc)(void *MemoryAddr, void *FileReadFuncData), void *FileReadFuncData = NULL);	// メモリ上のモデルファイルイメージと独自の読み込みルーチンを使用してモデルを読み込む
 	DXLUA_PORT(t, MV1DuplicateModel);
 	DXLUA_PORT(t, MV1CreateCloneModel);
 
@@ -114,21 +114,33 @@ void port_model(sol::state_view &lua, sol::table &t) {
 	//extern	int			MV1GetMaterialNumberOrderFlag(int MHandle);														// モデルのマテリアル番号順にメッシュを描画するかどうかのフラグを取得する( TRUE:マテリアル番号順に描画  FALSE:不透明メッシュの後半透明メッシュ )
 
 	// アニメーション関係
-	//extern	int			MV1AttachAnim(int MHandle, int AnimIndex, int AnimSrcMHandle = -1, int NameCheck = TRUE);		// アニメーションをアタッチする( 戻り値  -1:エラー  0以上:アタッチインデックス )
-	DXLUA_PORT(t, MV1AttachAnim);
+	t["MV1AttachAnim"] = [](int MHandle, int AnimIndex, sol::variadic_args va) {
+		int AnimSrcMHandle = va_get(va, 0, -1);
+		int NameCheck = va_get(va, 1, true);
+		return MV1AttachAnim(MHandle, AnimIndex, AnimSrcMHandle, NameCheck);
+	};
 	DXLUA_PORT(t, MV1DetachAnim);
-	//extern	int			MV1SetAttachAnimTime(int MHandle, int AttachIndex, float Time);										// アタッチしているアニメーションの再生時間を設定する
-	//extern	float		MV1GetAttachAnimTime(int MHandle, int AttachIndex);													// アタッチしているアニメーションの再生時間を取得する
-	//extern	float		MV1GetAttachAnimTotalTime(int MHandle, int AttachIndex);													// アタッチしているアニメーションの総時間を得る
-	//extern	int			MV1SetAttachAnimBlendRate(int MHandle, int AttachIndex, float Rate = 1.0f);									// アタッチしているアニメーションのブレンド率を設定する
-	//extern	float		MV1GetAttachAnimBlendRate(int MHandle, int AttachIndex);													// アタッチしているアニメーションのブレンド率を取得する
-	//extern	int			MV1SetAttachAnimBlendRateToFrame(int MHandle, int AttachIndex, int FrameIndex, float Rate, int SetChild = TRUE);	// アタッチしているアニメーションのブレンド率を設定する( フレーム単位 )
-	//extern	float		MV1GetAttachAnimBlendRateToFrame(int MHandle, int AttachIndex, int FrameIndex);									// アタッチしているアニメーションのブレンド率を設定する( フレーム単位 )
+	DXLUA_PORT(t, MV1SetAttachAnimTime);
+	DXLUA_PORT(t, MV1GetAttachAnimTime);
+	DXLUA_PORT(t, MV1GetAttachAnimTotalTime);
+	t["MV1SetAttachAnimBlendRate"] = [](int MHandle, int AttachIndex, sol::variadic_args va) {
+		float Rate = va_get(va, 0, 1.0f);
+		return MV1SetAttachAnimBlendRate(MHandle, AttachIndex, Rate);
+	};
+	DXLUA_PORT(t, MV1GetAttachAnimBlendRate);
+	t["MV1SetAttachAnimBlendRateToFrame"] = [](int MHandle, int AttachIndex, int FrameIndex, float Rate, sol::variadic_args va) {
+		int SetChild = va_get(va, 0, true);
+		return MV1SetAttachAnimBlendRateToFrame(MHandle, AttachIndex, FrameIndex, Rate, SetChild);
+	};
+	DXLUA_PORT(t, MV1GetAttachAnimBlendRateToFrame);
 	DXLUA_PORT(t, MV1GetAttachAnim);
-	//extern	int			MV1SetAttachAnimUseShapeFlag(int MHandle, int AttachIndex, int UseFlag);										// アタッチしているアニメーションのシェイプを使用するかどうかを設定する( UseFlag  TRUE:使用する( デフォルト )  FALSE:使用しない )
-	//extern	int			MV1GetAttachAnimUseShapeFlag(int MHandle, int AttachIndex);													// アタッチしているアニメーションのシェイプを使用するかどうかを取得する
-	//extern	VECTOR		MV1GetAttachAnimFrameLocalPosition(int MHandle, int AttachIndex, int FrameIndex);									// アタッチしているアニメーションの指定のフレームの現在のローカル座標を取得する
-	//extern	MATRIX		MV1GetAttachAnimFrameLocalMatrix(int MHandle, int AttachIndex, int FrameIndex);									// アタッチしているアニメーションの指定のフレームの現在のローカル変換行列を取得する
+	t["MV1SetAttachAnimUseShapeFlag"] = [](int MHandle, int AttachIndex, sol::variadic_args va) {
+		int UseFlag = va_get(va, 0, false);
+		return MV1SetAttachAnimUseShapeFlag(MHandle, AttachIndex, UseFlag);
+	};
+	DXLUA_PORT(t, MV1GetAttachAnimUseShapeFlag);
+	DXLUA_PORT(t, MV1GetAttachAnimFrameLocalPosition);
+	DXLUA_PORT(t, MV1GetAttachAnimFrameLocalMatrix);
 
 	//extern	int			MV1GetAnimNum(int MHandle);																		// アニメーションの数を取得する
 	//extern	const TCHAR *MV1GetAnimName(int MHandle, int AnimIndex);														// 指定番号のアニメーション名を取得する( NULL:エラー )
@@ -364,25 +376,72 @@ void port_model(sol::state_view &lua, sol::table &t) {
 	//extern	int			MV1GetTriangleListUseMaterial(int MHandle, int TListIndex);														// 指定のトライアングルリストが使用しているマテリアルのインデックスを取得する
 
 	// コリジョン関係
-	//extern	int							MV1SetupCollInfo(int MHandle, int FrameIndex = -1, int XDivNum = 32, int YDivNum = 8, int ZDivNum = 32, int MeshIndex = -1);		// コリジョン情報を構築する
-	//extern	int							MV1TerminateCollInfo(int MHandle, int FrameIndex = -1, int MeshIndex = -1);																// コリジョン情報の後始末
-	//extern	int							MV1RefreshCollInfo(int MHandle, int FrameIndex = -1, int MeshIndex = -1);																// コリジョン情報を更新する
-	//extern	MV1_COLL_RESULT_POLY		MV1CollCheck_Line(int MHandle, int FrameIndex, VECTOR PosStart, VECTOR PosEnd, int MeshIndex = -1);									// 線とモデルの当たり判定
-	//extern	MV1_COLL_RESULT_POLY_DIM	MV1CollCheck_LineDim(int MHandle, int FrameIndex, VECTOR PosStart, VECTOR PosEnd, int MeshIndex = -1);									// 線とモデルの当たり判定( 戻り値が MV1_COLL_RESULT_POLY_DIM )
+	t["MV1SetupCollInfo"] = [](int MHandle, sol::variadic_args va) {
+		int FrameIndex = va_get(va, 0, -1);
+		int XDivNum = va_get(va, 1, 32);
+		int YDivNum = va_get(va, 2, 8);
+		int ZDivNum = va_get(va, 3, 32);
+		int MeshIndex = va_get(va, 4, -1);
+		return MV1SetupCollInfo(MHandle, FrameIndex, XDivNum, YDivNum, ZDivNum, MeshIndex);
+	};
+	t["MV1TerminateCollInfo"] = [](int MHandle, sol::variadic_args va) {
+		int FrameIndex = va_get(va, 0, -1);
+		int MeshIndex = va_get(va, 1, -1);
+		return MV1TerminateCollInfo(MHandle, FrameIndex, MeshIndex);
+	};
+	t["MV1RefreshCollInfo"] = [](int MHandle, sol::variadic_args va) {
+		int FrameIndex = va_get(va, 0, -1);
+		int MeshIndex = va_get(va, 1, -1);
+		return MV1RefreshCollInfo(MHandle, FrameIndex, MeshIndex);
+	};
+	t["MV1CollCheck_Line"] = [](int MHandle, int FrameIndex, VECTOR PosStart, VECTOR PosEnd, sol::variadic_args va) {
+		int MeshIndex = va_get(va, 0, -1);
+		return MV1CollCheck_Line(MHandle, FrameIndex, PosStart, PosEnd, MeshIndex);
+	};
+	t["MV1CollCheck_LineDim"] = [](int MHandle, int FrameIndex, VECTOR PosStart, VECTOR PosEnd, sol::variadic_args va) {
+		int MeshIndex = va_get(va, 0, -1);
+		return MV1CollCheck_LineDim(MHandle, FrameIndex, PosStart, PosEnd, MeshIndex);
+	};
 	t["MV1CollCheck_Sphere"] = [](int MHandle, int FrameIndex, VECTOR CenterPos, float r, sol::variadic_args va) {
-		int MeshIndex = va.leftover_count() > 0 ? va[0].as<int>() : -1;
+		int MeshIndex = va_get(va, 0, -1);
 		return MV1CollCheck_Sphere(MHandle, FrameIndex, CenterPos, r, MeshIndex);
 	};
-	//extern	MV1_COLL_RESULT_POLY_DIM	MV1CollCheck_Capsule(int MHandle, int FrameIndex, VECTOR Pos1, VECTOR Pos2, float r, int MeshIndex = -1);									// カプセルとモデルの当たり判定
-	//extern	MV1_COLL_RESULT_POLY_DIM	MV1CollCheck_Triangle(int MHandle, int FrameIndex, VECTOR Pos1, VECTOR Pos2, VECTOR Pos3, int MeshIndex = -1);								// 三角形とモデルの当たり判定
-	//extern	MV1_COLL_RESULT_POLY		MV1CollCheck_GetResultPoly(MV1_COLL_RESULT_POLY_DIM ResultPolyDim, int PolyNo);																	// コリジョン結果ポリゴン配列から指定番号のポリゴン情報を取得する
+	t["MV1CollCheck_Capsule"] = [](int MHandle, int FrameIndex, VECTOR Pos1, VECTOR Pos2, float r, sol::variadic_args va) {
+		int MeshIndex = va_get(va, 0, -1);
+		return MV1CollCheck_Capsule(MHandle, FrameIndex, Pos1, Pos2, r, MeshIndex);
+	};
+	t["MV1CollCheck_Triangle"] = [](int MHandle, int FrameIndex, VECTOR Pos1, VECTOR Pos2, VECTOR Pos3, sol::variadic_args va) {
+		int MeshIndex = va_get(va, 0, -1);
+		return MV1CollCheck_Triangle(MHandle, FrameIndex, Pos1, Pos2, Pos3, MeshIndex);
+	};
+	DXLUA_PORT(t, MV1CollCheck_GetResultPoly);
 	DXLUA_PORT(t, MV1CollResultPolyDimTerminate);
 
 	// 参照用メッシュ関係
-	//extern	int					MV1SetupReferenceMesh(int MHandle, int FrameIndex, int IsTransform, int IsPositionOnly = FALSE, int MeshIndex = -1);						// 参照用メッシュのセットアップ
-	//extern	int					MV1TerminateReferenceMesh(int MHandle, int FrameIndex, int IsTransform, int IsPositionOnly = FALSE, int MeshIndex = -1);						// 参照用メッシュの後始末
-	//extern	int					MV1RefreshReferenceMesh(int MHandle, int FrameIndex, int IsTransform, int IsPositionOnly = FALSE, int MeshIndex = -1);						// 参照用メッシュの更新
-	//extern	MV1_REF_POLYGONLIST	MV1GetReferenceMesh(int MHandle, int FrameIndex, int IsTransform, int IsPositionOnly = FALSE, int MeshIndex = -1);						// 参照用メッシュを取得する
+	t["MV1SetupReferenceMesh"] = [](int MHandle, int FrameIndex, sol::variadic_args va) {
+		int IsTransform = va_get(va, 0, false);
+		int IsPositionOnly = va_get(va, 1, false);
+		int MeshIndex = va_get(va, 2, -1);
+		return MV1SetupReferenceMesh(MHandle, FrameIndex, IsTransform, IsPositionOnly, MeshIndex);
+	};
+	t["MV1TerminateReferenceMesh"] = [](int MHandle, int FrameIndex, sol::variadic_args va) {
+		int IsTransform = va_get(va, 0, false);
+		int IsPositionOnly = va_get(va, 1, false);
+		int MeshIndex = va_get(va, 2, -1);
+		return MV1TerminateReferenceMesh(MHandle, FrameIndex, IsTransform, IsPositionOnly, MeshIndex);
+	};
+	t["MV1RefreshReferenceMesh"] = [](int MHandle, int FrameIndex, sol::variadic_args va) {
+		int IsTransform = va_get(va, 0, false);
+		int IsPositionOnly = va_get(va, 1, false);
+		int MeshIndex = va_get(va, 2, -1);
+		return MV1RefreshReferenceMesh(MHandle, FrameIndex, IsTransform, IsPositionOnly, MeshIndex);
+	};
+	t["MV1GetReferenceMesh"] = [](int MHandle, int FrameIndex, sol::variadic_args va) {
+		int IsTransform = va_get(va, 0, false);
+		int IsPositionOnly = va_get(va, 1, false);
+		int MeshIndex = va_get(va, 2, -1);
+		return MV1GetReferenceMesh(MHandle, FrameIndex, IsTransform, IsPositionOnly, MeshIndex);
+	};
 
 #endif // DX_NON_MODEL
 }

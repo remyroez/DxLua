@@ -10,6 +10,16 @@
 
 namespace DxLua::detail {
 
+template<typename T>
+inline auto va_get(sol::variadic_args &va, int index, const T &default_value) {
+	return (va.leftover_count() > index) ? va[index].as<T>() : default_value;
+}
+
+template<>
+inline auto va_get<bool>(sol::variadic_args &va, int index, const bool &default_value) {
+	return ((va.leftover_count() > index) ? va[index].as<bool>() : default_value) ? TRUE : FALSE;
+}
+
 void port_define(sol::state_view &lua, sol::table &t);
 void port_type(sol::state_view &lua, sol::table &t);
 void port_network(sol::state_view &lua, sol::table &t);
