@@ -63,6 +63,44 @@ void port_type(sol::state_view &lua, sol::table &t) {
 		DXLUA_PORT_EX(t, FLOAT3, VECTOR);
 	}
 
+	// MATRIX
+	{
+		// ユーザー型定義
+		auto usertype = t.new_usertype<DxLib::MATRIX>(
+			"MATRIX",
+			"m", sol::property([](DxLib::MATRIX &self) { return std::ref(self.m); })
+		);
+
+		// ユーザー型をテーブルとして取得
+		sol::table table = t["MATRIX"];
+
+		// メタテーブルの作成
+		sol::table metatable = table[sol::metatable_key] = lua.create_table();
+
+		// 専用の new 関数を用意
+		table["new"] = [](sol::object arg) {
+			DxLib::MATRIX matrix;
+			memset(&matrix, 0, sizeof(matrix));
+			if (!arg.is<sol::table>()) {
+				// テーブルではない
+
+			} else if (sol::table argt = arg.as<sol::table>()) {
+				for (size_t i = 0; i < sizeof(DxLib::MATRIX::m) / sizeof(DxLib::MATRIX::m[0]); ++i) {
+					if (sol::object obj = argt[i + 1]; obj.is<sol::table>()) {
+						sol::table t = obj;
+						for (size_t j = 0; j < sizeof(DxLib::MATRIX::m[0]) / sizeof(DxLib::MATRIX::m[0][0]); ++j) {
+							matrix.m[i][j] = t.get_or(j + 1, 0.f);
+						}
+					}
+				}
+			}
+			return matrix;
+		};
+
+		// ユーザー型テーブルの呼び出しで new を呼ぶように対応
+		metatable["__call"] = [](sol::stack_object self, sol::variadic_args va) { return sol::table(self)["new"](va); };
+	}
+
 	// DINPUT_JOYSTATE
 	{
 		// ユーザー型定義
