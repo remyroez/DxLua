@@ -68,7 +68,23 @@ void port_type(sol::state_view &lua, sol::table &t) {
 		// ユーザー型定義
 		auto usertype = t.new_usertype<DxLib::MATRIX>(
 			"MATRIX",
-			"m", sol::property([](DxLib::MATRIX &self) { return std::ref(self.m); })
+			"m", sol::property([](DxLib::MATRIX &self) { return std::ref(self); }),
+			sol::meta_function::index, [](const DxLib::MATRIX &self, sol::stack_object key, sol::this_state L) {
+				int index = 1;
+				if (auto maybe_numeric_key = key.as<sol::optional<int>>()) {
+					index = *maybe_numeric_key;
+				}
+				if (index <= 0) {
+					index = 1;
+
+				} else if (index > sizeof(DxLib::MATRIX::m) / sizeof(DxLib::MATRIX::m[0])) {
+					index = sizeof(DxLib::MATRIX::m) / sizeof(DxLib::MATRIX::m[0]);
+				}
+				return std::ref(self.m[index - 1]);
+			},
+			sol::meta_function::length, [](const DxLib::MATRIX &self) {
+				return sizeof(DxLib::MATRIX::m) / sizeof(DxLib::MATRIX::m[0]);
+			}
 		);
 
 		// ユーザー型をテーブルとして取得

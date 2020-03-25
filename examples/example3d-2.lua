@@ -970,7 +970,7 @@ function Camera_Process()
 
     -- カメラの座標を決定する
     do
-        local RotZ = dx.MATRIX{}, RotY;
+        local RotZ, RotY;
         local Camera_Player_Length;
         local HRes = dx.MV1_COLL_RESULT_POLY_DIM{};
         local HitNum;
