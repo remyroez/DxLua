@@ -345,7 +345,7 @@ function Player_Move(MoveVector)
     --local i, j, k;						-- 汎用カウンタ変数
     local MoveFlag;						-- 水平方向に移動したかどうかのフラグ( ０:移動していない  １:移動した )
     local HitFlag;						-- ポリゴンに当たったかどうかを記憶しておくのに使う変数( ０:当たっていない  １:当たった )
-    local HitDim = dx.MV1_COLL_RESULT_POLY_DIM{};			-- プレイヤーの周囲にあるポリゴンを検出した結果が代入される当たり判定結果構造体
+    local HitDim;			-- プレイヤーの周囲にあるポリゴンを検出した結果が代入される当たり判定結果構造体
     local KabeNum;						-- 壁ポリゴンと判断されたポリゴンの数
     local YukaNum;						-- 床ポリゴンと判断されたポリゴンの数
     local Kabe = {};	-- 壁ポリゴンと判断されたポリゴンの構造体のアドレスを保存しておくためのポインタ配列
@@ -811,7 +811,7 @@ end
 
 -- プレイヤーの影を描画
 function Player_ShadowRender()
-    local HitResDim = dx.MV1_COLL_RESULT_POLY_DIM{};
+    local HitResDim;
     local HitRes;
     local Vertex = { dx.VERTEX3D{}, dx.VERTEX3D{}, dx.VERTEX3D{} }
     local SlideVec = dx.VECTOR{};
@@ -972,7 +972,7 @@ function Camera_Process()
     do
         local RotZ, RotY;
         local Camera_Player_Length;
-        local HRes = dx.MV1_COLL_RESULT_POLY_DIM{};
+        local HRes;
         local HitNum;
 
         -- 水平方向の回転はＹ軸回転

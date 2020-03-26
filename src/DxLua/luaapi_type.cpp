@@ -117,6 +117,82 @@ void port_type(sol::state_view &lua, sol::table &t) {
 		metatable["__call"] = [](sol::stack_object self, sol::variadic_args va) { return sol::table(self)["new"](va); };
 	}
 
+	// MV1_COLL_RESULT_POLY
+	{
+		// 定義する型
+		using type = DxLib::MV1_COLL_RESULT_POLY;
+
+		// ユーザー型定義
+		auto usertype = t.new_usertype<type>(
+			"MV1_COLL_RESULT_POLY",
+			"HitFlag", sol::property([](type &self) { return self.HitFlag != FALSE; }),
+			"HitPosition", sol::readonly(&type::HitPosition),
+			"FrameIndex", sol::readonly(&type::FrameIndex),
+			"MeshIndex", sol::readonly(&type::MeshIndex),
+			"PolygonIndex", sol::readonly(&type::PolygonIndex),
+			"MaterialIndex", sol::readonly(&type::MaterialIndex),
+			"Position", sol::property([](type &self) { return std::ref(self.Position); }),
+			"Normal", sol::readonly(&type::Normal),
+			"PositionWeight", sol::property([](type &self) { return std::ref(self.PositionWeight); }),
+			"PosMaxWeightFrameIndex", sol::property([](type &self) { return std::ref(self.PosMaxWeightFrameIndex); })
+		);
+
+		// ユーザー型をテーブルとして取得
+		sol::table table = t["MV1_COLL_RESULT_POLY"];
+
+		// メタテーブルの作成
+		sol::table metatable = table[sol::metatable_key] = lua.create_table();
+
+		// 専用の new 関数を用意
+		table["new"] = [](sol::object arg) {
+			type instance;
+			memset(&instance, 0, sizeof(instance));
+			if (!arg.is<sol::table>()) {
+				// テーブルではない
+
+			} else if (sol::table argt = arg.as<sol::table>()) {
+			}
+			return instance;
+		};
+
+		// ユーザー型テーブルの呼び出しで new を呼ぶように対応
+		metatable["__call"] = [](sol::stack_object self, sol::variadic_args va) { return sol::table(self)["new"](va); };
+	}
+
+	// MV1_COLL_RESULT_POLY_DIM
+	{
+		// 定義する型
+		using type = DxLib::MV1_COLL_RESULT_POLY_DIM;
+
+		// ユーザー型定義
+		auto usertype = t.new_usertype<type>(
+			"MV1_COLL_RESULT_POLY_DIM",
+			"HitNum", sol::property([](type &self) { return self.HitNum; }),
+			"Dim", sol::property([](type &self) { return std::ref(self.Dim); })
+		);
+		
+		// ユーザー型をテーブルとして取得
+		sol::table table = t["MV1_COLL_RESULT_POLY_DIM"];
+
+		// メタテーブルの作成
+		sol::table metatable = table[sol::metatable_key] = lua.create_table();
+
+		// 専用の new 関数を用意
+		table["new"] = [](sol::object arg) {
+			type instance;
+			memset(&instance, 0, sizeof(instance));
+			if (!arg.is<sol::table>()) {
+				// テーブルではない
+
+			} else if (sol::table argt = arg.as<sol::table>()) {
+			}
+			return instance;
+		};
+
+		// ユーザー型テーブルの呼び出しで new を呼ぶように対応
+		metatable["__call"] = [](sol::stack_object self, sol::variadic_args va) { return sol::table(self)["new"](va); };
+	}
+
 	// DINPUT_JOYSTATE
 	{
 		// ユーザー型定義
