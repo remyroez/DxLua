@@ -168,7 +168,11 @@ void port_type(sol::state_view &lua, sol::table &t) {
 		auto usertype = t.new_usertype<type>(
 			"MV1_COLL_RESULT_POLY_DIM",
 			"HitNum", sol::property([](type &self) { return self.HitNum; }),
-			"Dim", sol::property([](type &self) { return std::ref(self.Dim); })
+			"Dim", sol::property([](type &self) {
+				std::vector<DxLib::MV1_COLL_RESULT_POLY> dim(self.HitNum);
+				memcpy(dim.data(), self.Dim, self.HitNum);
+				return dim;
+			})
 		);
 		
 		// ユーザー型をテーブルとして取得
