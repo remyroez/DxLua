@@ -351,9 +351,9 @@ function Player_Move(MoveVector)
     local Kabe = {};	-- 壁ポリゴンと判断されたポリゴンの構造体のアドレスを保存しておくためのポインタ配列
     local Yuka = {};	-- 床ポリゴンと判断されたポリゴンの構造体のアドレスを保存しておくためのポインタ配列
     local Poly;				-- ポリゴンの構造体にアクセスするために使用するポインタ( 使わなくても済ませられますがプログラムが長くなるので・・・ )
-    local LineRes = dx.HITRESULT_LINE{};				-- 線分とポリゴンとの当たり判定の結果を代入する構造体
-    local OldPos = dx.VECTOR{};						-- 移動前の座標
-    local NowPos = dx.VECTOR{};						-- 移動後の座標
+    local LineRes;				-- 線分とポリゴンとの当たり判定の結果を代入する構造体
+    local OldPos;						-- 移動前の座標
+    local NowPos;						-- 移動後の座標
 
     -- 移動前の座標を保存
     OldPos = pl.Position;

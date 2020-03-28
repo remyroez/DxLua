@@ -158,7 +158,7 @@ void port_type(sol::state_view &lua, sol::table &t) {
 		// ユーザー型テーブルの呼び出しで new を呼ぶように対応
 		metatable["__call"] = [](sol::stack_object self, sol::variadic_args va) { return sol::table(self)["new"](va); };
 	}
-
+	
 	// MV1_COLL_RESULT_POLY_DIM
 	{
 		// 定義する型
@@ -177,6 +177,40 @@ void port_type(sol::state_view &lua, sol::table &t) {
 		
 		// ユーザー型をテーブルとして取得
 		sol::table table = t["MV1_COLL_RESULT_POLY_DIM"];
+
+		// メタテーブルの作成
+		sol::table metatable = table[sol::metatable_key] = lua.create_table();
+
+		// 専用の new 関数を用意
+		table["new"] = [](sol::object arg) {
+			type instance;
+			memset(&instance, 0, sizeof(instance));
+			if (!arg.is<sol::table>()) {
+				// テーブルではない
+
+			} else if (sol::table argt = arg.as<sol::table>()) {
+			}
+			return instance;
+		};
+
+		// ユーザー型テーブルの呼び出しで new を呼ぶように対応
+		metatable["__call"] = [](sol::stack_object self, sol::variadic_args va) { return sol::table(self)["new"](va); };
+	}
+
+	// HITRESULT_LINE
+	{
+		// 定義する型
+		using type = DxLib::HITRESULT_LINE;
+
+		// ユーザー型定義
+		auto usertype = t.new_usertype<type>(
+			"HITRESULT_LINE",
+			"HitFlag", sol::property([](type &self) { return self.HitFlag != FALSE; }),
+			"Position", sol::readonly(&type::Position)
+			);
+
+		// ユーザー型をテーブルとして取得
+		sol::table table = t["HITRESULT_LINE"];
 
 		// メタテーブルの作成
 		sol::table metatable = table[sol::metatable_key] = lua.create_table();
