@@ -7,6 +7,10 @@
 #include "DxLua.h"
 #include "luaapi.h"
 
+#ifdef min
+#undef min
+#endif
+
 namespace DxLua::detail {
 
 void port_draw(sol::state_view &lua, sol::table &library) {
@@ -62,6 +66,17 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 		return DrawRotaGraph(x, y, ExRate, Angle, GrHandle, TransFlag ? TRUE : FALSE, ReverseXFlag, ReverseYFlag);
 	};
 
+	//extern	int			DrawPolygon3D(const VERTEX3D * VertexArray, int PolygonNum, int GrHandle, int TransFlag);							// ３Ｄポリゴンを描画する
+
+	library["DrawPolygon3D"] = [](sol::table VertexArrayTable, int PolygonNum, int GrHandle, sol::variadic_args va) {
+		std::vector<VERTEX3D> VertexArray(PolygonNum);
+		int TransFlag = va_get(va, 0, false);
+		for (auto i = 0; i < std::min((size_t)PolygonNum, VertexArrayTable.size()); ++i) {
+			VertexArray[i] = VertexArrayTable[i + 1].get_or(VERTEX3D{});
+		}
+		return DrawPolygon3D(VertexArray.data(), PolygonNum, GrHandle, TransFlag);
+	};
+
 	// 描画設定関係関数
 	DXLUA_PORT(library, SetDrawMode);
 	DXLUA_PORT(library, GetDrawMode);
@@ -72,11 +87,20 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 		auto result = GetDrawBlendMode(&BlendMode, &BlendParam);
 		return std::make_tuple(result, BlendMode, BlendParam);
 	};
+	library["SetUseZBuffer3D"] = [](sol::variadic_args va) {
+		int Flag = va_get(va, 0, false);
+		return SetUseZBuffer3D(Flag);
+	};
 
 	DXLUA_PORT(library, SetDrawArea);
 	DXLUA_PORT(library, GetDrawArea);
 	DXLUA_PORT(library, SetDrawAreaFull);
 	DXLUA_PORT(library, SetDraw3DScale);
+
+	library["SetTextureAddressMode"] = [](int Mode, sol::variadic_args va) {
+		int Stage = va_get(va, 0, -1);
+		return SetTextureAddressMode(Mode, Stage);
+	};
 
 	// 画面関係関数
 	DXLUA_PORT(library, ScreenFlip);
@@ -95,6 +119,13 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 	library["SetWaitVSyncFlag"] = [](sol::object Flag) {
 		return SetWaitVSyncFlag(Flag.as<bool>() ? TRUE : FALSE);
 	};
+
+	// ライト関係関数
+	library["SetUseLighting"] = [](sol::variadic_args va) {
+		int Flag = va_get(va, 0, false);
+		return SetUseLighting(Flag);
+	};
+
 #endif // DX_NOTUSE_DRAWFUNCTION
 
 

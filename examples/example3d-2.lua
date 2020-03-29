@@ -375,8 +375,8 @@ function Player_Move(MoveVector)
     -- 検出されたポリゴンが壁ポリゴン( ＸＺ平面に垂直なポリゴン )か床ポリゴン( ＸＺ平面に垂直ではないポリゴン )かを判断する
     do
         -- 壁ポリゴンと床ポリゴンの数を初期化する
-        KabeNum = 1;
-        YukaNum = 1;
+        KabeNum = 0;
+        YukaNum = 0;
 
         -- 検出されたポリゴンの数だけ繰り返し
         for i = 1, HitDim.HitNum do
@@ -388,21 +388,21 @@ function Player_Move(MoveVector)
                     HitDim.Dim[i].Position[3].y > pl.Position.y + 1.0 then
                     -- ポリゴンの数が列挙できる限界数に達していなかったらポリゴンを配列に追加
                     if KabeNum < PLAYER_MAX_HITCOLL then
-                        -- ポリゴンの構造体のアドレスを壁ポリゴンポインタ配列に保存する
-                        Kabe[KabeNum] = HitDim.Dim[i];
-
                         -- 壁ポリゴンの数を加算する
                         KabeNum = KabeNum + 1
+
+                        -- ポリゴンの構造体のアドレスを壁ポリゴンポインタ配列に保存する
+                        Kabe[KabeNum] = HitDim.Dim[i];
                     end
                 end
             else
                 -- ポリゴンの数が列挙できる限界数に達していなかったらポリゴンを配列に追加
                 if YukaNum < PLAYER_MAX_HITCOLL then
-                    -- ポリゴンの構造体のアドレスを床ポリゴンポインタ配列に保存する
-                    Yuka[YukaNum] = HitDim.Dim[i];
-
                     -- 床ポリゴンの数を加算する
                     YukaNum = YukaNum + 1;
+
+                    -- ポリゴンの構造体のアドレスを床ポリゴンポインタ配列に保存する
+                    Yuka[YukaNum] = HitDim.Dim[i];
                 end
             end
         end
@@ -835,37 +835,42 @@ function Player_ShadowRender()
     );
 
     -- 頂点データで変化が無い部分をセット
-    Vertex[0].dif = dx.GetColorU8(255, 255, 255, 255);
-    Vertex[0].spc = dx.GetColorU8(0, 0, 0, 0);
-    Vertex[0].su = 0.0;
-    Vertex[0].sv = 0.0;
-    Vertex[1] = Vertex[0];
-    Vertex[2] = Vertex[0];
+    Vertex[1].dif = dx.GetColorU8(255, 255, 255, 255);
+    Vertex[1].spc = dx.GetColorU8(0, 0, 0, 0);
+    Vertex[1].su = 0.0;
+    Vertex[1].sv = 0.0;
+    --[[
+    Vertex[2] = Vertex[1];
+    Vertex[3] = Vertex[1];
+    --]]
+    Vertex[2].dif = dx.GetColorU8(255, 255, 255, 255);
+    Vertex[2].spc = dx.GetColorU8(0, 0, 0, 0);
+    Vertex[2].su = 0.0;
+    Vertex[2].sv = 0.0;
+    Vertex[3].dif = dx.GetColorU8(255, 255, 255, 255);
+    Vertex[3].spc = dx.GetColorU8(0, 0, 0, 0);
+    Vertex[3].su = 0.0;
+    Vertex[3].sv = 0.0;
 
     -- 球の直下に存在するポリゴンの数だけ繰り返し
-    HitRes = HitResDim.Dim;
     for i = 1, HitResDim.HitNum do
-        HitRes = HitRes + 1
+        HitRes = HitResDim.Dim[i]
 
         -- ポリゴンの座標は地面ポリゴンの座標
-        Vertex[0].pos = HitRes.Position[0];
-        Vertex[1].pos = HitRes.Position[1];
-        Vertex[2].pos = HitRes.Position[2];
+        Vertex[1].pos = dx.VECTOR(HitRes.Position[1]);
+        Vertex[2].pos = dx.VECTOR(HitRes.Position[2]);
+        Vertex[3].pos = dx.VECTOR(HitRes.Position[3]);
 
         -- ちょっと持ち上げて重ならないようにする
         SlideVec = dx.VScale(HitRes.Normal, 0.5);
-        Vertex[0].pos = dx.VAdd(Vertex[0].pos, SlideVec);
         Vertex[1].pos = dx.VAdd(Vertex[1].pos, SlideVec);
         Vertex[2].pos = dx.VAdd(Vertex[2].pos, SlideVec);
+        Vertex[3].pos = dx.VAdd(Vertex[3].pos, SlideVec);
 
         -- ポリゴンの不透明度を設定する
-        Vertex[0].dif.a = 0;
         Vertex[1].dif.a = 0;
         Vertex[2].dif.a = 0;
-        if (HitRes.Position[0].y > pl.Position.y - PLAYER_SHADOW_HEIGHT) then
-            Vertex[0].dif.a = 128 * (1.0 - math.abs(HitRes.Position[0].y - pl.Position.y) / PLAYER_SHADOW_HEIGHT);
-        end
-
+        Vertex[3].dif.a = 0;
         if (HitRes.Position[1].y > pl.Position.y - PLAYER_SHADOW_HEIGHT) then
             Vertex[1].dif.a = 128 * (1.0 - math.abs(HitRes.Position[1].y - pl.Position.y) / PLAYER_SHADOW_HEIGHT);
         end
@@ -874,13 +879,17 @@ function Player_ShadowRender()
             Vertex[2].dif.a = 128 * (1.0 - math.abs(HitRes.Position[2].y - pl.Position.y) / PLAYER_SHADOW_HEIGHT);
         end
 
+        if (HitRes.Position[3].y > pl.Position.y - PLAYER_SHADOW_HEIGHT) then
+            Vertex[3].dif.a = 128 * (1.0 - math.abs(HitRes.Position[3].y - pl.Position.y) / PLAYER_SHADOW_HEIGHT);
+        end
+
         -- ＵＶ値は地面ポリゴンとプレイヤーの相対座標から割り出す
-        Vertex[0].u = (HitRes.Position[0].x - pl.Position.x) / (PLAYER_SHADOW_SIZE * 2.0) + 0.5;
-        Vertex[0].v = (HitRes.Position[0].z - pl.Position.z) / (PLAYER_SHADOW_SIZE * 2.0) + 0.5;
         Vertex[1].u = (HitRes.Position[1].x - pl.Position.x) / (PLAYER_SHADOW_SIZE * 2.0) + 0.5;
         Vertex[1].v = (HitRes.Position[1].z - pl.Position.z) / (PLAYER_SHADOW_SIZE * 2.0) + 0.5;
         Vertex[2].u = (HitRes.Position[2].x - pl.Position.x) / (PLAYER_SHADOW_SIZE * 2.0) + 0.5;
         Vertex[2].v = (HitRes.Position[2].z - pl.Position.z) / (PLAYER_SHADOW_SIZE * 2.0) + 0.5;
+        Vertex[3].u = (HitRes.Position[3].x - pl.Position.x) / (PLAYER_SHADOW_SIZE * 2.0) + 0.5;
+        Vertex[3].v = (HitRes.Position[3].z - pl.Position.z) / (PLAYER_SHADOW_SIZE * 2.0) + 0.5;
 
         -- 影ポリゴンを描画
         dx.DrawPolygon3D(Vertex, 1, pl.ShadowHandle, true);

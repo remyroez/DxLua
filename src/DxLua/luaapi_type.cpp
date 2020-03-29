@@ -117,6 +117,94 @@ void port_type(sol::state_view &lua, sol::table &t) {
 		metatable["__call"] = [](sol::stack_object self, sol::variadic_args va) { return sol::table(self)["new"](va); };
 	}
 
+	// COLOR_U8
+	{
+		// 定義する型
+		using type = DxLib::COLOR_U8;
+
+		// ユーザー型定義
+		auto usertype = t.new_usertype<type>(
+			"COLOR_U8",
+			"b", &type::b,
+			"g", &type::g,
+			"r", &type::r,
+			"a", &type::a
+		);
+
+		// ユーザー型をテーブルとして取得
+		sol::table table = t["COLOR_U8"];
+
+		// メタテーブルの作成
+		sol::table metatable = table[sol::metatable_key] = lua.create_table();
+
+		// 専用の new 関数を用意
+		table["new"] = [](sol::object arg) {
+			type instance;
+			memset(&instance, 0, sizeof(instance));
+			if (!arg.is<sol::table>()) {
+				// テーブルではない
+
+			} else if (sol::table argt = arg.as<sol::table>()) {
+				if (argt[1].get_type() == sol::type::number) {
+					instance.b = argt[1].get_or<BYTE>(0);
+					instance.g = argt[2].get_or<BYTE>(0);
+					instance.r = argt[3].get_or<BYTE>(0);
+					instance.a = argt[4].get_or<BYTE>(0);
+
+				} else {
+					instance.b = argt["b"].get_or<BYTE>(0);
+					instance.g = argt["g"].get_or<BYTE>(0);
+					instance.r = argt["r"].get_or<BYTE>(0);
+					instance.a = argt["a"].get_or<BYTE>(0);
+				}
+			}
+			return instance;
+		};
+
+		// ユーザー型テーブルの呼び出しで new を呼ぶように対応
+		metatable["__call"] = [](sol::stack_object self, sol::variadic_args va) { return sol::table(self)["new"](va); };
+	}
+
+	// VERTEX3D
+	{
+		// 定義する型
+		using type = DxLib::VERTEX3D;
+
+		// ユーザー型定義
+		auto usertype = t.new_usertype<type>(
+			"VERTEX3D",
+			"pos", &type::pos,
+			"norm", &type::norm,
+			"dif", &type::dif,
+			"spc", &type::spc,
+			"u", &type::u,
+			"v", &type::v,
+			"su", &type::su,
+			"sv", &type::sv
+		);
+
+		// ユーザー型をテーブルとして取得
+		sol::table table = t["VERTEX3D"];
+
+		// メタテーブルの作成
+		sol::table metatable = table[sol::metatable_key] = lua.create_table();
+
+		// 専用の new 関数を用意
+		table["new"] = [](sol::object arg) {
+			type instance;
+			memset(&instance, 0, sizeof(instance));
+			if (!arg.is<sol::table>()) {
+				// テーブルではない
+
+			} else if (sol::table argt = arg.as<sol::table>()) {
+			}
+			return instance;
+		};
+
+		// ユーザー型テーブルの呼び出しで new を呼ぶように対応
+		metatable["__call"] = [](sol::stack_object self, sol::variadic_args va) { return sol::table(self)["new"](va); };
+	}
+
 	// MV1_COLL_RESULT_POLY
 	{
 		// 定義する型

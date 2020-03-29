@@ -11,4 +11,5 @@ target_sources(DxLua PRIVATE
     luaapi_input.cpp
     luaapi_draw.cpp
     luaapi_model.cpp
+    luaapi_math.cpp
 )

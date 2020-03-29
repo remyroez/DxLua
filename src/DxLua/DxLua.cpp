@@ -147,6 +147,7 @@ end)lua"
 	detail::port_input(lua, library);
 	detail::port_draw(lua, library);
 	detail::port_model(lua, library);
+	detail::port_math(lua, library);
 
 	// 以下、ポーティング
 
@@ -167,18 +168,6 @@ end)lua"
 
 	DXLUA_PORT(library, GetRand);
 	DXLUA_PORT(library, SRand);
-
-	DXLUA_PORT(library, VGet);
-	DXLUA_PORT(library, VAdd);
-	DXLUA_PORT(library, VSub);
-	DXLUA_PORT(library, VDot);
-	DXLUA_PORT(library, VCross);
-	DXLUA_PORT(library, VScale);
-	DXLUA_PORT(library, VNorm);
-	DXLUA_PORT(library, VSize);
-	DXLUA_PORT(library, VSquareSize);
-	DXLUA_PORT(library, VCos);
-	DXLUA_PORT(library, VRad);
 
 	DXLUA_PORT(library, SetCameraPositionAndTarget_UpVecY);
 
@@ -210,6 +199,7 @@ end)lua"
 		return Result;
 	};
 	DXLUA_PORT(library, GetColor);
+	DXLUA_PORT(library, GetColorU8);
 
 	library["GetCharBytes"] = [](int CharCodeFormat, const char *String) {
 		return GetCharBytes(CharCodeFormat, String);
