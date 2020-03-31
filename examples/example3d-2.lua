@@ -113,7 +113,7 @@ function dx.Update()
     Input_Process()
 
     -- プレイヤーの処理
-    Player_Process()
+    --Player_Process()
 
     -- カメラの処理
     Camera_Process()
@@ -195,9 +195,9 @@ end
 
 -- プレイヤーの処理
 function Player_Process()
-    local UpMoveVec = dx.VECTOR{}		-- 方向ボタン「↑」を入力をしたときのプレイヤーの移動方向ベクトル
-    local LeftMoveVec = dx.VECTOR{}		-- 方向ボタン「←」を入力をしたときのプレイヤーの移動方向ベクトル
-    local MoveVec = dx.VECTOR{}		-- このフレームの移動ベクトル
+    local UpMoveVec		-- 方向ボタン「↑」を入力をしたときのプレイヤーの移動方向ベクトル
+    local LeftMoveVec		-- 方向ボタン「←」を入力をしたときのプレイヤーの移動方向ベクトル
+    local MoveVec		-- このフレームの移動ベクトル
     local MoveFlag			-- 移動したかどうかのフラグ( 1:移動した  0:移動していない )
 
     -- ルートフレームのＺ軸方向の移動パラメータを無効にする
@@ -238,7 +238,7 @@ function Player_Process()
     MoveFlag = 0
 
     -- パッドの３ボタンと左シフトがどちらも押されていなかったらプレイヤーの移動処理
-    if dx.CheckHitKey(dx.KEY_INPUT_LSHIFT) == 0 and (bit.band(inp.NowInput, dx.PAD_INPUT_C) ~= 0) == 0 then
+    if dx.CheckHitKey(dx.KEY_INPUT_LSHIFT) == 0 and bit.band(inp.NowInput, dx.PAD_INPUT_C) == 0 then
         -- 方向ボタン「←」が入力されたらカメラの見ている方向から見て左方向に移動する
         if bit.band(inp.NowInput, dx.PAD_INPUT_LEFT) ~= 0 then
             -- 移動ベクトルに「←」が入力された時の移動ベクトルを加算する
@@ -932,7 +932,7 @@ end
 -- カメラの処理
 function Camera_Process()
     -- パッドの３ボタンか、シフトキーが押されている場合のみ角度変更操作を行う
-    if dx.CheckHitKey(dx.KEY_INPUT_LSHIFT) or (bit.band(inp.NowInput, dx.PAD_INPUT_C) ~= 0) then
+    if (dx.CheckHitKey(dx.KEY_INPUT_LSHIFT) ~= 0) or (bit.band(inp.NowInput, dx.PAD_INPUT_C) ~= 0) then
         -- 「←」ボタンが押されていたら水平角度をマイナスする
         if bit.band(inp.NowInput, dx.PAD_INPUT_LEFT) ~= 0 then
             cam.AngleH = cam.AngleH - CAMERA_ANGLE_SPEED
