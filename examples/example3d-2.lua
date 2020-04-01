@@ -113,7 +113,7 @@ function dx.Update()
     Input_Process()
 
     -- プレイヤーの処理
-    --Player_Process()
+    Player_Process()
 
     -- カメラの処理
     Camera_Process()
@@ -202,7 +202,7 @@ function Player_Process()
 
     -- ルートフレームのＺ軸方向の移動パラメータを無効にする
     do
-        local LocalMatrix = dx.MATRIX{}
+        local LocalMatrix
 
         -- ユーザー行列を解除する
         dx.MV1ResetFrameUserLocalMatrix(pl.ModelHandle, 2)
@@ -211,7 +211,7 @@ function Player_Process()
         LocalMatrix = dx.MV1GetFrameLocalMatrix(pl.ModelHandle, 2)
 
         -- Ｚ軸方向の平行移動成分を無効にする
-        LocalMatrix.m[3][2] = 0.0
+        LocalMatrix.m[4][3] = 0.0
 
         -- ユーザー行列として平行移動成分を無効にした行列をルートフレームにセットする
         dx.MV1SetFrameUserLocalMatrix(pl.ModelHandle, 2, LocalMatrix)
@@ -289,7 +289,7 @@ function Player_Process()
     end
 
     -- 移動ボタンが押されたかどうかで処理を分岐
-    if MoveFlag then
+    if MoveFlag ~= 0 then
         -- 移動ベクトルを正規化したものをプレイヤーが向くべき方向として保存
         pl.TargetMoveDirection = dx.VNorm(MoveVec)
 
@@ -653,7 +653,7 @@ function Player_Move(MoveVector)
                 -- もしジャンプ中だった場合は着地状態にする
                 if pl.State == 2 then
                     -- 移動していたかどうかで着地後の状態と再生するアニメーションを分岐する
-                    if MoveFlag then
+                    if MoveFlag ~= 0 then
                         -- 移動している場合は走り状態に
                         Player_PlayAnim(1)
                         pl.State = 1
