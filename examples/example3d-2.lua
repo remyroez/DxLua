@@ -434,7 +434,7 @@ function Player_Move(MoveVector)
 
                     -- 壁に当たったら壁に遮られない移動成分分だけ移動する
                     do
-                        local SlideVec = dx.VECTOR{}	-- プレイヤーをスライドさせるベクトル
+                        local SlideVec	-- プレイヤーをスライドさせるベクトル
 
                         -- 進行方向ベクトルと壁ポリゴンの法線ベクトルに垂直なベクトルを算出
                         SlideVec = dx.VCross(MoveVector, Poly.Normal)
@@ -448,7 +448,7 @@ function Player_Move(MoveVector)
                     end
 
                     -- 新たな移動座標で壁ポリゴンと当たっていないかどうかを判定する
-                    local jndex = KabeNum
+                    local jndex = -1
                     for j = 1, KabeNum do
                         -- j番目の壁ポリゴンのアドレスを壁ポリゴンポインタ配列から取得
                         Poly = Kabe[j]
@@ -467,7 +467,7 @@ function Player_Move(MoveVector)
 
                     -- j が KabeNum だった場合はどのポリゴンとも当たらなかったということなので
                     -- 壁に当たったフラグを倒した上でループから抜ける
-                    if jndex == KabeNum then
+                    if jndex == -1 then
                         HitFlag = 0
                         break
                     end
@@ -499,7 +499,7 @@ function Player_Move(MoveVector)
             -- 壁からの押し出し処理を試みる最大数だけ繰り返し
             for k = 1, PLAYER_HIT_TRYNUM do
                 -- 壁ポリゴンの数だけ繰り返し
-                local index = KabeNum
+                local index = -1
                 for i = 1, KabeNum do
                     -- i番目の壁ポリゴンのアドレスを壁ポリゴンポインタ配列から取得
                     Poly = Kabe[i]
@@ -515,7 +515,7 @@ function Player_Move(MoveVector)
                         NowPos = dx.VAdd(NowPos, dx.VScale(Poly.Normal, PLAYER_HIT_SLIDE_LENGTH))
 
                         -- 移動した上で壁ポリゴンと接触しているかどうかを判定
-                        local jndex = KabeNum
+                        local jndex = -1
                         for j = 1, KabeNum do
                             -- 当たっていたらループを抜ける
                             Poly = Kabe[j]
@@ -529,7 +529,7 @@ function Player_Move(MoveVector)
                         end
 
                         -- 全てのポリゴンと当たっていなかったらここでループ終了
-                        if jndex == KabeNum then
+                        if jndex == -1 then
                             index = i
                             break
                         end
@@ -537,7 +537,7 @@ function Player_Move(MoveVector)
                 end
 
                 -- i が KabeNum ではない場合は全部のポリゴンで押し出しを試みる前に全ての壁ポリゴンと接触しなくなったということなのでループから抜ける
-                if index ~= KabeNum then
+                if index ~= -1 then
                     break
                 end
             end

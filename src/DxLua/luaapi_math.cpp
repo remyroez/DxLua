@@ -142,6 +142,7 @@ void port_math(sol::state_view &lua, sol::table &t) {
 	//extern	double		Plane_Point_MinLengthD(VECTOR_D PlanePos, VECTOR_D PlaneNormal, VECTOR_D PointPos);																						// 平面と点の一番近い距離を得る
 
 	//extern	HITRESULT_LINE   HitCheck_Line_Triangle(VECTOR   LinePos1, VECTOR   LinePos2, VECTOR   TrianglePos1, VECTOR   TrianglePos2, VECTOR   TrianglePos3);										// 三角形と線の当たり判定
+	DXLUA_PORT(t, HitCheck_Line_Triangle);
 	//extern	HITRESULT_LINE_D HitCheck_Line_TriangleD(VECTOR_D LinePos1, VECTOR_D LinePos2, VECTOR_D TrianglePos1, VECTOR_D TrianglePos2, VECTOR_D TrianglePos3);										// 三角形と線の当たり判定
 	//extern	int			HitCheck_Triangle_Triangle(VECTOR   Triangle1Pos1, VECTOR   Triangle1Pos2, VECTOR   Triangle1Pos3, VECTOR   Triangle2Pos1, VECTOR   Triangle2Pos2, VECTOR   Triangle2Pos3);	// 三角形と三角形の当たり判定( TRUE:当たっている  FALSE:当たっていない )
 	//extern	int			HitCheck_Triangle_TriangleD(VECTOR_D Triangle1Pos1, VECTOR_D Triangle1Pos2, VECTOR_D Triangle1Pos3, VECTOR_D Triangle2Pos1, VECTOR_D Triangle2Pos2, VECTOR_D Triangle2Pos3);	// 三角形と三角形の当たり判定( TRUE:当たっている  FALSE:当たっていない )
@@ -161,7 +162,16 @@ void port_math(sol::state_view &lua, sol::table &t) {
 	//extern	int			HitCheck_Sphere_TriangleD(VECTOR_D SphereCenterPos, double SphereR, VECTOR_D TrianglePos1, VECTOR_D TrianglePos2, VECTOR_D TrianglePos3);									// 球と三角形の当たり判定( TRUE:当たっている  FALSE:当たっていない )
 	//extern	int			HitCheck_Capsule_Capsule(VECTOR   Cap1Pos1, VECTOR   Cap1Pos2, float  Cap1R, VECTOR   Cap2Pos1, VECTOR   Cap2Pos2, float  Cap2R);											// カプセル同士の当たり判定( TRUE:当たっている  FALSE:当たっていない )
 	//extern	int			HitCheck_Capsule_CapsuleD(VECTOR_D Cap1Pos1, VECTOR_D Cap1Pos2, double Cap1R, VECTOR_D Cap2Pos1, VECTOR_D Cap2Pos2, double Cap2R);											// カプセル同士の当たり判定( TRUE:当たっている  FALSE:当たっていない )
-	DXLUA_PORT(t, HitCheck_Capsule_Triangle);
+	//DXLUA_PORT(t, HitCheck_Capsule_Triangle);
+	t["HitCheck_Capsule_Triangle"] = [](sol::variadic_args va) {
+		auto CapPos1 = va_get(va, 0, VECTOR{ 0, 0, 0 });
+		auto CapPos2 = va_get(va, 1, VECTOR{ 0, 0, 0 });
+		auto CapR = va_get(va, 2, 0.f);
+		auto TrianglePos1 = va_get(va, 3, VECTOR{ 0, 0, 0 });
+		auto TrianglePos2 = va_get(va, 4, VECTOR{ 0, 0, 0 });
+		auto TrianglePos3 = va_get(va, 5, VECTOR{ 0, 0, 0 });
+		return HitCheck_Capsule_Triangle(CapPos1, CapPos2, CapR, TrianglePos1, TrianglePos2, TrianglePos3);
+	};
 	//extern	int			HitCheck_Capsule_TriangleD(VECTOR_D CapPos1, VECTOR_D CapPos2, double CapR, VECTOR_D TrianglePos1, VECTOR_D TrianglePos2, VECTOR_D TrianglePos3);							// カプセルと三角形の当たり判定( TRUE:当たっている  FALSE:当たっていない )
 
 	// その他

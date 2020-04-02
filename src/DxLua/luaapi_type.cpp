@@ -255,12 +255,26 @@ void port_type(sol::state_view &lua, sol::table &t) {
 		// ユーザー型定義
 		auto usertype = t.new_usertype<type>(
 			"MV1_COLL_RESULT_POLY_DIM",
-			"HitNum", sol::property([](type &self) { return self.HitNum; }),
+			"HitNum", sol::readonly(&type::HitNum),
 			"Dim", sol::property([](type &self) {
-				std::vector<DxLib::MV1_COLL_RESULT_POLY> dim(self.HitNum);
-				memcpy(dim.data(), self.Dim, self.HitNum);
-				return dim;
-			})
+				return std::ref(self);
+			}),
+			sol::meta_function::index, [](const type &self, sol::stack_object key, sol::this_state L) {
+				int index = 1;
+				if (auto maybe_numeric_key = key.as<sol::optional<int>>()) {
+					index = *maybe_numeric_key;
+				}
+				if (index <= 0) {
+					index = 1;
+
+				} else if (index > self.HitNum) {
+					index = self.HitNum;
+				}
+				return std::ref(self.Dim[index - 1]);
+			},
+			sol::meta_function::length, [](const type &self) {
+				return self.HitNum;
+			}
 		);
 		
 		// ユーザー型をテーブルとして取得
