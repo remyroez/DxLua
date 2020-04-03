@@ -17,43 +17,283 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 #ifndef DX_NOTUSE_DRAWFUNCTION
 
 	// グラフィックハンドル作成関係関数
+	//extern	int			MakeGraph(int SizeX, int SizeY, int NotUse3DFlag = FALSE);							// 指定サイズのグラフィックハンドルを作成する
+	//extern	int			MakeScreen(int SizeX, int SizeY, int UseAlphaChannel = FALSE);						// SetDrawScreen で描画対象にできるグラフィックハンドルを作成する
+	//extern	int			DerivationGraph(int   SrcX, int   SrcY, int   Width, int   Height, int SrcGraphHandle);	// 指定のグラフィックハンドルの指定部分だけを抜き出して新たなグラフィックハンドルを作成する
+	//extern	int			DerivationGraphF(float SrcX, float SrcY, float Width, float Height, int SrcGraphHandle);	// 指定のグラフィックハンドルの指定部分だけを抜き出して新たなグラフィックハンドルを作成する( float版 )
+	library["DeleteGraph"] = [library](int GrHandle, sol::variadic_args va) {
+		int LogOutFlag = va_get(va, 0, false);
+		return DeleteGraph(GrHandle, LogOutFlag);
+	};
+	//extern	int			DeleteSharingGraph(int GrHandle);															// 指定のグラフィックハンドルと、同じグラフィックハンドルから派生しているグラフィックハンドル( DerivationGraph で派生したハンドル、LoadDivGraph 読み込んで作成された複数のハンドル )を一度に削除する
+	//extern	int			GetGraphNum(void);																	// 有効なグラフィックハンドルの数を取得する
+	//extern	int			FillGraph(int GrHandle, int Red, int Green, int Blue, int Alpha = 255);				// グラフィックハンドルを指定の色で塗りつぶす
+	//extern	int			FillRectGraph(int GrHandle, int x, int y, int Width, int Height, int Red, int Green, int Blue, int Alpha = 255);	// グラフィックハンドルの指定の範囲を指定の色で塗りつぶす
+	//extern	int			SetGraphLostFlag(int GrHandle, int *LostFlag);												// 指定のグラフィックハンドルが削除された際に 1 にする変数のアドレスを設定する
+	//extern	int			InitGraph(int LogOutFlag = FALSE);													// すべてのグラフィックハンドルを削除する
+	//extern	int			ReloadFileGraphAll(void);																	// ファイルから画像を読み込んだ全てのグラフィックハンドルについて、再度ファイルから画像を読み込む
 
 	// シャドウマップハンドル関係関数
+	//extern	int			MakeShadowMap(int SizeX, int SizeY);													// シャドウマップハンドルを作成する
+	//extern	int			DeleteShadowMap(int SmHandle);															// シャドウマップハンドルを削除する
+	//extern	int			SetShadowMapLightDirection(int SmHandle, VECTOR Direction);											// シャドウマップが想定するライトの方向を設定する
+	//extern	int			ShadowMap_DrawSetup(int SmHandle);															// シャドウマップへの描画の準備を行う
+	//extern	int			ShadowMap_DrawEnd(void);																	// シャドウマップへの描画を終了する
+	//extern	int			SetUseShadowMap(int SmSlotIndex, int SmHandle);											// 描画で使用するシャドウマップを指定する、有効なスロットは０～２、SmHandle に -1 を渡すと指定のスロットのシャドウマップを解除
+	//extern	int			SetShadowMapDrawArea(int SmHandle, VECTOR MinPosition, VECTOR MaxPosition);					// シャドウマップに描画する際の範囲を設定する( この関数で描画範囲を設定しない場合は視錐台を拡大した範囲が描画範囲となる )
+	//extern	int			ResetShadowMapDrawArea(int SmHandle);															// SetShadowMapDrawArea の設定を解除する
+	//extern	int			SetShadowMapAdjustDepth(int SmHandle, float Depth);												// シャドウマップを使用した描画時の補正深度を設定する
+	//extern	int			GetShadowMapViewProjectionMatrix(int SmHandle, MATRIX * MatrixBuffer);										// シャドウマップ作成時や適用時に使用するビュー行列と射影行列を乗算した行列を取得する
+	//extern	int			TestDrawShadowMap(int SmHandle, int x1, int y1, int x2, int y2);							// シャドウマップを画面にテスト描画する
 
 	// グラフィックハンドルへの画像転送関数
+	//extern	int			BltBmpToGraph(const COLORDATA * BmpColorData, HBITMAP RgbBmp, HBITMAP AlphaBmp, int CopyPointX, int CopyPointY, int  GrHandle);					// ＢＭＰの内容をグラフィックハンドルに転送
+	//extern	int			BltBmpToDivGraph(const COLORDATA * BmpColorData, HBITMAP RgbBmp, HBITMAP AlphaBmp, int AllNum, int XNum, int YNum, int Width, int Height, const int *GrHandle, int ReverseFlag);	// ＢＭＰの内容を分割作成したグラフィックハンドルたちに転送
+	//extern	int			BltBmpOrGraphImageToGraph(const COLORDATA * BmpColorData, HBITMAP RgbBmp, HBITMAP AlphaBmp, int BmpFlag, const BASEIMAGE * RgbBaseImage, const BASEIMAGE * AlphaBaseImage, int CopyPointX, int CopyPointY, int  GrHandle);					// ＢＭＰ か BASEIMAGE をグラフィックハンドルに転送
+	//extern	int			BltBmpOrGraphImageToGraph2(const COLORDATA * BmpColorData, HBITMAP RgbBmp, HBITMAP AlphaBmp, int BmpFlag, const BASEIMAGE * RgbBaseImage, const BASEIMAGE * AlphaBaseImage, const RECT * SrcRect, int DestX, int DestY, int  GrHandle);					// ＢＭＰ か BASEIMAGE の指定の領域をグラフィックハンドルに転送
+	//extern	int			BltBmpOrGraphImageToDivGraph(const COLORDATA * BmpColorData, HBITMAP RgbBmp, HBITMAP AlphaBmp, int BmpFlag, const BASEIMAGE * RgbBaseImage, const BASEIMAGE * AlphaBaseImage, int AllNum, int XNum, int YNum, int   Width, int   Height, const int *GrHandle, int ReverseFlag);	// ＢＭＰ か BASEIMAGE を分割作成したグラフィックハンドルたちに転送
+	//extern	int			BltBmpOrGraphImageToDivGraphF(const COLORDATA * BmpColorData, HBITMAP RgbBmp, HBITMAP AlphaBmp, int BmpFlag, const BASEIMAGE * RgbBaseImage, const BASEIMAGE * AlphaBaseImage, int AllNum, int XNum, int YNum, float Width, float Height, const int *GrHandle, int ReverseFlag);	// ＢＭＰ か BASEIMAGE を分割作成したグラフィックハンドルたちに転送( float型 )
 
 	// 画像からグラフィックハンドルを作成する関数
+	//extern	int			LoadBmpToGraph(const TCHAR * FileName, int TextureFlag, int ReverseFlag, int SurfaceMode = DX_MOVIESURFACE_NORMAL);										// 画像ファイルからグラフィックハンドルを作成する
+	//extern	int			LoadBmpToGraphWithStrLen(const TCHAR * FileName, size_t FileNameLength, int TextureFlag, int ReverseFlag, int SurfaceMode = DX_MOVIESURFACE_NORMAL);										// 画像ファイルからグラフィックハンドルを作成する
 	library["LoadGraph"] = [library](const TCHAR *FileName, sol::variadic_args va) {
-		return LoadGraph(DxLua::to_data_path(library, FileName).c_str(), va.leftover_count() > 0 ? va[0].as<bool>() : false);
+		int NotUse3DFlag = va_get(va, 0, false);
+		return LoadGraph(DxLua::to_data_path(library, FileName).c_str(), NotUse3DFlag);
 	};
+	//extern	int			LoadGraphWithStrLen(const TCHAR * FileName, size_t FileNameLength, int NotUse3DFlag = FALSE);																							// 画像ファイルからグラフィックハンドルを作成する
+	//extern	int			LoadReverseGraph(const TCHAR * FileName, int NotUse3DFlag = FALSE);																							// 画像ファイルを反転したものでグラフィックハンドルを作成する
+	//extern	int			LoadReverseGraphWithStrLen(const TCHAR * FileName, size_t FileNameLength, int NotUse3DFlag = FALSE);																							// 画像ファイルを反転したものでグラフィックハンドルを作成する
+	//extern	int			LoadDivGraph(const TCHAR * FileName, int AllNum, int XNum, int YNum, int   XSize, int   YSize, int *HandleArray, int NotUse3DFlag = FALSE);				// 画像ファイルを分割してグラフィックハンドルを作成する
+	//extern	int			LoadDivGraphWithStrLen(const TCHAR * FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int   XSize, int   YSize, int *HandleArray, int NotUse3DFlag = FALSE);				// 画像ファイルを分割してグラフィックハンドルを作成する
+	//extern	int			LoadDivGraphF(const TCHAR * FileName, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag = FALSE);				// 画像ファイルを分割してグラフィックハンドルを作成する
+	//extern	int			LoadDivGraphFWithStrLen(const TCHAR * FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag = FALSE);				// 画像ファイルを分割してグラフィックハンドルを作成する
+	//extern	int			LoadDivBmpToGraph(const TCHAR * FileName, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, int *HandleArray, int TextureFlag, int ReverseFlag);		// 画像ファイルを分割してグラフィックハンドルを作成する
+	//extern	int			LoadDivBmpToGraphWithStrLen(const TCHAR * FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, int *HandleArray, int TextureFlag, int ReverseFlag);		// 画像ファイルを分割してグラフィックハンドルを作成する
+	//extern	int			LoadDivBmpToGraphF(const TCHAR * FileName, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray, int TextureFlag, int ReverseFlag);		// 画像ファイルを分割してグラフィックハンドルを作成する
+	//extern	int			LoadDivBmpToGraphFWithStrLen(const TCHAR * FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray, int TextureFlag, int ReverseFlag);		// 画像ファイルを分割してグラフィックハンドルを作成する
+	//extern	int			LoadReverseDivGraph(const TCHAR * FileName, int AllNum, int XNum, int YNum, int   XSize, int   YSize, int *HandleArray, int NotUse3DFlag = FALSE);				// 画像ファイルを反転したものを分割してグラフィックハンドルを作成する
+	//extern	int			LoadReverseDivGraphWithStrLen(const TCHAR * FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int   XSize, int   YSize, int *HandleArray, int NotUse3DFlag = FALSE);				// 画像ファイルを反転したものを分割してグラフィックハンドルを作成する
+	//extern	int			LoadReverseDivGraphF(const TCHAR * FileName, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag = FALSE);				// 画像ファイルを反転したものを分割してグラフィックハンドルを作成する
+	//extern	int			LoadReverseDivGraphFWithStrLen(const TCHAR * FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag = FALSE);				// 画像ファイルを反転したものを分割してグラフィックハンドルを作成する
+	//extern	int			LoadBlendGraph(const TCHAR * FileName);																																			// 画像ファイルからブレンド用グラフィックハンドルを作成する
+	//extern	int			LoadBlendGraphWithStrLen(const TCHAR * FileName, size_t FileNameLength);																													// 画像ファイルからブレンド用グラフィックハンドルを作成する
+
+	//extern	int			CreateGraphFromMem(const void *RGBFileImage, int RGBFileImageSize, const void *AlphaFileImage = NULL, int AlphaFileImageSize = 0, int TextureFlag = TRUE, int ReverseFlag = FALSE);																			// メモリ上の画像イメージからグラフィックハンドルを作成する
+	//extern	int			ReCreateGraphFromMem(const void *RGBFileImage, int RGBFileImageSize, int GrHandle, const void *AlphaFileImage = NULL, int AlphaFileImageSize = 0, int TextureFlag = TRUE, int ReverseFlag = FALSE);																			// メモリ上の画像イメージから既存のグラフィックハンドルにデータを転送する
+	//extern	int			CreateDivGraphFromMem(const void *RGBFileImage, int RGBFileImageSize, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE, const void *AlphaFileImage = NULL, int AlphaFileImageSize = 0);			// メモリ上の画像イメージから分割グラフィックハンドルを作成する
+	//extern	int			CreateDivGraphFFromMem(const void *RGBFileImage, int RGBFileImageSize, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE, const void *AlphaFileImage = NULL, int AlphaFileImageSize = 0);			// メモリ上の画像イメージから分割グラフィックハンドルを作成する( float版 )
+	//extern	int			ReCreateDivGraphFromMem(const void *RGBFileImage, int RGBFileImageSize, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, const int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE, const void *AlphaFileImage = NULL, int AlphaFileImageSize = 0);			// メモリ上の画像イメージから既存の分割グラフィックハンドルにデータを転送する
+	//extern	int			ReCreateDivGraphFFromMem(const void *RGBFileImage, int RGBFileImageSize, int AllNum, int XNum, int YNum, float SizeX, float SizeY, const int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE, const void *AlphaFileImage = NULL, int AlphaFileImageSize = 0);			// メモリ上の画像イメージから既存の分割グラフィックハンドルにデータを転送する( float版 )
+	//extern	int			CreateGraphFromBmp(const BITMAPINFO * RGBBmpInfo, const void *RGBBmpImage, const BITMAPINFO * AlphaBmpInfo = NULL, const void *AlphaBmpImage = NULL, int TextureFlag = TRUE, int ReverseFlag = FALSE);																			// ビットマップデータからグラフィックハンドルを作成する
+	//extern	int			ReCreateGraphFromBmp(const BITMAPINFO * RGBBmpInfo, const void *RGBBmpImage, int GrHandle, const BITMAPINFO * AlphaBmpInfo = NULL, const void *AlphaBmpImage = NULL, int TextureFlag = TRUE, int ReverseFlag = FALSE);																			// ビットマップデータから既存のグラフィックハンドルにデータを転送する
+	//extern	int			CreateDivGraphFromBmp(const BITMAPINFO * RGBBmpInfo, const void *RGBBmpImage, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE, const BITMAPINFO * AlphaBmpInfo = NULL, const void *AlphaBmpImage = NULL);	// ビットマップデータから分割グラフィックハンドルを作成する
+	//extern	int			CreateDivGraphFFromBmp(const BITMAPINFO * RGBBmpInfo, const void *RGBBmpImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE, const BITMAPINFO * AlphaBmpInfo = NULL, const void *AlphaBmpImage = NULL);	// ビットマップデータから分割グラフィックハンドルを作成する( float版 )
+	//extern	int			ReCreateDivGraphFromBmp(const BITMAPINFO * RGBBmpInfo, const void *RGBBmpImage, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, const int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE, const BITMAPINFO * AlphaBmpInfo = NULL, const void *AlphaBmpImage = NULL);	// ビットマップデータから既存の分割グラフィックハンドルにデータを転送する
+	//extern	int			ReCreateDivGraphFFromBmp(const BITMAPINFO * RGBBmpInfo, const void *RGBBmpImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, const int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE, const BITMAPINFO * AlphaBmpInfo = NULL, const void *AlphaBmpImage = NULL);	// ビットマップデータから既存の分割グラフィックハンドルにデータを転送する( float版 )
+	//extern	int			CreateDXGraph(const BASEIMAGE * RgbBaseImage, const BASEIMAGE * AlphaBaseImage, int TextureFlag);																									// 基本イメージデータからサイズを割り出し、それに合ったグラフィックハンドルを作成する
+	//extern	int			CreateGraphFromGraphImage(const BASEIMAGE * RgbBaseImage, int TextureFlag = TRUE, int ReverseFlag = FALSE);																// 基本イメージデータからグラフィックハンドルを作成する
+	//extern	int			CreateGraphFromGraphImage(const BASEIMAGE * RgbBaseImage, const BASEIMAGE * AlphaBaseImage, int TextureFlag = TRUE, int ReverseFlag = FALSE);																// 基本イメージデータからグラフィックハンドルを作成する
+	//extern	int			ReCreateGraphFromGraphImage(const BASEIMAGE * RgbBaseImage, int GrHandle, int TextureFlag = TRUE, int ReverseFlag = FALSE);																// 基本イメージデータから既存のグラフィックハンドルにデータを転送する
+	//extern	int			ReCreateGraphFromGraphImage(const BASEIMAGE * RgbBaseImage, const BASEIMAGE * AlphaBaseImage, int GrHandle, int TextureFlag = TRUE, int ReverseFlag = FALSE);																// 基本イメージデータから既存のグラフィックハンドルにデータを転送する
+	//extern	int			CreateDivGraphFromGraphImage(BASEIMAGE * RgbBaseImage, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE);																// 基本イメージデータから分割グラフィックハンドルを作成する
+	//extern	int			CreateDivGraphFFromGraphImage(BASEIMAGE * RgbBaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE);																// 基本イメージデータから分割グラフィックハンドルを作成する( float版 )
+	//extern	int			CreateDivGraphFromGraphImage(BASEIMAGE * RgbBaseImage, const BASEIMAGE * AlphaBaseImage, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE);																// 基本イメージデータから分割グラフィックハンドルを作成する
+	//extern	int			CreateDivGraphFFromGraphImage(BASEIMAGE * RgbBaseImage, const BASEIMAGE * AlphaBaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE);																// 基本イメージデータから分割グラフィックハンドルを作成する( float版 )
+	//extern	int			ReCreateDivGraphFromGraphImage(BASEIMAGE * RgbBaseImage, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, const int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE);																// 基本イメージデータから既存の分割グラフィックハンドルにデータを転送する
+	//extern	int			ReCreateDivGraphFFromGraphImage(BASEIMAGE * RgbBaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, const int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE);																// 基本イメージデータから既存の分割グラフィックハンドルにデータを転送する( float版 )
+	//extern	int			ReCreateDivGraphFromGraphImage(BASEIMAGE * RgbBaseImage, const BASEIMAGE * AlphaBaseImage, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, const int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE);																// 基本イメージデータから既存の分割グラフィックハンドルにデータを転送する
+	//extern	int			ReCreateDivGraphFFromGraphImage(BASEIMAGE * RgbBaseImage, const BASEIMAGE * AlphaBaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, const int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE);																// 基本イメージデータから既存の分割グラフィックハンドルにデータを転送する( float版 )
+	//extern	int			CreateGraph(int Width, int Height, int Pitch, const void *RGBImage, const void *AlphaImage = NULL, int GrHandle = -1);																																						// メモリ上のビットマップイメージからグラフィックハンドルを作成する
+	//extern	int			CreateDivGraph(int Width, int Height, int Pitch, const void *RGBImage, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, int *HandleArray, const void *AlphaImage = NULL);																								// メモリ上のビットマップイメージから分割グラフィックハンドルを作成する
+	//extern	int			CreateDivGraphF(int Width, int Height, int Pitch, const void *RGBImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray, const void *AlphaImage = NULL);																								// メモリ上のビットマップイメージから分割グラフィックハンドルを作成する( float版 )
+	//extern	int			ReCreateGraph(int Width, int Height, int Pitch, const void *RGBImage, int GrHandle, const void *AlphaImage = NULL);																																								// メモリ上のビットマップイメージからグラフィックハンドルを再作成する
+#ifndef DX_NON_SOFTIMAGE
+	//extern	int			CreateBlendGraphFromSoftImage(int SIHandle);																														// ソフトウエアで扱うイメージからブレンド用画像グラフィックハンドルを作成する( -1:エラー  -1以外:ブレンド用グラフィックハンドル )
+	//extern	int			CreateGraphFromSoftImage(int SIHandle);																														// ソフトウエアで扱うイメージからグラフィックハンドルを作成する( -1:エラー  -1以外:グラフィックハンドル )
+	//extern	int			CreateGraphFromRectSoftImage(int SIHandle, int x, int y, int SizeX, int SizeY);																					// ソフトウエアで扱うイメージの指定の領域を使ってグラフィックハンドルを作成する( -1:エラー  -1以外:グラフィックハンドル )
+	//extern	int			ReCreateGraphFromSoftImage(int SIHandle, int GrHandle);																											// ソフトウエアで扱うイメージから既存のグラフィックハンドルに画像データを転送する
+	//extern	int			ReCreateGraphFromRectSoftImage(int SIHandle, int x, int y, int SizeX, int SizeY, int GrHandle);																		// ソフトウエアで扱うイメージから既存のグラフィックハンドルに画像データを転送する
+	//extern	int			CreateDivGraphFromSoftImage(int SIHandle, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, int *HandleArray);											// ソフトウエアで扱うイメージから分割グラフィックハンドルを作成する
+	//extern	int			CreateDivGraphFFromSoftImage(int SIHandle, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray);											// ソフトウエアで扱うイメージから分割グラフィックハンドルを作成する( float版 )
+	//extern	int			ReCreateDivGraphFromSoftImage(int SIHandle, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, const int *HandleArray);										// ソフトウエアで扱うイメージから既存の分割グラフィックハンドルにデータを転送する
+	//extern	int			ReCreateDivGraphFFromSoftImage(int SIHandle, int AllNum, int XNum, int YNum, float SizeX, float SizeY, const int *HandleArray);										// ソフトウエアで扱うイメージから既存の分割グラフィックハンドルにデータを転送する( float版 )
+#endif // DX_NON_SOFTIMAGE
+	//extern	int			CreateGraphFromBaseImage(const BASEIMAGE * BaseImage);																											// 基本イメージデータからグラフィックハンドルを作成する
+	//extern	int			CreateGraphFromRectBaseImage(const BASEIMAGE * BaseImage, int x, int y, int SizeX, int SizeY);																		// 基本イメージデータの指定の領域を使ってグラフィックハンドルを作成する
+	//extern	int			ReCreateGraphFromBaseImage(const BASEIMAGE * BaseImage, int GrHandle);														// 基本イメージデータから既存のグラフィックハンドルに画像データを転送する
+	//extern	int			ReCreateGraphFromRectBaseImage(const BASEIMAGE * BaseImage, int x, int y, int SizeX, int SizeY, int GrHandle);														// 基本イメージデータの指定の領域を使って既存のグラフィックハンドルに画像データを転送する
+	//extern	int			CreateDivGraphFromBaseImage(BASEIMAGE * BaseImage, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, int *HandleArray);								// 基本イメージデータから分割グラフィックハンドルを作成する
+	//extern	int			CreateDivGraphFFromBaseImage(BASEIMAGE * BaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray);								// 基本イメージデータから分割グラフィックハンドルを作成する( float版 )
+	//extern	int			ReCreateDivGraphFromBaseImage(BASEIMAGE * BaseImage, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, const int *HandleArray);						// 基本イメージデータから既存の分割グラフィックハンドルにデータを転送する
+	//extern	int			ReCreateDivGraphFFromBaseImage(BASEIMAGE * BaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, const int *HandleArray);						// 基本イメージデータから既存の分割グラフィックハンドルにデータを転送する( float版 )
+	//extern	int			ReloadGraph(const TCHAR * FileName, int GrHandle, int ReverseFlag = FALSE);																		// 画像ファイルからグラフィックハンドルへ画像データを転送する
+	//extern	int			ReloadGraphWithStrLen(const TCHAR * FileName, size_t FileNameLength, int GrHandle, int ReverseFlag = FALSE);																		// 画像ファイルからグラフィックハンドルへ画像データを転送する
+	//extern	int			ReloadDivGraph(const TCHAR * FileName, int AllNum, int XNum, int YNum, int   XSize, int   YSize, const int *HandleArray, int ReverseFlag = FALSE);	// 画像ファイルからグラフィックハンドルたちへ画像データを分割転送する
+	//extern	int			ReloadDivGraphWithStrLen(const TCHAR * FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int   XSize, int   YSize, const int *HandleArray, int ReverseFlag = FALSE);	// 画像ファイルからグラフィックハンドルたちへ画像データを分割転送する
+	//extern	int			ReloadDivGraphF(const TCHAR * FileName, int AllNum, int XNum, int YNum, float XSize, float YSize, const int *HandleArray, int ReverseFlag = FALSE);	// 画像ファイルからグラフィックハンドルたちへ画像データを分割転送する( float版 )
+	//extern	int			ReloadDivGraphFWithStrLen(const TCHAR * FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, float XSize, float YSize, const int *HandleArray, int ReverseFlag = FALSE);	// 画像ファイルからグラフィックハンドルたちへ画像データを分割転送する( float版 )
+	//extern	int			ReloadReverseGraph(const TCHAR * FileName, int GrHandle);																			// ReloadGraph の画像反転処理追加版
+	//extern	int			ReloadReverseGraphWithStrLen(const TCHAR * FileName, size_t FileNameLength, int GrHandle);																			// ReloadGraph の画像反転処理追加版
+	//extern	int			ReloadReverseDivGraph(const TCHAR * FileName, int AllNum, int XNum, int YNum, int   XSize, int   YSize, const int *HandleArray);		// ReloadDivGraph の画像反転処理追加版
+	//extern	int			ReloadReverseDivGraphWithStrLen(const TCHAR * FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int   XSize, int   YSize, const int *HandleArray);		// ReloadDivGraph の画像反転処理追加版
+	//extern	int			ReloadReverseDivGraphF(const TCHAR * FileName, int AllNum, int XNum, int YNum, float XSize, float YSize, const int *HandleArray);		// ReloadDivGraph の画像反転処理追加版( float版 )
+	//extern	int			ReloadReverseDivGraphFWithStrLen(const TCHAR * FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, float XSize, float YSize, const int *HandleArray);		// ReloadDivGraph の画像反転処理追加版( float版 )
 
 	// グラフィックハンドル作成時設定係関数
+	//extern	int			SetGraphColorBitDepth(int ColorBitDepth);							// SetCreateGraphColorBitDepth の旧名称
+	//extern 	int			GetGraphColorBitDepth(void);										// GetCreateGraphColorBitDepth の旧名称
+	//extern	int			SetCreateGraphColorBitDepth(int BitDepth);								// 作成するグラフィックハンドルの色深度を設定する
+	//extern	int			GetCreateGraphColorBitDepth(void);										// 作成するグラフィックハンドルの色深度を取得する
+	//extern	int			SetCreateGraphChannelBitDepth(int BitDepth);								// 作成するグラフィックハンドルの１チャンネル辺りのビット深度を設定する
+	//extern	int			GetCreateGraphChannelBitDepth(void);										// 作成するグラフィックハンドルの１チャンネル辺りのビット深度を取得する
+	//extern	int			SetDrawValidGraphCreateFlag(int Flag);									// SetDrawScreen に引数として渡せる( 描画対象として使用できる )グラフィックハンドルを作成するかどうかを設定する( TRUE:描画可能グラフィックハンドルを作成する  FLASE:通常のグラフィックハンドルを作成する( デフォルト ) )
+	//extern	int			GetDrawValidGraphCreateFlag(void);										// SetDrawScreen に引数として渡せる( 描画対象として使用できる )グラフィックハンドルを作成するかどうかを設定を取得する
+	//extern	int			SetDrawValidFlagOf3DGraph(int Flag);									// SetDrawValidGraphCreateFlag の旧名称
+	//extern	int			SetLeftUpColorIsTransColorFlag(int Flag);									// 画像ファイルからグラフィックハンドルを作成する際に画像左上の色を透過色として扱うかどうかを設定する( TRUE:透過色として扱う 　FALSE:透過色として扱わない( デフォルト ) )
+	//extern	int			SetUsePaletteGraphFlag(int Flag);									// 読み込む画像がパレット画像の場合、パレット画像として使用できる場合はパレット画像として使用するかどうかを設定する( TRUE:パレット画像として使用できる場合はパレット画像として使用する( デフォルト )  FALSE:パレット画像として使用できる場合もパレット画像としては使用しない( 通常タイプの画像に変換して使用する ) )
+	//extern	int			SetUseBlendGraphCreateFlag(int Flag);									// ブレンド処理用画像を作成するかどうか( 要は画像の赤成分をα成分として扱うかどうか )の設定を行う( TRUE:ブレンド画像として読み込む  FALSE:通常画像として読み込む( デフォルト ) )
+	//extern	int			GetUseBlendGraphCreateFlag(void);										// ブレンド処理用画像を作成するかどうか( 要は画像の赤成分をα成分として扱うかどうか )の設定を取得する
+	//extern	int			SetUseAlphaTestGraphCreateFlag(int Flag);									// アルファテストを使用するグラフィックハンドルを作成するかどうかを設定する( TRUE:アルファテストを使用する( デフォルト )  FALSE:アルファテストを使用しない )
+	//extern	int			GetUseAlphaTestGraphCreateFlag(void);										// アルファテストを使用するグラフィックハンドルを作成するかどうかを取得する
+	//extern	int			SetUseAlphaTestFlag(int Flag);									// SetUseAlphaTestGraphCreateFlag の旧名称
+	//extern	int			GetUseAlphaTestFlag(void);										// GetUseAlphaTestGraphCreateFlag の旧名称
+	//extern	int			SetCubeMapTextureCreateFlag(int Flag);									// キューブマップテクスチャを作成するかどうかのフラグを設定する
+	//extern	int			GetCubeMapTextureCreateFlag(void);										// キューブマップテクスチャを作成するかどうかのフラグを取得する
+	//extern	int			SetUseNoBlendModeParam(int Flag);									// SetDrawBlendMode 関数の第一引数に DX_BLENDMODE_NOBLEND を代入した際に、デフォルトでは第二引数は内部で２５５を指定したことになるが、その自動２５５化をしないかどうかを設定する( TRUE:しない(第二引数の値が使用される)   FALSE:する(第二引数の値は無視されて 255 が常に使用される)(デフォルト) )αチャンネル付き画像に対して描画を行う場合のみ意味がある関数
+	//extern	int			SetDrawValidAlphaChannelGraphCreateFlag(int Flag);									// SetDrawScreen の引数として渡せる( 描画対象として使用できる )αチャンネル付きグラフィックハンドルを作成するかどうかを設定する( SetDrawValidGraphCreateFlag 関数で描画対象として使用できるグラフィックハンドルを作成するように設定されていないと効果ありません )( TRUE:αチャンネル付き   FALSE:αチャンネルなし( デフォルト ) )
+	//extern	int			GetDrawValidAlphaChannelGraphCreateFlag(void);										// SetDrawScreen の引数として渡せる( 描画対象として使用できる )αチャンネル付きグラフィックハンドルを作成するかどうかを取得する
+	//extern	int			SetDrawValidFloatTypeGraphCreateFlag(int Flag);									// SetDrawScreen の引数として渡せる( 描画対象として使用できる )ピクセルフォーマットが浮動小数点型のグラフィックハンドルを作成するかどうかを設定する( SetDrawValidGraphCreateFlag 関数で描画対象として使用できるグラフィックハンドルを作成するように設定されていないと効果ありません )、グラフィックスデバイスが浮動小数点型のピクセルフォーマットに対応していない場合はグラフィックハンドルの作成に失敗する( TRUE:浮動小数点型　　FALSE:整数型( デフォルト ) )
+	//extern	int			GetDrawValidFloatTypeGraphCreateFlag(void);										// SetDrawScreen の引数として渡せる( 描画対象として使用できる )ピクセルフォーマットが浮動小数点型のグラフィックハンドルを作成するかどうかを取得する
+	//extern	int			SetDrawValidGraphCreateZBufferFlag(int Flag);									// SetDrawScreen の引数として渡せる( 描画対象として使用できる )グラフィックハンドルを作成する際に専用のＺバッファも作成するかどうかを設定する( TRUE:専用のＺバッファを作成する( デフォルト )  FALSE:専用のＺバッファは作成しない )
+	//extern	int			GetDrawValidGraphCreateZBufferFlag(void);										// SetDrawScreen の引数として渡せる( 描画対象として使用できる )グラフィックハンドルを作成する際に専用のＺバッファも作成するかどうかを取得する
+	//extern	int			SetCreateDrawValidGraphZBufferBitDepth(int BitDepth);								// SetDrawScreen の引数として渡せる( 描画対象として使用できる )グラフィックハンドルに適用するＺバッファのビット深度を設定する( BitDepth:ビット深度( 指定可能な値は 16, 24, 32 の何れか( SetDrawValidGraphCreateFlag 関数で描画対象として使用できるグラフィックハンドルを作成するように設定されていないと効果ありません )
+	//extern	int			GetCreateDrawValidGraphZBufferBitDepth(void);										// SetDrawScreen の引数として渡せる( 描画対象として使用できる )グラフィックハンドルに適用するＺバッファのビット深度を取得する
+	//extern	int			SetCreateDrawValidGraphMipLevels(int MipLevels);								// SetDrawScreen の引数として渡せる( 描画対象として使用できる )グラフィックハンドルに適用するMipMapのレベルを設定する
+	//extern	int			GetCreateDrawValidGraphMipLevels(void);										// SetDrawScreen の引数として渡せる( 描画対象として使用できる )グラフィックハンドルに適用するMipMapのレベルを取得する
+	//extern	int			SetCreateDrawValidGraphChannelNum(int ChannelNum);								// SetDrawScreen の引数として渡せる( 描画対象として使用できる )グラフィックハンドルに適用する色のチャンネル数を設定する( ChannelNum:チャンネル数( 指定可能な値は 1, 2, 4 の何れか( SetDrawValidGraphCreateFlag 関数で描画対象として使用できるグラフィックハンドルを作成するように設定されていないと効果ありません )
+	//extern	int			GetCreateDrawValidGraphChannelNum(void);										// SetDrawScreen の引数として渡せる( 描画対象として使用できる )グラフィックハンドルに適用する色のチャンネル数を取得する
+	//extern	int			SetCreateDrawValidGraphMultiSample(int Samples, int Quality);					// SetDrawScreen の引数として渡せる( 描画対象として使用できる )グラフィックハンドルに適用するマルチサンプリング( アンチエイリアシング )設定を行う( Samples:マルチサンプル処理に使用するドット数( 多いほど重くなります )  Quality:マルチサンプル処理の品質 )
+	//extern	int			SetDrawValidMultiSample(int Samples, int Quality);					// SetCreateDrawValidGraphMultiSample の旧名称
+	//extern	int			GetMultiSampleQuality(int Samples);									// 指定のマルチサンプル数で使用できる最大クオリティ値を取得する( 戻り値がマイナスの場合は引数のサンプル数が使用できないことを示します )
+	//extern	int			SetUseTransColor(int Flag);									// 透過色機能を使用するかどうかを設定する( TRUE:使用する( デフォルト )  FALSE:使用しない )
+	//extern	int			SetUseTransColorGraphCreateFlag(int Flag);									// 透過色機能を使用することを前提とした画像データの読み込み処理を行うかどうかを設定する( TRUE にすると SetDrawMode( DX_DRAWMODE_BILINEAR ); をした状態で DrawGraphF 等の浮動小数点型座標を受け取る関数で小数点以下の値を指定した場合に発生する描画結果の不自然を緩和する効果があります ( デフォルトは FALSE ) )
+	//extern 	int			SetUseGraphAlphaChannel(int Flag);									// SetUseAlphaChannelGraphCreateFlag の旧名称
+	//extern 	int			GetUseGraphAlphaChannel(void);										// GetUseAlphaChannelGraphCreateFlag の旧名称
+	//extern 	int			SetUseAlphaChannelGraphCreateFlag(int Flag);									// αチャンネル付きグラフィックハンドルを作成するかどうかを設定する( TRUE:αチャンネル付き   FALSE:αチャンネル無し )
+	//extern 	int			GetUseAlphaChannelGraphCreateFlag(void);										// αチャンネル付きグラフィックハンドルを作成するかどうかを取得する( TRUE:αチャンネル付き   FALSE:αチャンネル無し )
+	//extern	int			SetUseNotManageTextureFlag(int Flag);									// Direct3D の管理テクスチャ機能を使用するグラフィックハンドルを作成するかどうかを設定する( TRUE:管理機能を使用する( デフォルト )  FALSE:管理機能を使用しない )、管理機能を使用するとグラフィックスデバイスのＶＲＡＭ容量以上の画像を扱うことができる代わりにシステムメモリの使用量が増えます
+	//extern	int			GetUseNotManageTextureFlag(void);										// Direct3D の管理テクスチャ機能を使用するグラフィックハンドルを作成するかどうかを取得する
+	//extern	int			SetUsePlatformTextureFormat(int PlatformTextureFormat);					// 作成するグラフィックハンドルで使用する環境依存のテクスチャフォーマットを指定する( Direct3D9環境なら DX_TEXTUREFORMAT_DIRECT3D9_R8G8B8 など、0 を渡すと解除 )
+	//extern	int			GetUsePlatformTextureFormat(void);										// 作成するグラフィックハンドルで使用する環境依存のテクスチャフォーマットを取得する
+	//extern	int			SetTransColor(int Red, int Green, int Blue);				// 作成するグラフィックハンドルに適用する透過色を設定する( Red,Green,Blue:透過色を光の３原色で表したもの( 各色０～２５５ ) )
+	//extern	int			GetTransColor(int *Red, int *Green, int *Blue);				// 作成するグラフィックハンドルに適用する透過色を取得する
+	//extern	int			SetUseDivGraphFlag(int Flag);									// ２のｎ乗ではないサイズの画像を複数のテクスチャを使用してＶＲＡＭの無駄を省くかどうかを設定する( TRUE:複数のテクスチャを使用する   FALSE:なるべく一枚のテクスチャで済ます( デフォルト ) )、複数のテクスチャを使用する場合はＶＲＡＭ容量の節約ができる代わりに速度の低下やバイリニアフィルタリング描画時にテクスチャとテクスチャの境目が良く見るとわかる等の弊害があります
+	//extern	int			SetUseAlphaImageLoadFlag(int Flag);									// LoadGraph などの際にファイル名の末尾に _a が付いたアルファチャンネル用の画像ファイルを追加で読み込む処理を行うかどうかを設定する( TRUE:行う( デフォルト )  FALSE:行わない )
+	//extern	int			SetUseMaxTextureSize(int Size);									// 使用するテクスチャーの最大サイズを設定する( デフォルトではグラフィックスデバイスが対応している最大テクスチャーサイズ、引数に 0 を渡すとデフォルト設定になります )
+	//extern	int			SetUseGraphBaseDataBackup(int Flag);									// グラフィックハンドルを作成する際に使用した画像データのバックアップをして Direct3DDevice のデバイスロスト時に使用するかどうかを設定する( TRUE:バックアップをする( デフォルト )  FALSE:バックアップをしない )、バックアップをしないとメモリの節約になりますが、復帰に掛かる時間が長くなり、メモリ上のファイルイメージからグラフィックハンドルを作成した場合は自動復帰ができないなどの弊害があります
+	//extern	int			GetUseGraphBaseDataBackup(void);										// グラフィックハンドルを作成する際に使用した画像データのバックアップをして Direct3DDevice のデバイスロスト時に使用するかどうかを取得する
+	//extern	int			SetUseSystemMemGraphCreateFlag(int Flag);									// ( 現在効果なし )グラフィックハンドルが持つ画像データをシステムメモリ上に作成するかどうかを設定する( TRUE:システムメモリ上に作成  FALSE:ＶＲＡＭ上に作成( デフォルト ) )
+	//extern	int			GetUseSystemMemGraphCreateFlag(void);										// ( 現在効果なし )グラフィックハンドルが持つ画像データをシステムメモリ上に作成するかどうかを取得する
+
+	// 画像情報関係関数
+	//extern	const unsigned int *GetFullColorImage(int GrHandle);																// 指定のグラフィックハンドルのＡＲＧＢ８イメージを取得する( 現在動画ファイルをグラフィックハンドルで読み込んだ場合のみ使用可能 )
+
+	//extern	int			GraphLock(int GrHandle, int *PitchBuf, void **DataPointBuf, COLORDATA **ColorDataPP = NULL, int WriteOnly = FALSE);	// グラフィックメモリ領域のロック
+	//extern	int			GraphUnLock(int GrHandle);																							// グラフィックメモリ領域のロック解除
+
+	//extern	int			SetUseGraphZBuffer(int GrHandle, int UseFlag, int BitDepth = -1);										// グラフィックハンドル専用のＺバッファを持つかどうかを設定する( GrHandle:対象となるグラフィックハンドル( 描画対象として使用可能なグラフィックハンドルのみ有効 )  UseFlag:専用のＺバッファを持つかどうか( TRUE:持つ( デフォルト )  FALSE:持たない )  BitDepth:ビット深度( 16 or 24 or 32 ) )
+	//extern	int			CopyGraphZBufferImage(int DestGrHandle, int SrcGrHandle);													// グラフィックハンドルのＺバッファの状態を別のグラフィックハンドルのＺバッファにコピーする( DestGrHandle も SrcGrHandle もＺバッファを持っている描画対象にできるグラフィックハンドルで、サイズが同じであり、且つマルチサンプリング( アンチエイリアス )設定が無いことが条件 )
+
+	//extern	int			SetDeviceLostDeleteGraphFlag(int GrHandle, int DeleteFlag);														// グラフィックスデバイスのデバイスロスト発生時に指定のグラフィックハンドルを削除するかどうかを設定する( TRUE:デバイスロスト時に削除する  FALSE:デバイスロストが発生しても削除しない )
+
+	//extern	int			GetGraphSize(int GrHandle, int *SizeXBuf, int *SizeYBuf);										// グラフィックハンドルが持つ画像のサイズを得る
+	//extern	int			GetGraphSizeF(int GrHandle, float *SizeXBuf, float *SizeYBuf);										// グラフィックハンドルが持つ画像のサイズを得る( float型 )
+	//extern	int			GetGraphTextureSize(int GrHandle, int *SizeXBuf, int *SizeYBuf);										// グラフィックハンドルが持つ一つ目のテクスチャのサイズを得る
+	//extern	int			GetGraphUseBaseGraphArea(int GrHandle, int *UseX, int *UseY, int *UseSizeX, int *UseSizeY);			// LoadDivGraph や DerivationGraph で元画像の一部分を使用している場合に、指定のグラフィックハンドルが使用している元画像の範囲を取得する
+	//extern	int			GetGraphMipmapCount(int GrHandle);																		// グラフィックハンドルが持つテクスチャのミップマップレベル数を取得する
+	//extern	int			GetGraphFilePath(int GrHandle, TCHAR *FilePathBuffer);													// グラフィックハンドルが画像ファイルから読み込まれていた場合、その画像のファイルパスを取得する
+	//extern	int			CheckDrawValidGraph(int GrHandle);																		// 指定のグラフィックハンドルが描画対象にできる( SetDrawScreen の引数に渡せる )グラフィックハンドルかどうかを取得する( 戻り値　TRUE:描画対象にできるグラフィックハンドル　FALSE:描画対象にできないグラフィックハンドル )
+
+	//extern	const COLORDATA *GetTexColorData(int AlphaCh, int AlphaTest, int ColorBitDepth, int DrawValid = FALSE);				// カラーデータを得る
+	//extern	const COLORDATA *GetTexColorData(const IMAGEFORMATDESC *Format);														// フォーマットに基づいたカラーデータを得る
+	//extern	const COLORDATA *GetTexColorData(int FormatIndex);																		// 指定のフォーマットインデックスのカラーデータを得る
+	//extern	int			GetMaxGraphTextureSize(int *SizeX, int *SizeY);																// グラフィックスデバイスが対応している最大テクスチャサイズを取得する
+	//extern	int			GetValidRestoreShredPoint(void);																				// グラフィックハンドルの画像を復元する関数が登録されているかどうかを取得する( TRUE:登録されている  FALSE:登録されていない )
+	//extern	int			GetCreateGraphColorData(COLORDATA *ColorData, IMAGEFORMATDESC *Format);										// ( 現在効果なし )これから新たにグラフィックを作成する場合に使用するカラー情報を取得する
+
+	// 画像パレット操作関係関数( ソフトウエア画像のみ使用可能 )
+	//extern	int			GetGraphPalette(int GrHandle, int ColorIndex, int *Red, int *Green, int *Blue);						// グラフィックハンドルのパレットを取得する( ソフトウエアレンダリングモードで、且つパレット画像の場合のみ使用可能 )
+	//extern  int			GetGraphOriginalPalette(int GrHandle, int ColorIndex, int *Red, int *Green, int *Blue);						// グラフィックハンドルの SetGraphPalette で変更する前のパレットを取得する( ソフトウエアレンダリングモードで、且つパレット画像の場合のみ使用可能 )
+	//extern	int			SetGraphPalette(int GrHandle, int ColorIndex, unsigned int Color);									// グラフィックハンドルのパレットを変更する( ソフトウエアレンダリングモードで、且つパレット画像の場合のみ使用可能 )
+	//extern	int			ResetGraphPalette(int GrHandle);																		// SetGraphPalette で変更したパレットを全て元に戻す( ソフトウエアレンダリングモードで、且つパレット画像の場合のみ使用可能 )
 
 	// 図形描画関数
 	library["DrawLine"] = [](int x1, int y1, int x2, int y2, sol::variadic_args va) {
-		unsigned int Color = va.leftover_count() > 0 ? va[0].as<unsigned int>() : 0xFFFFFFFF;
-		int Thickness = va.leftover_count() > 1 ? va[1].as<int>() : 1;
-		return DrawLine(x1, y1, x2, y2, Color, va.leftover_count() > 0 ? va[0].as<int>() : 1);
+		unsigned int Color = va_get(va, 0, 0xFFFFFFFFUL);
+		int Thickness = va_get(va, 1, 1);
+		return DrawLine(x1, y1, x2, y2, Color, Thickness);
 	};
+	//extern	int			DrawLineAA(float x1, float y1, float x2, float y2, unsigned int Color, float Thickness = 1.0f);							// 線を描画する( アンチエイリアス付き )
 	library["DrawBox"] = [](int x1, int y1, int x2, int y2, sol::variadic_args va) {
-		unsigned int Color = va.leftover_count() > 0 ? va[0].as<unsigned int>() : 0xFFFFFFFF;
-		int FillFlag = va.leftover_count() > 1 ? (va[1].as<bool>() ? TRUE : FALSE) : TRUE;
+		unsigned int Color = va_get(va, 0, 0xFFFFFFFFUL);
+		int FillFlag = va_get(va, 1, true);
 		return DrawBox(x1, y1, x2, y2, Color, FillFlag);
 	};
+	//extern	int			DrawBoxAA(float x1, float y1, float x2, float y2, unsigned int Color, int FillFlag, float LineThickness = 1.0f);			// 四角形を描画する( アンチエイリアス付き )
+	//extern	int			DrawFillBox(int   x1, int   y1, int   x2, int   y2, unsigned int Color);													// 中身を塗りつぶす四角形を描画する
+	//extern	int			DrawLineBox(int   x1, int   y1, int   x2, int   y2, unsigned int Color);													// 枠だけの四角形の描画 する
 	library["DrawCircle"] = [](int x, int y, int r, sol::variadic_args va) {
-		unsigned int Color = va.leftover_count() > 0 ? va[0].as<unsigned int>() : 0xFFFFFFFF;
-		int FillFlag = va.leftover_count() > 1 ? (va[1].as<bool>() ? TRUE : FALSE) : TRUE;
-		int LineThickness = va.leftover_count() > 2 ? va[2].as<int>() : 1;
+		unsigned int Color = va_get(va, 0, 0xFFFFFFFFUL);
+		int FillFlag = va_get(va, 1, true);
+		int LineThickness = va_get(va, 2, 1);
 		return DrawCircle(x, y, r, Color, FillFlag, LineThickness);
 	};
+	//extern	int			DrawCircleAA(float x, float y, float r, int posnum, unsigned int Color, int FillFlag = TRUE, float LineThickness = 1.0f);	// 円を描画する( アンチエイリアス付き )
+	//extern	int			DrawOval(int   x, int   y, int   rx, int   ry, unsigned int Color, int FillFlag, int   LineThickness = 1);	// 楕円を描画する
+	//extern	int			DrawOvalAA(float x, float y, float rx, float ry, int posnum, unsigned int Color, int FillFlag, float LineThickness = 1.0f);	// 楕円を描画する( アンチエイリアス付き )
+	//extern	int			DrawOval_Rect(int   x1, int   y1, int   x2, int   y2, unsigned int Color, int FillFlag);										// 指定の矩形に収まる円( 楕円 )を描画する
 	library["DrawTriangle"] = [](int x1, int y1, int x2, int y2, int x3, int y3, sol::variadic_args va) {
-		unsigned int Color = va.leftover_count() > 0 ? va[0].as<unsigned int>() : 0xFFFFFFFF;
-		int FillFlag = va.leftover_count() > 1 ? (va[1].as<bool>() ? TRUE : FALSE) : TRUE;
+		unsigned int Color = va_get(va, 0, 0xFFFFFFFFUL);
+		int FillFlag = va_get(va, 1, true);
 		return DrawTriangle(x1, y1, x2, y2, x3, y3, Color, FillFlag);
 	};
-	DXLUA_PORT(library, DrawPixel);
+	//extern	int			DrawTriangleAA(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int Color, int FillFlag, float LineThickness = 1.0f);			// 三角形を描画する( アンチエイリアス付き )
+	//extern	int			DrawQuadrangle(int   x1, int   y1, int   x2, int   y2, int   x3, int   y3, int   x4, int   y4, unsigned int Color, int FillFlag);										// 四角形を描画する
+	//extern	int			DrawQuadrangleAA(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, unsigned int Color, int FillFlag, float LineThickness = 1.0f);			// 四角形を描画する( アンチエイリアス付き )
+	//extern	int			DrawRoundRect(int   x1, int   y1, int   x2, int   y2, int   rx, int   ry, unsigned int Color, int FillFlag);										// 角の丸い四角形を描画する
+	//extern	int			DrawRoundRectAA(float x1, float y1, float x2, float y2, float rx, float ry, int posnum, unsigned int Color, int FillFlag, float LineThickness = 1.0f);			// 角の丸い四角形を描画する( アンチエイリアス付き )
+	//extern	int			BeginAADraw(void);																																					// DrawTriangleAA などのアンチエイリアス付き図形描画の準備を行う
+	//extern	int			EndAADraw(void);																																					// DrawTriangleAA などのアンチエイリアス付き図形描画の後始末を行う
+	library["DrawPixel"] = [](int x, int y, sol::variadic_args va) {
+		unsigned int Color = va_get(va, 0, 0xFFFFFFFFUL);
+		return DrawPixel(x, y, Color);
+	};
+
+	//extern	int			Paint(int x, int y, unsigned int FillColor, ULONGLONG BoundaryColor = ULL_PARAM(0xffffffffffffffff));								// 指定点から境界色があるところまで塗りつぶす(境界色を -1 にすると指定点の色の領域を塗りつぶす)
+
+	//extern 	int			DrawPixelSet(const POINTDATA *PointDataArray, int Num);																					// 点の集合を描画する
+	//extern	int			DrawLineSet(const LINEDATA *LineDataArray, int Num);																					// 線の集合を描画する
+
+	//extern	int			DrawPixel3D(VECTOR   Pos, unsigned int Color);							// ３Ｄの点を描画する
+	//extern	int			DrawPixel3DD(VECTOR_D Pos, unsigned int Color);							// ３Ｄの点を描画する
+	//extern	int			DrawLine3D(VECTOR   Pos1, VECTOR   Pos2, unsigned int Color);							// ３Ｄの線分を描画する
+	//extern	int			DrawLine3DD(VECTOR_D Pos1, VECTOR_D Pos2, unsigned int Color);							// ３Ｄの線分を描画する
+	//extern	int			DrawTriangle3D(VECTOR   Pos1, VECTOR   Pos2, VECTOR   Pos3, unsigned int Color, int FillFlag);				// ３Ｄの三角形を描画する
+	//extern	int			DrawTriangle3DD(VECTOR_D Pos1, VECTOR_D Pos2, VECTOR_D Pos3, unsigned int Color, int FillFlag);				// ３Ｄの三角形を描画する
+	//extern	int			DrawCube3D(VECTOR   Pos1, VECTOR   Pos2, unsigned int DifColor, unsigned int SpcColor, int FillFlag);		// ３Ｄの立方体を描画する
+	//extern	int			DrawCube3DD(VECTOR_D Pos1, VECTOR_D Pos2, unsigned int DifColor, unsigned int SpcColor, int FillFlag);		// ３Ｄの立方体を描画する
+	//extern	int			DrawSphere3D(VECTOR   CenterPos, float  r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag);		// ３Ｄの球体を描画する
+	//extern	int			DrawSphere3DD(VECTOR_D CenterPos, double r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag);		// ３Ｄの球体を描画する
+	//extern	int			DrawCapsule3D(VECTOR   Pos1, VECTOR   Pos2, float  r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag);		// ３Ｄのカプセルを描画する
+	//extern	int			DrawCapsule3DD(VECTOR_D Pos1, VECTOR_D Pos2, double r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag);		// ３Ｄのカプセルを描画する
+	//extern	int			DrawCone3D(VECTOR   TopPos, VECTOR   BottomPos, float  r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag);		// ３Ｄの円錐を描画する
+	//extern	int			DrawCone3DD(VECTOR_D TopPos, VECTOR_D BottomPos, double r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag);		// ３Ｄの円錐を描画する
 
 	// 画像描画関数
+	//extern	int			LoadGraphScreen(int x, int y, const TCHAR *GraphName, int TransFlag);										// 画像ファイルを読みこんで画面に描画する
+	//extern	int			LoadGraphScreenWithStrLen(int x, int y, const TCHAR *GraphName, size_t GraphNameLength, int TransFlag);										// 画像ファイルを読みこんで画面に描画する
+
 	library["DrawGraph"] = [](float xf, float yf, int GrHandle, bool TransFlag) {
 		return DrawGraph(xf, yf, GrHandle, TransFlag ? TRUE : FALSE);
 	};
@@ -61,13 +301,79 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 		return DrawExtendGraph(x1, y1, x2, y2, GrHandle, TransFlag ? TRUE : FALSE);
 	};
 	library["DrawRotaGraph"] = [](int x, int y, double ExRate, double Angle, int GrHandle, bool TransFlag, sol::variadic_args va) {
-		int ReverseXFlag = va.leftover_count() > 0 ? (va[0].as<bool>() ? TRUE : FALSE) : FALSE;
-		int ReverseYFlag = va.leftover_count() > 1 ? (va[1].as<bool>() ? TRUE : FALSE) : FALSE;
+		int ReverseXFlag = va_get(va, 0, false);
+		int ReverseYFlag = va_get(va, 1, false);
 		return DrawRotaGraph(x, y, ExRate, Angle, GrHandle, TransFlag ? TRUE : FALSE, ReverseXFlag, ReverseYFlag);
 	};
+	//extern	int			DrawRotaGraph2(int x, int y, int cx, int cy, double ExtRate, double Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の回転描画２( 回転中心指定付き )
+	//extern	int			DrawRotaGraph3(int x, int y, int cx, int cy, double ExtRateX, double ExtRateY, double Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE); 	// 画像の回転描画３( 回転中心指定付き＋縦横拡大率別指定版 )
+	//extern	int			DrawRotaGraphFast(int x, int y, float  ExRate, float  Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の回転描画( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
+	//extern	int			DrawRotaGraphFast2(int x, int y, int cx, int cy, float  ExtRate, float  Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の回転描画２( 回転中心指定付き )( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
+	//extern	int			DrawRotaGraphFast3(int x, int y, int cx, int cy, float  ExtRateX, float  ExtRateY, float  Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE); 	// 画像の回転描画３( 回転中心指定付き＋縦横拡大率別指定版 )( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
+	//extern	int			DrawModiGraph(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, int GrHandle, int TransFlag);															// 画像の自由変形描画
+	//extern	int			DrawTurnGraph(int x, int y, int GrHandle, int TransFlag);															// 画像の左右反転描画
+	//extern	int			DrawReverseGraph(int x, int y, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の反転描画
 
-	//extern	int			DrawPolygon3D(const VERTEX3D * VertexArray, int PolygonNum, int GrHandle, int TransFlag);							// ３Ｄポリゴンを描画する
+	//extern	int			DrawGraphF(float xf, float yf, int GrHandle, int TransFlag);															// 画像の描画( 座標指定が float 版 )
+	//extern	int			DrawExtendGraphF(float x1f, float y1f, float x2f, float y2, int GrHandle, int TransFlag);															// 画像の拡大描画( 座標指定が float 版 )
+	//extern	int			DrawRotaGraphF(float xf, float yf, double ExRate, double Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の回転描画( 座標指定が float 版 )
+	//extern	int			DrawRotaGraph2F(float xf, float yf, float cxf, float cyf, double ExtRate, double Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の回転描画２( 回転中心指定付き )( 座標指定が float 版 )
+	//extern	int			DrawRotaGraph3F(float xf, float yf, float cxf, float cyf, double ExtRateX, double ExtRateY, double Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE); 	// 画像の回転描画３( 回転中心指定付き＋縦横拡大率別指定版 )( 座標指定が float 版 )
+	//extern	int			DrawRotaGraphFastF(float xf, float yf, float  ExRate, float  Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の回転描画( 座標指定が float 版 )( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
+	//extern	int			DrawRotaGraphFast2F(float xf, float yf, float cxf, float cyf, float  ExtRate, float  Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の回転描画２( 回転中心指定付き )( 座標指定が float 版 )( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
+	//extern	int			DrawRotaGraphFast3F(float xf, float yf, float cxf, float cyf, float  ExtRateX, float  ExtRateY, float  Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE); 	// 画像の回転描画３( 回転中心指定付き＋縦横拡大率別指定版 )( 座標指定が float 版 )( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
+	//extern	int			DrawModiGraphF(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, int GrHandle, int TransFlag);															// 画像の自由変形描画( 座標指定が float 版 )
+	//extern	int			DrawTurnGraphF(float xf, float yf, int GrHandle, int TransFlag);															// 画像の左右反転描画( 座標指定が float 版 )
+	//extern	int			DrawReverseGraphF(float xf, float yf, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の反転描画( 座標指定が float 版 )
 
+	//extern	int			DrawChipMap(int Sx, int Sy, int XNum, int YNum, const int *MapData, int ChipTypeNum, int MapDataPitch, const int *ChipGrHandle, int TransFlag);																											// チップ画像を使った２Ｄマップ描画
+	//extern	int			DrawChipMap(int MapWidth, int MapHeight, const int *MapData, int ChipTypeNum, const int *ChipGrHandle, int TransFlag, int MapDrawPointX, int MapDrawPointY, int MapDrawWidth, int MapDrawHeight, int ScreenX, int ScreenY);	// チップ画像を使った２Ｄマップ描画
+	//extern	int			DrawTile(int x1, int y1, int x2, int y2, int Tx, int Ty, double ExtRate, double Angle, int GrHandle, int TransFlag);																																	// 画像を指定領域にタイル状に描画する
+
+	//extern	int			DrawRectGraph(int DestX, int DestY, int SrcX, int SrcY, int    Width, int    Height, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);				// 画像の指定矩形部分のみを等倍描画
+	//extern	int			DrawRectExtendGraph(int DestX1, int DestY1, int DestX2, int DestY2, int SrcX, int SrcY, int SrcWidth, int SrcHeight, int GraphHandle, int TransFlag);																	// 画像の指定矩形部分のみを拡大描画
+	//extern	int			DrawRectRotaGraph(int x, int y, int SrcX, int SrcY, int Width, int Height, double ExtRate, double Angle, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);				// 画像の指定矩形部分のみを回転描画
+	//extern	int			DrawRectRotaGraph2(int x, int y, int SrcX, int SrcY, int Width, int Height, int cx, int cy, double ExtRate, double Angle, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);				// 画像の指定矩形部分のみを回転描画２( 回転中心指定付き )
+	//extern	int			DrawRectRotaGraph3(int x, int y, int SrcX, int SrcY, int Width, int Height, int cx, int cy, double ExtRateX, double ExtRateY, double Angle, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);				// 画像の指定矩形部分のみを回転描画３( 回転中心指定付き＋縦横拡大率別指定版 )
+	//extern	int			DrawRectRotaGraphFast(int x, int y, int SrcX, int SrcY, int Width, int Height, float ExtRate, float Angle, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);				// 画像の指定矩形部分のみを回転描画( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
+	//extern	int			DrawRectRotaGraphFast2(int x, int y, int SrcX, int SrcY, int Width, int Height, int cx, int cy, float ExtRate, float Angle, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);				// 画像の指定矩形部分のみを回転描画２( 回転中心指定付き )( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
+	//extern	int			DrawRectRotaGraphFast3(int x, int y, int SrcX, int SrcY, int Width, int Height, int cx, int cy, float ExtRateX, float ExtRateY, float Angle, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);				// 画像の指定矩形部分のみを回転描画３( 回転中心指定付き＋縦横拡大率別指定版 )( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
+	//extern	int			DrawRectModiGraph(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, int SrcX, int SrcY, int Width, int Height, int GraphHandle, int TransFlag);																	// 画像の指定矩形部分のみを自由変形描画
+
+	//extern	int			DrawRectGraphF(float DestX, float DestY, int SrcX, int SrcY, int    Width, int    Height, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の指定矩形部分のみを等倍描画( 座標指定が float 版 )
+	//extern	int			DrawRectExtendGraphF(float DestX1, float DestY1, float DestX2, float DestY2, int SrcX, int SrcY, int SrcWidth, int SrcHeight, int GraphHandle, int TransFlag);															// 画像の指定矩形部分のみを拡大描画( 座標指定が float 版 )
+	//extern	int			DrawRectRotaGraphF(float x, float y, int SrcX, int SrcY, int Width, int Height, double ExtRate, double Angle, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の指定矩形部分のみを回転描画( 座標指定が float 版 )
+	//extern	int			DrawRectRotaGraph2F(float x, float y, int SrcX, int SrcY, int Width, int Height, float cxf, float cyf, double ExtRate, double Angle, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の指定矩形部分のみを回転描画２( 回転中心指定付き )( 座標指定が float 版 )
+	//extern	int			DrawRectRotaGraph3F(float x, float y, int SrcX, int SrcY, int Width, int Height, float cxf, float cyf, double ExtRateX, double ExtRateY, double Angle, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の指定矩形部分のみを回転描画３( 回転中心指定付き＋縦横拡大率別指定版 )( 座標指定が float 版 )
+	//extern	int			DrawRectRotaGraphFastF(float x, float y, int SrcX, int SrcY, int Width, int Height, float ExtRate, float  Angle, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の指定矩形部分のみを回転描画( 座標指定が float 版 )( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
+	//extern	int			DrawRectRotaGraphFast2F(float x, float y, int SrcX, int SrcY, int Width, int Height, float cxf, float cyf, float ExtRate, float  Angle, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の指定矩形部分のみを回転描画２( 回転中心指定付き )( 座標指定が float 版 )( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
+	//extern	int			DrawRectRotaGraphFast3F(float x, float y, int SrcX, int SrcY, int Width, int Height, float cxf, float cyf, float ExtRateX, float  ExtRateY, float  Angle, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の指定矩形部分のみを回転描画３( 回転中心指定付き＋縦横拡大率別指定版 )( 座標指定が float 版 )( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
+	//extern	int			DrawRectModiGraphF(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, int SrcX, int SrcY, int Width, int Height, int GraphHandle, int TransFlag);															// 画像の指定矩形部分のみを自由変形描画( 座標指定が float 版 )
+
+	//extern	int			DrawBlendGraph(int x, int y, int GrHandle, int TransFlag, int BlendGraph, int BorderParam, int BorderRange);									// ブレンド画像と合成して画像を等倍描画する
+	//extern	int			DrawBlendGraphPos(int x, int y, int GrHandle, int TransFlag, int bx, int by, int BlendGraph, int BorderParam, int BorderRange);									// ブレンド画像と合成して画像を等倍描画する( ブレンド画像の起点座標を指定する引数付き )
+
+	//extern	int			DrawCircleGauge(int CenterX, int CenterY, double Percent, int GrHandle, double StartPercent = 0.0, double Scale = 1.0, int ReverseX = FALSE, int ReverseY = FALSE);										// 円グラフ的な描画を行う( GrHandle の画像の上下左右の端は透過色にしておく必要があります )
+
+	//extern	int			DrawGraphToZBuffer(int X, int Y, int GrHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */);														// Ｚバッファに対して画像の等倍描画
+	//extern	int			DrawTurnGraphToZBuffer(int x, int y, int GrHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */);														// Ｚバッファに対して画像の左右反転描画
+	//extern	int			DrawReverseGraphToZBuffer(int x, int y, int GrHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// Ｚバッファに対して画像の反転描画
+	//extern	int			DrawExtendGraphToZBuffer(int x1, int y1, int x2, int y2, int GrHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */);														// Ｚバッファに対して画像の拡大描画
+	//extern	int			DrawRotaGraphToZBuffer(int x, int y, double ExRate, double Angle, int GrHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// Ｚバッファに対して画像の回転描画
+	//extern	int			DrawRotaGraph2ToZBuffer(int x, int y, int cx, int cy, double ExtRate, double Angle, int GrHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// Ｚバッファに対して画像の回転描画２( 回転中心指定付き )
+	//extern	int			DrawRotaGraph3ToZBuffer(int x, int y, int cx, int cy, double ExtRateX, double ExtRateY, double Angle, int GrHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE); 	// Ｚバッファに対して画像の回転描画３( 回転中心指定付き＋縦横拡大率別指定版 )
+	//extern	int			DrawRotaGraphFastToZBuffer(int x, int y, float ExRate, float Angle, int GrHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// Ｚバッファに対して画像の回転描画( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
+	//extern	int			DrawRotaGraphFast2ToZBuffer(int x, int y, int cx, int cy, float ExtRate, float Angle, int GrHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// Ｚバッファに対して画像の回転描画２( 回転中心指定付き )( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
+	//extern	int			DrawRotaGraphFast3ToZBuffer(int x, int y, int cx, int cy, float ExtRateX, float ExtRateY, float Angle, int GrHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE); 	// Ｚバッファに対して画像の回転描画３( 回転中心指定付き＋縦横拡大率別指定版 )( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
+	//extern	int			DrawModiGraphToZBuffer(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, int GrHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */);														// Ｚバッファに対して画像の自由変形描画
+	//extern	int			DrawBoxToZBuffer(int x1, int y1, int x2, int y2, int FillFlag, int WriteZMode /* DX_ZWRITE_MASK 等 */);														// Ｚバッファに対して矩形の描画
+	//extern	int			DrawCircleToZBuffer(int x, int y, int r, int FillFlag, int WriteZMode /* DX_ZWRITE_MASK 等 */);														// Ｚバッファに対して円の描画
+	//extern	int			DrawTriangleToZBuffer(int x1, int y1, int x2, int y2, int x3, int y3, int FillFlag, int WriteZMode /* DX_ZWRITE_MASK 等 */);														// Ｚバッファに対して三角形を描画する
+	//extern	int			DrawQuadrangleToZBuffer(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, int FillFlag, int WriteZMode /* DX_ZWRITE_MASK 等 */);														// Ｚバッファに対して四角形を描画する
+	//extern	int			DrawRoundRectToZBuffer(int x1, int y1, int x2, int y2, int rx, int ry, int FillFlag, int WriteZMode /* DX_ZWRITE_MASK 等 */);														// Ｚバッファに対して角の丸い四角形を描画する
+
+	//extern	int			DrawPolygon(const VERTEX *VertexArray, int PolygonNum, int GrHandle, int TransFlag, int UVScaling = FALSE);		// ２Ｄポリゴンを描画する( Vertex:三角形を形成する頂点配列の先頭アドレス( 頂点の数はポリゴンの数×３ )  PolygonNum:描画するポリゴンの数  GrHandle:使用するグラフィックハンドル  TransFlag:透過色処理を行うかどうか( TRUE:行う  FALSE:行わない )  UVScaling:基本FALSEでOK )
+	//extern	int			DrawPolygon2D(const VERTEX2D *VertexArray, int PolygonNum, int GrHandle, int TransFlag);							// ２Ｄポリゴンを描画する
 	library["DrawPolygon3D"] = [](sol::table VertexArrayTable, int PolygonNum, int GrHandle, sol::variadic_args va) {
 		std::vector<VERTEX3D> VertexArray(PolygonNum);
 		int TransFlag = va_get(va, 0, false);
@@ -76,6 +382,30 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 		}
 		return DrawPolygon3D(VertexArray.data(), PolygonNum, GrHandle, TransFlag);
 	};
+	//extern	int			DrawPolygonIndexed2D(const VERTEX2D *VertexArray, int VertexNum, const unsigned short *IndexArray, int PolygonNum, int GrHandle, int TransFlag);							// ２Ｄポリゴンを描画する( 頂点インデックスを使用 )
+	//extern	int			DrawPolygonIndexed3D(const VERTEX3D *VertexArray, int VertexNum, const unsigned short *IndexArray, int PolygonNum, int GrHandle, int TransFlag);							// ３Ｄポリゴンを描画する( 頂点インデックスを使用 )
+	//extern	int			DrawPolygonIndexed3DBase(const VERTEX_3D *VertexArray, int VertexNum, const unsigned short *IndexArray, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */, int GrHandle, int TransFlag);							// ３Ｄポリゴンを描画する( 頂点インデックスを使用 )( 旧バージョン用 )
+	//extern	int			DrawPolygon3DBase(const VERTEX_3D *VertexArray, int VertexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */, int GrHandle, int TransFlag);							// ３Ｄポリゴンを描画する( 旧バージョン用 )
+
+	//extern	int			DrawPolygonBase(const VERTEX *VertexArray, int VertexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */, int GrHandle, int TransFlag, int UVScaling = FALSE);		// ２Ｄプリミティブを描画する
+	//extern	int			DrawPrimitive2D(const VERTEX2D *VertexArray, int VertexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */, int GrHandle, int TransFlag);							// ２Ｄプリミティブを描画する
+	//extern	int			DrawPrimitive3D(const VERTEX3D *VertexArray, int VertexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */, int GrHandle, int TransFlag);							// ３Ｄプリミティブを描画する
+	//extern	int			DrawPrimitiveIndexed2D(const VERTEX2D *VertexArray, int VertexNum, const unsigned short *IndexArray, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */, int GrHandle, int TransFlag);							// ２Ｄプリミティブを描画する(頂点インデックス使用)
+	//extern	int			DrawPrimitiveIndexed3D(const VERTEX3D *VertexArray, int VertexNum, const unsigned short *IndexArray, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */, int GrHandle, int TransFlag);							// ３Ｄプリミティブを描画する(頂点インデックス使用)
+
+	//extern	int			DrawPolygon3D_UseVertexBuffer(int VertexBufHandle, int GrHandle, int TransFlag);		// 頂点バッファを使用して３Ｄポリゴンを描画する
+	//extern	int			DrawPrimitive3D_UseVertexBuffer(int VertexBufHandle, int PrimitiveType  /* DX_PRIMTYPE_TRIANGLELIST 等 */, int GrHandle, int TransFlag);		// 頂点バッファを使用して３Ｄプリミティブを描画する
+	//extern	int			DrawPrimitive3D_UseVertexBuffer2(int VertexBufHandle, int PrimitiveType  /* DX_PRIMTYPE_TRIANGLELIST 等 */, int StartVertex, int UseVertexNum, int GrHandle, int TransFlag);		// 頂点バッファを使用して３Ｄプリミティブを描画する
+	//extern	int			DrawPolygonIndexed3D_UseVertexBuffer(int VertexBufHandle, int IndexBufHandle, int GrHandle, int TransFlag);		// 頂点バッファとインデックスバッファを使用して３Ｄポリゴンを描画する
+	//extern	int			DrawPrimitiveIndexed3D_UseVertexBuffer(int VertexBufHandle, int IndexBufHandle, int PrimitiveType  /* DX_PRIMTYPE_TRIANGLELIST 等 */, int GrHandle, int TransFlag);		// 頂点バッファとインデックスバッファを使用して３Ｄプリミティブを描画する
+	//extern	int			DrawPrimitiveIndexed3D_UseVertexBuffer2(int VertexBufHandle, int IndexBufHandle, int PrimitiveType  /* DX_PRIMTYPE_TRIANGLELIST 等 */, int BaseVertex, int StartVertex, int UseVertexNum, int StartIndex, int UseIndexNum, int GrHandle, int TransFlag);		// 頂点バッファとインデックスバッファを使用して３Ｄプリミティブを描画する
+
+	//extern	int			DrawGraph3D(float x, float y, float z, int GrHandle, int TransFlag);																// 画像の３Ｄ描画
+	//extern	int			DrawExtendGraph3D(float x, float y, float z, double ExRateX, double ExRateY, int GrHandle, int TransFlag);																// 画像の拡大３Ｄ描画
+	//extern	int			DrawRotaGraph3D(float x, float y, float z, double ExRate, double Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);		// 画像の回転３Ｄ描画
+	//extern	int			DrawRota2Graph3D(float x, float y, float z, float cx, float cy, double ExtRateX, double ExtRateY, double Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);		// 画像の回転３Ｄ描画(回転中心指定型)
+	//extern	int			DrawModiBillboard3D(VECTOR Pos, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, int GrHandle, int TransFlag);																// 画像の自由変形３Ｄ描画
+	//extern	int			DrawBillboard3D(VECTOR Pos, float cx, float cy, float Size, float Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);		// ３Ｄ空間上に画像を描画
 
 	// 描画設定関係関数
 	DXLUA_PORT(library, SetDrawMode);
@@ -87,38 +417,189 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 		auto result = GetDrawBlendMode(&BlendMode, &BlendParam);
 		return std::make_tuple(result, BlendMode, BlendParam);
 	};
+	//extern	int			SetDrawAlphaTest(int TestMode, int TestParam);									// 描画時のアルファテストの設定を行う( TestMode:テストモード( DX_CMP_GREATER等 -1でデフォルト動作に戻す )  TestParam:描画アルファ値との比較に使用する値( 0～255 ) )
+	//extern	int			GetDrawAlphaTest(int *TestMode, int *TestParam);								// 描画時のアルファテストの設定を取得する( TestMode:テストモード( DX_CMP_GREATER等 -1でデフォルト動作に戻す )  TestParam:描画アルファ値との比較に使用する値( 0～255 ) )
+	//extern	int			SetBlendGraph(int BlendGraph, int BorderParam, int BorderRange);			// ( SetBlendGraphParam の BlendType = DX_BLENDGRAPHTYPE_WIPE の処理を行う旧関数 )描画処理時に描画する画像とブレンドするαチャンネル付き画像をセットする( BlendGraph を -1 でブレンド機能を無効 )
+	//extern	int			SetBlendGraphParam(int BlendGraph, int BlendType, ...);							// 描画処理時に描画する画像とブレンドする画像のブレンド設定を行う、BlendGraph を -1 にすれば設定を解除、その場合 BlendType とその後ろのパラメータは無視される
+	////		int			SetBlendGraphParam(					int BlendGraph, int BlendType = DX_BLENDGRAPHTYPE_NORMAL, int Ratio = ( 0( ブレンド率０％ )～255( ブレンド率１００％ ) ) ) ;
+	////		int			SetBlendGraphParam(					int BlendGraph, int BlendType = DX_BLENDGRAPHTYPE_WIPE, int BorderParam = 境界位置(０～２５５), int BorderRange = 境界幅(指定できる値は１、６４、１２８、２５５の４つ) ) ;
+	////		int			SetBlendGraphParam(					int BlendGraph, int BlendType = DX_BLENDGRAPHTYPE_ALPHA ) ;
+	//extern	int			SetBlendGraphPosition(int x, int y);												// ブレンド画像の起点座標をセットする
+	//extern	int			SetBlendGraphPositionMode(int BlendGraphPositionMode /* DX_BLENDGRAPH_POSMODE_DRAWGRAPH など */);	// ブレンド画像の適応座標モードを設定する
+	//extern	int			SetDrawBright(int RedBright, int GreenBright, int BlueBright);				// 描画輝度を設定する
+	//extern	int			GetDrawBright(int *Red, int *Green, int *Blue);								// 描画輝度を取得する
+	//extern	int			SetWriteAlphaChannelFlag(int Flag);													// 描画先のアルファチャンネルの内容を書き換えるかを設定する( FALSE:書き換えない  TRUE:書き換える( デフォルト ) )
+	//extern	int			GetWriteAlphaChannelFlag(void);														// 描画先のアルファチャンネルの内容を書き換えるかを取得する( FALSE:書き換えない  TRUE:書き換える( デフォルト ) )
+	//extern	int			CheckSeparateAlphaBlendEnable(void);														// 描画先のアルファチャンネルの内容を書き換えないことができるかどうかを取得する( TRUE:書き換えないことができる  FALSE:書き換えないことができない )
+	//extern	int			SetIgnoreDrawGraphColor(int EnableFlag);												// 描画する画像のＲＧＢ成分を無視するかどうかを指定する( EnableFlag:この機能を使うかどうか( TRUE:使う  FALSE:使わない( デフォルト ) ) )
+	//extern	int			SetMaxAnisotropy(int MaxAnisotropy);											// 最大異方性値を設定する
+	//extern	int			SetUseLarge3DPositionSupport(int UseFlag);													// ３Ｄ処理で使用する座標値が 10000000.0f などの大きな値になっても描画の崩れを小さく抑える処理を使用するかどうかを設定する、DxLib_Init の呼び出し前でのみ使用可能( TRUE:描画の崩れを抑える処理を使用する( CPU負荷が上がります )　　FALSE:描画の崩れを抑える処理は使用しない( デフォルト ) )
+	//
+	//extern	int			SetUseZBufferFlag(int Flag);													// Ｚバッファを使用するかどうかを設定する( ２Ｄと３Ｄ描画に影響 )( TRUE:Ｚバッファを使用する  FALSE:Ｚバッファを使用しない( デフォルト ) )
+	//extern	int			SetWriteZBufferFlag(int Flag);													// Ｚバッファに書き込みを行うかどうかを設定する( ２Ｄと３Ｄ描画に影響 )( TRUE:書き込みを行う  FALSE:書き込みを行わない( デフォルト ) )
+	//extern	int			SetZBufferCmpType(int CmpType /* DX_CMP_NEVER 等 */);							// ＺバッファのＺ値と書き込むＺ値との比較モードを設定する( ２Ｄと３Ｄ描画に影響 )( CmpType:DX_CMP_NEVER等( デフォルト:DX_CMP_LESSEQUAL ) )
+	//extern	int			SetZBias(int Bias);													// 書き込むＺ値のバイアスを設定する( ２Ｄと３Ｄ描画に影響 )( Bias:バイアス値( デフォルト:0 ) )
 	library["SetUseZBuffer3D"] = [](sol::variadic_args va) {
 		int Flag = va_get(va, 0, false);
 		return SetUseZBuffer3D(Flag);
 	};
+	//extern	int			SetWriteZBuffer3D(int Flag);													// Ｚバッファに書き込みを行うかどうかを設定する( ３Ｄ描画のみに影響 )( TRUE:書き込みを行う  FALSE:書き込みを行わない( デフォルト ) )
+	//extern	int			SetZBufferCmpType3D(int CmpType /* DX_CMP_NEVER 等 */);							// ＺバッファのＺ値と書き込むＺ値との比較モードを設定する( ３Ｄ描画のみに影響 )( CmpType:DX_CMP_NEVER等( デフォルト:DX_CMP_LESSEQUAL ) )
+	//extern	int			SetZBias3D(int Bias);													// 書き込むＺ値のバイアスを設定する( ３Ｄ描画のみに影響 )( Bias:バイアス値( デフォルト:0 ) )
+	//extern	int			SetDrawZ(float Z);														// ２Ｄ描画でＺバッファに書き込むＺ値を設定する( Z:書き込むＺ値( デフォルト:0.2f ) )
 
 	DXLUA_PORT(library, SetDrawArea);
 	DXLUA_PORT(library, GetDrawArea);
 	DXLUA_PORT(library, SetDrawAreaFull);
 	DXLUA_PORT(library, SetDraw3DScale);
 
+	//extern	int			SetRestoreShredPoint(void (*ShredPoint)(void));								// SetRestoreGraphCallback の旧名
+	//extern	int			SetRestoreGraphCallback(void (*Callback)(void));									// グラフィックハンドル復元関数を登録する
+	//extern	int			RunRestoreShred(void);														// グラフィック復元関数を実行する
+	//extern	int			SetGraphicsDeviceRestoreCallbackFunction(void (*Callback)(void *Data), void *CallbackData);	// グラフィックスデバイスがロストから復帰した際に呼ばれるコールバック関数を設定する
+	//extern	int			SetGraphicsDeviceLostCallbackFunction(void (*Callback)(void *Data), void *CallbackData);	// グラフィックスデバイスがロストから復帰する前に呼ばれるコールバック関数を設定する
+
+	//extern	int			SetTransformTo2D(const MATRIX *Matrix);										// ２Ｄ描画に使用される変換行列を設定する
+	//extern	int			SetTransformTo2DD(const MATRIX_D *Matrix);										// ２Ｄ描画に使用される変換行列を設定する
+	//extern	int			ResetTransformTo2D(void);														// ２Ｄ描画用に使用する変換行列の設定を初期状態に戻す
+	//extern	int			SetTransformToWorld(const MATRIX *Matrix);										// ローカル座標からワールド座標に変換するための行列を設定する
+	//extern	int			SetTransformToWorldD(const MATRIX_D *Matrix);										// ローカル座標からワールド座標に変換するための行列を設定する
+	//extern	int			GetTransformToWorldMatrix(MATRIX *MatBuf);										// ローカル座標からワールド座標に変換するための行列を取得する
+	//extern	int			GetTransformToWorldMatrixD(MATRIX_D *MatBuf);										// ローカル座標からワールド座標に変換するための行列を取得する
+	//extern	int			SetTransformToView(const MATRIX *Matrix);										// ワールド座標からビュー座標に変換するための行列を設定する
+	//extern	int			SetTransformToViewD(const MATRIX_D *Matrix);										// ワールド座標からビュー座標に変換するための行列を設定する
+	//extern	int			GetTransformToViewMatrix(MATRIX *MatBuf);										// ワールド座標からビュー座標に変換するための行列を取得する
+	//extern	int			GetTransformToViewMatrixD(MATRIX_D *MatBuf);										// ワールド座標からビュー座標に変換するための行列を取得する
+	//extern	int			SetTransformToProjection(const MATRIX *Matrix);										// ビュー座標からプロジェクション座標に変換するための行列を設定する
+	//extern	int			SetTransformToProjectionD(const MATRIX_D *Matrix);										// ビュー座標からプロジェクション座標に変換するための行列を設定する
+	//extern	int			GetTransformToProjectionMatrix(MATRIX *MatBuf);										// ビュー座標からプロジェクション座標に変換するための行列を取得する
+	//extern	int			GetTransformToProjectionMatrixD(MATRIX_D *MatBuf);										// ビュー座標からプロジェクション座標に変換するための行列を取得する
+	//extern	int			SetTransformToViewport(const MATRIX *Matrix);										// ビューポート行列を設定する
+	//extern	int			SetTransformToViewportD(const MATRIX_D *Matrix);										// ビューポート行列を設定する
+	//extern	int			GetTransformToViewportMatrix(MATRIX *MatBuf);											// ビューポート行列を取得する
+	//extern	int			GetTransformToViewportMatrixD(MATRIX_D *MatBuf);											// ビューポート行列を取得する
+	//extern	int			GetTransformToAPIViewportMatrix(MATRIX *MatBuf);											// Direct3Dで自動適用されるビューポート行列を取得する
+	//extern	int			GetTransformToAPIViewportMatrixD(MATRIX_D *MatBuf);											// Direct3Dで自動適用されるビューポート行列を取得する
+	//extern	int			SetDefTransformMatrix(void);														// デフォルトの変換行列を設定する
+	//extern	int			GetTransformPosition(VECTOR *LocalPos, float *x, float *y);					// ローカル座標からスクリーン座標を取得する
+	//extern	int			GetTransformPositionD(VECTOR_D *LocalPos, double *x, double *y);					// ローカル座標からスクリーン座標を取得する
+	//extern	float		GetBillboardPixelSize(VECTOR   WorldPos, float  WorldSize);							// ワールド空間上のビルボードのサイズからスクリーンに投影した場合のピクセル単位のサイズを取得する
+	//extern	double		GetBillboardPixelSizeD(VECTOR_D WorldPos, double WorldSize);							// ワールド空間上のビルボードのサイズからスクリーンに投影した場合のピクセル単位のサイズを取得する
+	//extern	VECTOR		ConvWorldPosToViewPos(VECTOR   WorldPos);											// ワールド座標をビュー座標に変換する
+	//extern	VECTOR_D	ConvWorldPosToViewPosD(VECTOR_D WorldPos);											// ワールド座標をビュー座標に変換する
+	//extern	VECTOR		ConvWorldPosToScreenPos(VECTOR   WorldPos);											// ワールド座標をスクリーン座標に変換する
+	//extern	VECTOR_D	ConvWorldPosToScreenPosD(VECTOR_D WorldPos);											// ワールド座標をスクリーン座標に変換する
+	//extern	FLOAT4		ConvWorldPosToScreenPosPlusW(VECTOR   WorldPos);											// ワールド座標をスクリーン座標に変換する、最後のＸＹＺ座標をＷで割る前の値を得る
+	//extern	DOUBLE4		ConvWorldPosToScreenPosPlusWD(VECTOR_D WorldPos);											// ワールド座標をスクリーン座標に変換する、最後のＸＹＺ座標をＷで割る前の値を得る
+	//extern	VECTOR		ConvScreenPosToWorldPos(VECTOR   ScreenPos);											// スクリーン座標をワールド座標に変換する
+	//extern	VECTOR_D	ConvScreenPosToWorldPosD(VECTOR_D ScreenPos);											// スクリーン座標をワールド座標に変換する
+	//extern	VECTOR		ConvScreenPosToWorldPos_ZLinear(VECTOR   ScreenPos);											// スクリーン座標をワールド座標に変換する( Z座標が線形 )
+	//extern	VECTOR_D	ConvScreenPosToWorldPos_ZLinearD(VECTOR_D ScreenPos);											// スクリーン座標をワールド座標に変換する( Z座標が線形 )
+
+	//extern	int			SetUseCullingFlag(int Flag);													// SetUseBackCulling の旧名称
+	//extern	int			SetUseBackCulling(int Flag /* DX_CULLING_LEFT 等 */);							// ポリゴンカリングモードを設定する
+	//extern	int			GetUseBackCulling(void);														// ポリゴンカリングモードを取得する
+
 	library["SetTextureAddressMode"] = [](int Mode, sol::variadic_args va) {
 		int Stage = va_get(va, 0, -1);
 		return SetTextureAddressMode(Mode, Stage);
 	};
+	//extern	int			SetTextureAddressModeUV(int ModeU, int ModeV, int Stage = -1);						// テクスチャアドレスモードを設定する( U と V を別々に設定する )
+	//extern	int			SetTextureAddressTransform(float TransU, float TransV, float ScaleU, float ScaleV, float RotCenterU, float RotCenterV, float Rotate);	// テクスチャ座標変換パラメータを設定する
+	//extern	int			SetTextureAddressTransformMatrix(MATRIX Matrix);												// テクスチャ座標変換行列を設定する
+	//extern	int			ResetTextureAddressTransform(void);														// テクスチャ座標変換設定をリセットする
+
+	//extern	int			SetFogEnable(int Flag);													// フォグを有効にするかどうかを設定する( TRUE:有効  FALSE:無効 )
+	//extern	int			GetFogEnable(void);														// フォグが有効かどうかを取得する( TRUE:有効  FALSE:無効 )
+	//extern	int			SetFogMode(int Mode /* DX_FOGMODE_NONE 等 */);							// フォグモードを設定する
+	//extern	int			GetFogMode(void);														// フォグモードを取得する
+	//extern	int			SetFogColor(int  r, int  g, int  b);										// フォグカラーを設定する
+	//extern	int			GetFogColor(int *r, int *g, int *b);										// フォグカラーを取得する
+	//extern	int			SetFogStartEnd(float  start, float  end);									// フォグが始まる距離と終了する距離を設定する( 0.0f ～ 1.0f )
+	//extern	int			GetFogStartEnd(float *start, float *end);									// フォグが始まる距離と終了する距離を取得する( 0.0f ～ 1.0f )
+	//extern	int			SetFogDensity(float density);												// フォグの密度を設定する( 0.0f ～ 1.0f )
+	//extern	float		GetFogDensity(void);														// フォグの密度を取得する( 0.0f ～ 1.0f )
 
 	// 画面関係関数
+	//extern	unsigned int	GetPixel(int x, int y);																// 指定座標の色を取得する
+	//extern	COLOR_F			GetPixelF(int x, int y);																// 指定座標の色を取得する( float型 )
+	//extern	int				SetBackgroundColor(int Red, int  Green, int  Blue, int  Alpha = 0);							// メインウインドウの背景色を設定する( Red,Green,Blue,Alpha:それぞれ ０～２５５ )
+	//extern	int				GetBackgroundColor(int *Red, int *Green, int *Blue, int *Alpha = NULL);							// メインウインドウの背景色を取得する( Red,Green,Blue,Alpha:それぞれ ０～２５５ )
+	//extern	int				GetDrawScreenGraph(int x1, int y1, int x2, int y2, int GrHandle, int UseClientFlag = TRUE);	// 描画先の画面から指定領域の画像情報をグラフィックハンドルに転送する
+	//extern	int				BltDrawValidGraph(int TargetDrawValidGrHandle, int x1, int y1, int x2, int y2, int DestX, int DestY, int DestGrHandle);							// SetDrawScreen で描画対象にできるグラフィックハンドルから指定領域の画像情報を別のグラフィックハンドルに転送する
 	DXLUA_PORT(library, ScreenFlip);
 	DXLUA_PORT(library, ScreenCopy);
 	DXLUA_PORT(library, WaitVSync);
 	library["ClearDrawScreen"] = [](sol::variadic_args va) {
+		// TODO: ClearDrawScreen(const RECT * ClearRect = NULL);
 		return ClearDrawScreen();
 	};
+	//extern	int				ClearDrawScreenZBuffer(const RECT *ClearRect = NULL);												// 画面のＺバッファをクリアする
+	//extern	int				ClsDrawScreen(void);																		// ClearDrawScreenの旧名称
 	DXLUA_PORT(library, SetDrawScreen);
 	DXLUA_PORT(library, GetDrawScreen);
-
-	//DXLUA_PORT(library, SetGraphMode);
+	//extern	int				GetActiveGraph(void);																		// GetDrawScreen の旧名称
+	//extern	int				SetUseSetDrawScreenSettingReset(int UseFlag);																	// SetDrawScreen を実行した際にカメラや描画範囲の設定をリセットするかを設定する( UseFlag  TRUE:リセットする( デフォルト )  FALSE:リセットしない )
+	//extern	int				GetUseSetDrawScreenSettingReset(void);																		// SetDrawScreen を実行した際にカメラや描画範囲の設定をリセットするかを取得する
+	//extern	int				SetDrawZBuffer(int DrawScreen);																// 描画先Ｚバッファのセット( DrawScreen 付属のＺバッファを描画先Ｚバッファにする、DrawScreen を -1 にするとデフォルトの描画先Ｚバッファに戻る )
 	library["SetGraphMode"] = [](int ScreenSizeX, int ScreenSizeY, int ColorBitDepth, sol::variadic_args va) {
-		return SetGraphMode(ScreenSizeX, ScreenSizeY, ColorBitDepth, va.leftover_count() > 0 ? va[0].as<int>() : 60);
+		int RefreshRate = va_get(va, 0, 60);
+		return SetGraphMode(ScreenSizeX, ScreenSizeY, ColorBitDepth, RefreshRate);
 	};
+	//extern	int				SetUserScreenImage(void *Image, int PixelFormat /* DX_USER_SCREEN_PIXEL_FORMAT_R5G6B5 等 */);	// 画面のメモリイメージをセットする( DxLib_Init の前で呼ぶ必要がある( DxLib_Init の前に一度でも呼んでいれば、DxLib_Init 後は Image のアドレスのみの変更目的で呼ぶことは可能 )、PixelFormat に DX_USER_SCREEN_PIXEL_FORMAT_R5G6B5 又は DX_USER_SCREEN_PIXEL_FORMAT_X8R8G8B8 の二つ以外を指定した場合はＤＸライブラリの描画関数は一切使用できなくなります )
+	//extern	int				SetFullScreenResolutionMode(int ResolutionMode /* DX_FSRESOLUTIONMODE_NATIVE 等 */);						// フルスクリーン解像度モードを設定する
+	//extern	int				GetFullScreenResolutionMode(int *ResolutionMode, int *UseResolutionMode);									// フルスクリーン解像度モードを取得する( UseResolutionMode は実際に使用されている解像度モード( 例えば DX_FSRESOLUTIONMODE_NATIVE を指定していてもモニタが指定の解像度に対応していない場合は UseResolutionMode が DX_FSRESOLUTIONMODE_DESKTOP や DX_FSRESOLUTIONMODE_MAXIMUM になります ) )
+	//extern	int				SetFullScreenScalingMode(int ScalingMode /* DX_FSSCALINGMODE_NEAREST 等 */, int FitScaling = FALSE);	// フルスクリーンモード時の画面拡大モードを設定する
+	//extern	int				SetEmulation320x240(int Flag);																	// ６４０ｘ４８０の画面で３２０ｘ２４０の画面解像度にするかどうかを設定する、６４０ｘ４８０以外の解像度では無効( TRUE:有効  FALSE:無効 )
+	//extern	int				SetZBufferSize(int ZBufferSizeX, int ZBufferSizeY);											// 画面用のＺバッファのサイズを設定する
+	//extern	int				SetZBufferBitDepth(int BitDepth);																// 画面用のＺバッファのビット深度を設定する( 16 or 24 or 32 )
 	library["SetWaitVSyncFlag"] = [](sol::object Flag) {
 		return SetWaitVSyncFlag(Flag.as<bool>() ? TRUE : FALSE);
 	};
+	//extern	int				GetWaitVSyncFlag(void);																		// ScreenFlip 実行時にＶＳＹＮＣ待ちをするかどうかを取得する
+	//extern	int				SetFullSceneAntiAliasingMode(int Samples, int Quality);													// 画面のフルスクリーンアンチエイリアスモードの設定を行う( DxLib_Init の前でのみ使用可能 )
+	//extern	int				SetGraphDisplayArea(int x1, int y1, int x2, int y2);												// ScreenFlip 時に表画面全体に転送する裏画面の領域を設定する( DxLib_Init の前でのみ使用可能 )
+	//extern	int				SetChangeScreenModeGraphicsSystemResetFlag(int Flag);																	// 画面モード変更時( とウインドウモード変更時 )にグラフィックスシステムの設定やグラフィックハンドルをリセットするかどうかを設定する( TRUE:リセットする( デフォルト )  FALSE:リセットしない )
+	//extern	int				GetScreenState(int *SizeX, int *SizeY, int *ColorBitDepth);									// 現在の画面の解像度とカラービット数を得る 
+	//extern	int				GetDrawScreenSize(int *XBuf, int *YBuf);														// 描画先のサイズを取得する
+	//extern	int				GetScreenBitDepth(void);																		// 画面のカラービット数を取得する
+	//extern	int				GetColorBitDepth(void);																		// GetScreenBitDepth の旧名称
+	//extern	int				GetChangeDisplayFlag(void);																		// 画面モードが変更されているかどうかを取得する
+	//extern	int				GetVideoMemorySize(int *AllSize, int *FreeSize);													// ( 現在正常に動作しません )ビデオメモリの容量を得る
+	//extern	int				GetRefreshRate(void);																		// 現在の画面のリフレッシュレートを取得する
+	//extern	int				GetDisplayNum(void);																		// ディスプレイの数を取得
+	//extern	int				GetDisplayInfo(int DisplayIndex, int *DesktopRectX, int *DesktopRectY, int *DesktopSizeX, int *DesktopSizeY, int *IsPrimary);	// ディスプレイのデスクトップ上での矩形位置を取得する
+	//extern	int				GetDisplayModeNum(int DisplayIndex = 0);														// 変更可能なディスプレイモードの数を取得する
+	//extern	DISPLAYMODEDATA	GetDisplayMode(int ModeIndex, int DisplayIndex = 0);											// 変更可能なディスプレイモードの情報を取得する( ModeIndex は 0 ～ GetDisplayModeNum の戻り値-1 )
+	//extern	int				GetDisplayMaxResolution(int *SizeX, int *SizeY, int DisplayIndex = 0);								// ディスプレイの最大解像度を取得する
+	//extern	const COLORDATA *GetDispColorData(void);																		// ディスプレイのカラーデータアドレスを取得する
+	//extern	int				GetMultiDrawScreenNum(void);																		// 同時に描画を行うことができる画面の数を取得する
+	//extern	int				GetDrawFloatCoordType(void);																		// DrawGraphF 等の浮動小数点値で座標を指定する関数における座標タイプを取得する( 戻り値 : DX_DRAWFLOATCOORDTYPE_DIRECT3D9 など )
+
+	// その他設定関係関数
+	//extern	int			SetUseNormalDrawShader(int Flag);									// 通常描画にプログラマブルシェーダーを使用するかどうかを設定する( TRUE:使用する( デフォルト )  FALSE:使用しない )
+	//extern	int			SetUseSoftwareRenderModeFlag(int Flag);									// ソフトウエアレンダリングモードを使用するかどうかを設定する( TRUE:使用する  FALSE:使用しない( デフォルト ) )( DxLib_Init の前に呼ぶ必要があります )
+	//extern	int			SetNotUse3DFlag(int Flag);									// ( 同効果のSetUseSoftwareRenderModeFlag を使用して下さい )３Ｄ機能を使わないかどうかを設定する
+	//extern	int			SetUse3DFlag(int Flag);									// ( 同効果のSetUseSoftwareRenderModeFlag を使用して下さい )３Ｄ機能を使うかどうかを設定する
+	//extern	int			GetUse3DFlag(void);										// 描画に３Ｄ機能を使うかどうかを取得する
+	//extern	int			SetScreenMemToVramFlag(int Flag);									// ( 同効果のSetUseSoftwareRenderModeFlag を使用して下さい )画面のピクセルデータをＶＲＡＭに置くかどうかを設定する
+	//extern	int			GetScreenMemToSystemMemFlag(void);										// 画面のピクセルデータがシステムメモリ上に存在するかを取得する
+
+	//extern	int			SetWindowDrawRect(const RECT *DrawRect);						// 通常使用しない
+	//extern	int			RestoreGraphSystem(void);										// ＤＸライブラリのグラフィックス処理関連の復帰処理を行う
+	//extern	int			SetUseHardwareVertexProcessing(int Flag);									// ハードウエアの頂点演算処理機能を使用するかどうかを設定する( TRUE:使用する( デフォルト )  FALSE:使用しない )( DxLib_Init の前に呼ぶ必要があります )
+	//extern	int			SetUsePixelLighting(int Flag);									// ピクセル単位でライティングを行うかどうかを設定する、要 ShaderModel 3.0( TRUE:ピクセル単位のライティングを行う  FALSE:頂点単位のライティングを行う( デフォルト ) )
+	//extern	int			SetUseOldDrawModiGraphCodeFlag(int Flag);									// 古いバージョンの DrawModiGraph 関数のコードを使用するかどうかを設定する
+	//extern	int			SetUseVramFlag(int Flag);									// ( 現在効果なし )ＶＲＡＭを使用するかのフラグをセットする
+	//extern	int			GetUseVramFlag(void);										// ( 現在効果なし )２Ｄグラフィックサーフェス作成時にシステムメモリーを使用するかのフラグ取得
+	//extern	int			SetBasicBlendFlag(int Flag);									// ( 現在効果なし )簡略化ブレンド処理を行うか否かのフラグをセットする
+	//extern	int			SetUseBasicGraphDraw3DDeviceMethodFlag(int Flag);									// ( 現在効果なし )単純図形の描画に３Ｄデバイスの機能を使用するかどうかを設定する
+	//extern	int			SetUseDisplayIndex(int Index);									// ＤＸライブラリのウインドウを表示するディスプレイデバイスを設定する( -1 を指定するとマウスカーソルがあるディスプレイデバイスにＤＸライブラリのウインドウを表示する )
+	//extern	int			RenderVertex(void);										// 頂点バッファに溜まった頂点データを描画する( 特殊用途 )
+
+	// 描画パフォーマンス関係関数
+	//extern	int			GetDrawCallCount(void);										// 前々回の ScreenFlip 呼び出しから、前回の ScreenFlip 呼び出しまでの間に行われた描画コールの回数を取得する
+	//extern	float		GetFPS(void);										// フレームレート( １秒間に呼ばれる ScreenFlip の回数 )を取得する
 
 	// ライト関係関数
 	library["SetUseLighting"] = [](sol::variadic_args va) {
@@ -130,536 +611,6 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 
 
 #if 0//ndef DX_NOTUSE_DRAWFUNCTION
-
-	// 画像処理系関数プロトタイプ宣言
-
-	// グラフィックハンドル作成関係関数
-	extern	int			MakeGraph(int SizeX, int SizeY, int NotUse3DFlag = FALSE);							// 指定サイズのグラフィックハンドルを作成する
-	extern	int			MakeScreen(int SizeX, int SizeY, int UseAlphaChannel = FALSE);						// SetDrawScreen で描画対象にできるグラフィックハンドルを作成する
-	extern	int			DerivationGraph(int   SrcX, int   SrcY, int   Width, int   Height, int SrcGraphHandle);	// 指定のグラフィックハンドルの指定部分だけを抜き出して新たなグラフィックハンドルを作成する
-	extern	int			DerivationGraphF(float SrcX, float SrcY, float Width, float Height, int SrcGraphHandle);	// 指定のグラフィックハンドルの指定部分だけを抜き出して新たなグラフィックハンドルを作成する( float版 )
-	extern	int			DeleteGraph(int GrHandle, int LogOutFlag = FALSE);									// グラフィックハンドルを削除する
-	extern	int			DeleteSharingGraph(int GrHandle);															// 指定のグラフィックハンドルと、同じグラフィックハンドルから派生しているグラフィックハンドル( DerivationGraph で派生したハンドル、LoadDivGraph 読み込んで作成された複数のハンドル )を一度に削除する
-	extern	int			GetGraphNum(void);																	// 有効なグラフィックハンドルの数を取得する
-	extern	int			FillGraph(int GrHandle, int Red, int Green, int Blue, int Alpha = 255);				// グラフィックハンドルを指定の色で塗りつぶす
-	extern	int			FillRectGraph(int GrHandle, int x, int y, int Width, int Height, int Red, int Green, int Blue, int Alpha = 255);	// グラフィックハンドルの指定の範囲を指定の色で塗りつぶす
-	extern	int			SetGraphLostFlag(int GrHandle, int *LostFlag);												// 指定のグラフィックハンドルが削除された際に 1 にする変数のアドレスを設定する
-	extern	int			InitGraph(int LogOutFlag = FALSE);													// すべてのグラフィックハンドルを削除する
-	extern	int			ReloadFileGraphAll(void);																	// ファイルから画像を読み込んだ全てのグラフィックハンドルについて、再度ファイルから画像を読み込む
-
-	// シャドウマップハンドル関係関数
-	extern	int			MakeShadowMap(int SizeX, int SizeY);													// シャドウマップハンドルを作成する
-	extern	int			DeleteShadowMap(int SmHandle);															// シャドウマップハンドルを削除する
-	extern	int			SetShadowMapLightDirection(int SmHandle, VECTOR Direction);											// シャドウマップが想定するライトの方向を設定する
-	extern	int			ShadowMap_DrawSetup(int SmHandle);															// シャドウマップへの描画の準備を行う
-	extern	int			ShadowMap_DrawEnd(void);																	// シャドウマップへの描画を終了する
-	extern	int			SetUseShadowMap(int SmSlotIndex, int SmHandle);											// 描画で使用するシャドウマップを指定する、有効なスロットは０～２、SmHandle に -1 を渡すと指定のスロットのシャドウマップを解除
-	extern	int			SetShadowMapDrawArea(int SmHandle, VECTOR MinPosition, VECTOR MaxPosition);					// シャドウマップに描画する際の範囲を設定する( この関数で描画範囲を設定しない場合は視錐台を拡大した範囲が描画範囲となる )
-	extern	int			ResetShadowMapDrawArea(int SmHandle);															// SetShadowMapDrawArea の設定を解除する
-	extern	int			SetShadowMapAdjustDepth(int SmHandle, float Depth);												// シャドウマップを使用した描画時の補正深度を設定する
-	extern	int			GetShadowMapViewProjectionMatrix(int SmHandle, MATRIX * MatrixBuffer);										// シャドウマップ作成時や適用時に使用するビュー行列と射影行列を乗算した行列を取得する
-	extern	int			TestDrawShadowMap(int SmHandle, int x1, int y1, int x2, int y2);							// シャドウマップを画面にテスト描画する
-
-	// グラフィックハンドルへの画像転送関数
-	extern	int			BltBmpToGraph(const COLORDATA * BmpColorData, HBITMAP RgbBmp, HBITMAP AlphaBmp, int CopyPointX, int CopyPointY, int  GrHandle);					// ＢＭＰの内容をグラフィックハンドルに転送
-	extern	int			BltBmpToDivGraph(const COLORDATA * BmpColorData, HBITMAP RgbBmp, HBITMAP AlphaBmp, int AllNum, int XNum, int YNum, int Width, int Height, const int *GrHandle, int ReverseFlag);	// ＢＭＰの内容を分割作成したグラフィックハンドルたちに転送
-	extern	int			BltBmpOrGraphImageToGraph(const COLORDATA * BmpColorData, HBITMAP RgbBmp, HBITMAP AlphaBmp, int BmpFlag, const BASEIMAGE * RgbBaseImage, const BASEIMAGE * AlphaBaseImage, int CopyPointX, int CopyPointY, int  GrHandle);					// ＢＭＰ か BASEIMAGE をグラフィックハンドルに転送
-	extern	int			BltBmpOrGraphImageToGraph2(const COLORDATA * BmpColorData, HBITMAP RgbBmp, HBITMAP AlphaBmp, int BmpFlag, const BASEIMAGE * RgbBaseImage, const BASEIMAGE * AlphaBaseImage, const RECT * SrcRect, int DestX, int DestY, int  GrHandle);					// ＢＭＰ か BASEIMAGE の指定の領域をグラフィックハンドルに転送
-	extern	int			BltBmpOrGraphImageToDivGraph(const COLORDATA * BmpColorData, HBITMAP RgbBmp, HBITMAP AlphaBmp, int BmpFlag, const BASEIMAGE * RgbBaseImage, const BASEIMAGE * AlphaBaseImage, int AllNum, int XNum, int YNum, int   Width, int   Height, const int *GrHandle, int ReverseFlag);	// ＢＭＰ か BASEIMAGE を分割作成したグラフィックハンドルたちに転送
-	extern	int			BltBmpOrGraphImageToDivGraphF(const COLORDATA * BmpColorData, HBITMAP RgbBmp, HBITMAP AlphaBmp, int BmpFlag, const BASEIMAGE * RgbBaseImage, const BASEIMAGE * AlphaBaseImage, int AllNum, int XNum, int YNum, float Width, float Height, const int *GrHandle, int ReverseFlag);	// ＢＭＰ か BASEIMAGE を分割作成したグラフィックハンドルたちに転送( float型 )
-
-	// 画像からグラフィックハンドルを作成する関数
-	extern	int			LoadBmpToGraph(const TCHAR * FileName, int TextureFlag, int ReverseFlag, int SurfaceMode = DX_MOVIESURFACE_NORMAL);										// 画像ファイルからグラフィックハンドルを作成する
-	extern	int			LoadBmpToGraphWithStrLen(const TCHAR * FileName, size_t FileNameLength, int TextureFlag, int ReverseFlag, int SurfaceMode = DX_MOVIESURFACE_NORMAL);										// 画像ファイルからグラフィックハンドルを作成する
-	//extern	int			LoadGraph(const TCHAR * FileName, int NotUse3DFlag = FALSE);																							// 画像ファイルからグラフィックハンドルを作成する
-	extern	int			LoadGraphWithStrLen(const TCHAR * FileName, size_t FileNameLength, int NotUse3DFlag = FALSE);																							// 画像ファイルからグラフィックハンドルを作成する
-	extern	int			LoadReverseGraph(const TCHAR * FileName, int NotUse3DFlag = FALSE);																							// 画像ファイルを反転したものでグラフィックハンドルを作成する
-	extern	int			LoadReverseGraphWithStrLen(const TCHAR * FileName, size_t FileNameLength, int NotUse3DFlag = FALSE);																							// 画像ファイルを反転したものでグラフィックハンドルを作成する
-	extern	int			LoadDivGraph(const TCHAR * FileName, int AllNum, int XNum, int YNum, int   XSize, int   YSize, int *HandleArray, int NotUse3DFlag = FALSE);				// 画像ファイルを分割してグラフィックハンドルを作成する
-	extern	int			LoadDivGraphWithStrLen(const TCHAR * FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int   XSize, int   YSize, int *HandleArray, int NotUse3DFlag = FALSE);				// 画像ファイルを分割してグラフィックハンドルを作成する
-	extern	int			LoadDivGraphF(const TCHAR * FileName, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag = FALSE);				// 画像ファイルを分割してグラフィックハンドルを作成する
-	extern	int			LoadDivGraphFWithStrLen(const TCHAR * FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag = FALSE);				// 画像ファイルを分割してグラフィックハンドルを作成する
-	extern	int			LoadDivBmpToGraph(const TCHAR * FileName, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, int *HandleArray, int TextureFlag, int ReverseFlag);		// 画像ファイルを分割してグラフィックハンドルを作成する
-	extern	int			LoadDivBmpToGraphWithStrLen(const TCHAR * FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, int *HandleArray, int TextureFlag, int ReverseFlag);		// 画像ファイルを分割してグラフィックハンドルを作成する
-	extern	int			LoadDivBmpToGraphF(const TCHAR * FileName, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray, int TextureFlag, int ReverseFlag);		// 画像ファイルを分割してグラフィックハンドルを作成する
-	extern	int			LoadDivBmpToGraphFWithStrLen(const TCHAR * FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray, int TextureFlag, int ReverseFlag);		// 画像ファイルを分割してグラフィックハンドルを作成する
-	extern	int			LoadReverseDivGraph(const TCHAR * FileName, int AllNum, int XNum, int YNum, int   XSize, int   YSize, int *HandleArray, int NotUse3DFlag = FALSE);				// 画像ファイルを反転したものを分割してグラフィックハンドルを作成する
-	extern	int			LoadReverseDivGraphWithStrLen(const TCHAR * FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int   XSize, int   YSize, int *HandleArray, int NotUse3DFlag = FALSE);				// 画像ファイルを反転したものを分割してグラフィックハンドルを作成する
-	extern	int			LoadReverseDivGraphF(const TCHAR * FileName, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag = FALSE);				// 画像ファイルを反転したものを分割してグラフィックハンドルを作成する
-	extern	int			LoadReverseDivGraphFWithStrLen(const TCHAR * FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, float XSize, float YSize, int *HandleArray, int NotUse3DFlag = FALSE);				// 画像ファイルを反転したものを分割してグラフィックハンドルを作成する
-	extern	int			LoadBlendGraph(const TCHAR * FileName);																																			// 画像ファイルからブレンド用グラフィックハンドルを作成する
-	extern	int			LoadBlendGraphWithStrLen(const TCHAR * FileName, size_t FileNameLength);																													// 画像ファイルからブレンド用グラフィックハンドルを作成する
-
-	extern	int			CreateGraphFromMem(const void *RGBFileImage, int RGBFileImageSize, const void *AlphaFileImage = NULL, int AlphaFileImageSize = 0, int TextureFlag = TRUE, int ReverseFlag = FALSE);																			// メモリ上の画像イメージからグラフィックハンドルを作成する
-	extern	int			ReCreateGraphFromMem(const void *RGBFileImage, int RGBFileImageSize, int GrHandle, const void *AlphaFileImage = NULL, int AlphaFileImageSize = 0, int TextureFlag = TRUE, int ReverseFlag = FALSE);																			// メモリ上の画像イメージから既存のグラフィックハンドルにデータを転送する
-	extern	int			CreateDivGraphFromMem(const void *RGBFileImage, int RGBFileImageSize, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE, const void *AlphaFileImage = NULL, int AlphaFileImageSize = 0);			// メモリ上の画像イメージから分割グラフィックハンドルを作成する
-	extern	int			CreateDivGraphFFromMem(const void *RGBFileImage, int RGBFileImageSize, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE, const void *AlphaFileImage = NULL, int AlphaFileImageSize = 0);			// メモリ上の画像イメージから分割グラフィックハンドルを作成する( float版 )
-	extern	int			ReCreateDivGraphFromMem(const void *RGBFileImage, int RGBFileImageSize, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, const int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE, const void *AlphaFileImage = NULL, int AlphaFileImageSize = 0);			// メモリ上の画像イメージから既存の分割グラフィックハンドルにデータを転送する
-	extern	int			ReCreateDivGraphFFromMem(const void *RGBFileImage, int RGBFileImageSize, int AllNum, int XNum, int YNum, float SizeX, float SizeY, const int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE, const void *AlphaFileImage = NULL, int AlphaFileImageSize = 0);			// メモリ上の画像イメージから既存の分割グラフィックハンドルにデータを転送する( float版 )
-	extern	int			CreateGraphFromBmp(const BITMAPINFO * RGBBmpInfo, const void *RGBBmpImage, const BITMAPINFO * AlphaBmpInfo = NULL, const void *AlphaBmpImage = NULL, int TextureFlag = TRUE, int ReverseFlag = FALSE);																			// ビットマップデータからグラフィックハンドルを作成する
-	extern	int			ReCreateGraphFromBmp(const BITMAPINFO * RGBBmpInfo, const void *RGBBmpImage, int GrHandle, const BITMAPINFO * AlphaBmpInfo = NULL, const void *AlphaBmpImage = NULL, int TextureFlag = TRUE, int ReverseFlag = FALSE);																			// ビットマップデータから既存のグラフィックハンドルにデータを転送する
-	extern	int			CreateDivGraphFromBmp(const BITMAPINFO * RGBBmpInfo, const void *RGBBmpImage, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE, const BITMAPINFO * AlphaBmpInfo = NULL, const void *AlphaBmpImage = NULL);	// ビットマップデータから分割グラフィックハンドルを作成する
-	extern	int			CreateDivGraphFFromBmp(const BITMAPINFO * RGBBmpInfo, const void *RGBBmpImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE, const BITMAPINFO * AlphaBmpInfo = NULL, const void *AlphaBmpImage = NULL);	// ビットマップデータから分割グラフィックハンドルを作成する( float版 )
-	extern	int			ReCreateDivGraphFromBmp(const BITMAPINFO * RGBBmpInfo, const void *RGBBmpImage, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, const int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE, const BITMAPINFO * AlphaBmpInfo = NULL, const void *AlphaBmpImage = NULL);	// ビットマップデータから既存の分割グラフィックハンドルにデータを転送する
-	extern	int			ReCreateDivGraphFFromBmp(const BITMAPINFO * RGBBmpInfo, const void *RGBBmpImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, const int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE, const BITMAPINFO * AlphaBmpInfo = NULL, const void *AlphaBmpImage = NULL);	// ビットマップデータから既存の分割グラフィックハンドルにデータを転送する( float版 )
-	extern	int			CreateDXGraph(const BASEIMAGE * RgbBaseImage, const BASEIMAGE * AlphaBaseImage, int TextureFlag);																									// 基本イメージデータからサイズを割り出し、それに合ったグラフィックハンドルを作成する
-	extern	int			CreateGraphFromGraphImage(const BASEIMAGE * RgbBaseImage, int TextureFlag = TRUE, int ReverseFlag = FALSE);																// 基本イメージデータからグラフィックハンドルを作成する
-	extern	int			CreateGraphFromGraphImage(const BASEIMAGE * RgbBaseImage, const BASEIMAGE * AlphaBaseImage, int TextureFlag = TRUE, int ReverseFlag = FALSE);																// 基本イメージデータからグラフィックハンドルを作成する
-	extern	int			ReCreateGraphFromGraphImage(const BASEIMAGE * RgbBaseImage, int GrHandle, int TextureFlag = TRUE, int ReverseFlag = FALSE);																// 基本イメージデータから既存のグラフィックハンドルにデータを転送する
-	extern	int			ReCreateGraphFromGraphImage(const BASEIMAGE * RgbBaseImage, const BASEIMAGE * AlphaBaseImage, int GrHandle, int TextureFlag = TRUE, int ReverseFlag = FALSE);																// 基本イメージデータから既存のグラフィックハンドルにデータを転送する
-	extern	int			CreateDivGraphFromGraphImage(BASEIMAGE * RgbBaseImage, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE);																// 基本イメージデータから分割グラフィックハンドルを作成する
-	extern	int			CreateDivGraphFFromGraphImage(BASEIMAGE * RgbBaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE);																// 基本イメージデータから分割グラフィックハンドルを作成する( float版 )
-	extern	int			CreateDivGraphFromGraphImage(BASEIMAGE * RgbBaseImage, const BASEIMAGE * AlphaBaseImage, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE);																// 基本イメージデータから分割グラフィックハンドルを作成する
-	extern	int			CreateDivGraphFFromGraphImage(BASEIMAGE * RgbBaseImage, const BASEIMAGE * AlphaBaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE);																// 基本イメージデータから分割グラフィックハンドルを作成する( float版 )
-	extern	int			ReCreateDivGraphFromGraphImage(BASEIMAGE * RgbBaseImage, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, const int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE);																// 基本イメージデータから既存の分割グラフィックハンドルにデータを転送する
-	extern	int			ReCreateDivGraphFFromGraphImage(BASEIMAGE * RgbBaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, const int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE);																// 基本イメージデータから既存の分割グラフィックハンドルにデータを転送する( float版 )
-	extern	int			ReCreateDivGraphFromGraphImage(BASEIMAGE * RgbBaseImage, const BASEIMAGE * AlphaBaseImage, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, const int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE);																// 基本イメージデータから既存の分割グラフィックハンドルにデータを転送する
-	extern	int			ReCreateDivGraphFFromGraphImage(BASEIMAGE * RgbBaseImage, const BASEIMAGE * AlphaBaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, const int *HandleArray, int TextureFlag = TRUE, int ReverseFlag = FALSE);																// 基本イメージデータから既存の分割グラフィックハンドルにデータを転送する( float版 )
-	extern	int			CreateGraph(int Width, int Height, int Pitch, const void *RGBImage, const void *AlphaImage = NULL, int GrHandle = -1);																																						// メモリ上のビットマップイメージからグラフィックハンドルを作成する
-	extern	int			CreateDivGraph(int Width, int Height, int Pitch, const void *RGBImage, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, int *HandleArray, const void *AlphaImage = NULL);																								// メモリ上のビットマップイメージから分割グラフィックハンドルを作成する
-	extern	int			CreateDivGraphF(int Width, int Height, int Pitch, const void *RGBImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray, const void *AlphaImage = NULL);																								// メモリ上のビットマップイメージから分割グラフィックハンドルを作成する( float版 )
-	extern	int			ReCreateGraph(int Width, int Height, int Pitch, const void *RGBImage, int GrHandle, const void *AlphaImage = NULL);																																								// メモリ上のビットマップイメージからグラフィックハンドルを再作成する
-#ifndef DX_NON_SOFTIMAGE
-	extern	int			CreateBlendGraphFromSoftImage(int SIHandle);																														// ソフトウエアで扱うイメージからブレンド用画像グラフィックハンドルを作成する( -1:エラー  -1以外:ブレンド用グラフィックハンドル )
-	extern	int			CreateGraphFromSoftImage(int SIHandle);																														// ソフトウエアで扱うイメージからグラフィックハンドルを作成する( -1:エラー  -1以外:グラフィックハンドル )
-	extern	int			CreateGraphFromRectSoftImage(int SIHandle, int x, int y, int SizeX, int SizeY);																					// ソフトウエアで扱うイメージの指定の領域を使ってグラフィックハンドルを作成する( -1:エラー  -1以外:グラフィックハンドル )
-	extern	int			ReCreateGraphFromSoftImage(int SIHandle, int GrHandle);																											// ソフトウエアで扱うイメージから既存のグラフィックハンドルに画像データを転送する
-	extern	int			ReCreateGraphFromRectSoftImage(int SIHandle, int x, int y, int SizeX, int SizeY, int GrHandle);																		// ソフトウエアで扱うイメージから既存のグラフィックハンドルに画像データを転送する
-	extern	int			CreateDivGraphFromSoftImage(int SIHandle, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, int *HandleArray);											// ソフトウエアで扱うイメージから分割グラフィックハンドルを作成する
-	extern	int			CreateDivGraphFFromSoftImage(int SIHandle, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray);											// ソフトウエアで扱うイメージから分割グラフィックハンドルを作成する( float版 )
-	extern	int			ReCreateDivGraphFromSoftImage(int SIHandle, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, const int *HandleArray);										// ソフトウエアで扱うイメージから既存の分割グラフィックハンドルにデータを転送する
-	extern	int			ReCreateDivGraphFFromSoftImage(int SIHandle, int AllNum, int XNum, int YNum, float SizeX, float SizeY, const int *HandleArray);										// ソフトウエアで扱うイメージから既存の分割グラフィックハンドルにデータを転送する( float版 )
-#endif // DX_NON_SOFTIMAGE
-	extern	int			CreateGraphFromBaseImage(const BASEIMAGE * BaseImage);																											// 基本イメージデータからグラフィックハンドルを作成する
-	extern	int			CreateGraphFromRectBaseImage(const BASEIMAGE * BaseImage, int x, int y, int SizeX, int SizeY);																		// 基本イメージデータの指定の領域を使ってグラフィックハンドルを作成する
-	extern	int			ReCreateGraphFromBaseImage(const BASEIMAGE * BaseImage, int GrHandle);														// 基本イメージデータから既存のグラフィックハンドルに画像データを転送する
-	extern	int			ReCreateGraphFromRectBaseImage(const BASEIMAGE * BaseImage, int x, int y, int SizeX, int SizeY, int GrHandle);														// 基本イメージデータの指定の領域を使って既存のグラフィックハンドルに画像データを転送する
-	extern	int			CreateDivGraphFromBaseImage(BASEIMAGE * BaseImage, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, int *HandleArray);								// 基本イメージデータから分割グラフィックハンドルを作成する
-	extern	int			CreateDivGraphFFromBaseImage(BASEIMAGE * BaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, int *HandleArray);								// 基本イメージデータから分割グラフィックハンドルを作成する( float版 )
-	extern	int			ReCreateDivGraphFromBaseImage(BASEIMAGE * BaseImage, int AllNum, int XNum, int YNum, int   SizeX, int   SizeY, const int *HandleArray);						// 基本イメージデータから既存の分割グラフィックハンドルにデータを転送する
-	extern	int			ReCreateDivGraphFFromBaseImage(BASEIMAGE * BaseImage, int AllNum, int XNum, int YNum, float SizeX, float SizeY, const int *HandleArray);						// 基本イメージデータから既存の分割グラフィックハンドルにデータを転送する( float版 )
-	extern	int			ReloadGraph(const TCHAR * FileName, int GrHandle, int ReverseFlag = FALSE);																		// 画像ファイルからグラフィックハンドルへ画像データを転送する
-	extern	int			ReloadGraphWithStrLen(const TCHAR * FileName, size_t FileNameLength, int GrHandle, int ReverseFlag = FALSE);																		// 画像ファイルからグラフィックハンドルへ画像データを転送する
-	extern	int			ReloadDivGraph(const TCHAR * FileName, int AllNum, int XNum, int YNum, int   XSize, int   YSize, const int *HandleArray, int ReverseFlag = FALSE);	// 画像ファイルからグラフィックハンドルたちへ画像データを分割転送する
-	extern	int			ReloadDivGraphWithStrLen(const TCHAR * FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int   XSize, int   YSize, const int *HandleArray, int ReverseFlag = FALSE);	// 画像ファイルからグラフィックハンドルたちへ画像データを分割転送する
-	extern	int			ReloadDivGraphF(const TCHAR * FileName, int AllNum, int XNum, int YNum, float XSize, float YSize, const int *HandleArray, int ReverseFlag = FALSE);	// 画像ファイルからグラフィックハンドルたちへ画像データを分割転送する( float版 )
-	extern	int			ReloadDivGraphFWithStrLen(const TCHAR * FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, float XSize, float YSize, const int *HandleArray, int ReverseFlag = FALSE);	// 画像ファイルからグラフィックハンドルたちへ画像データを分割転送する( float版 )
-	extern	int			ReloadReverseGraph(const TCHAR * FileName, int GrHandle);																			// ReloadGraph の画像反転処理追加版
-	extern	int			ReloadReverseGraphWithStrLen(const TCHAR * FileName, size_t FileNameLength, int GrHandle);																			// ReloadGraph の画像反転処理追加版
-	extern	int			ReloadReverseDivGraph(const TCHAR * FileName, int AllNum, int XNum, int YNum, int   XSize, int   YSize, const int *HandleArray);		// ReloadDivGraph の画像反転処理追加版
-	extern	int			ReloadReverseDivGraphWithStrLen(const TCHAR * FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int   XSize, int   YSize, const int *HandleArray);		// ReloadDivGraph の画像反転処理追加版
-	extern	int			ReloadReverseDivGraphF(const TCHAR * FileName, int AllNum, int XNum, int YNum, float XSize, float YSize, const int *HandleArray);		// ReloadDivGraph の画像反転処理追加版( float版 )
-	extern	int			ReloadReverseDivGraphFWithStrLen(const TCHAR * FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, float XSize, float YSize, const int *HandleArray);		// ReloadDivGraph の画像反転処理追加版( float版 )
-
-	// グラフィックハンドル作成時設定係関数
-	extern	int			SetGraphColorBitDepth(int ColorBitDepth);							// SetCreateGraphColorBitDepth の旧名称
-	extern 	int			GetGraphColorBitDepth(void);										// GetCreateGraphColorBitDepth の旧名称
-	extern	int			SetCreateGraphColorBitDepth(int BitDepth);								// 作成するグラフィックハンドルの色深度を設定する
-	extern	int			GetCreateGraphColorBitDepth(void);										// 作成するグラフィックハンドルの色深度を取得する
-	extern	int			SetCreateGraphChannelBitDepth(int BitDepth);								// 作成するグラフィックハンドルの１チャンネル辺りのビット深度を設定する
-	extern	int			GetCreateGraphChannelBitDepth(void);										// 作成するグラフィックハンドルの１チャンネル辺りのビット深度を取得する
-	extern	int			SetDrawValidGraphCreateFlag(int Flag);									// SetDrawScreen に引数として渡せる( 描画対象として使用できる )グラフィックハンドルを作成するかどうかを設定する( TRUE:描画可能グラフィックハンドルを作成する  FLASE:通常のグラフィックハンドルを作成する( デフォルト ) )
-	extern	int			GetDrawValidGraphCreateFlag(void);										// SetDrawScreen に引数として渡せる( 描画対象として使用できる )グラフィックハンドルを作成するかどうかを設定を取得する
-	extern	int			SetDrawValidFlagOf3DGraph(int Flag);									// SetDrawValidGraphCreateFlag の旧名称
-	extern	int			SetLeftUpColorIsTransColorFlag(int Flag);									// 画像ファイルからグラフィックハンドルを作成する際に画像左上の色を透過色として扱うかどうかを設定する( TRUE:透過色として扱う 　FALSE:透過色として扱わない( デフォルト ) )
-	extern	int			SetUsePaletteGraphFlag(int Flag);									// 読み込む画像がパレット画像の場合、パレット画像として使用できる場合はパレット画像として使用するかどうかを設定する( TRUE:パレット画像として使用できる場合はパレット画像として使用する( デフォルト )  FALSE:パレット画像として使用できる場合もパレット画像としては使用しない( 通常タイプの画像に変換して使用する ) )
-	extern	int			SetUseBlendGraphCreateFlag(int Flag);									// ブレンド処理用画像を作成するかどうか( 要は画像の赤成分をα成分として扱うかどうか )の設定を行う( TRUE:ブレンド画像として読み込む  FALSE:通常画像として読み込む( デフォルト ) )
-	extern	int			GetUseBlendGraphCreateFlag(void);										// ブレンド処理用画像を作成するかどうか( 要は画像の赤成分をα成分として扱うかどうか )の設定を取得する
-	extern	int			SetUseAlphaTestGraphCreateFlag(int Flag);									// アルファテストを使用するグラフィックハンドルを作成するかどうかを設定する( TRUE:アルファテストを使用する( デフォルト )  FALSE:アルファテストを使用しない )
-	extern	int			GetUseAlphaTestGraphCreateFlag(void);										// アルファテストを使用するグラフィックハンドルを作成するかどうかを取得する
-	extern	int			SetUseAlphaTestFlag(int Flag);									// SetUseAlphaTestGraphCreateFlag の旧名称
-	extern	int			GetUseAlphaTestFlag(void);										// GetUseAlphaTestGraphCreateFlag の旧名称
-	extern	int			SetCubeMapTextureCreateFlag(int Flag);									// キューブマップテクスチャを作成するかどうかのフラグを設定する
-	extern	int			GetCubeMapTextureCreateFlag(void);										// キューブマップテクスチャを作成するかどうかのフラグを取得する
-	extern	int			SetUseNoBlendModeParam(int Flag);									// SetDrawBlendMode 関数の第一引数に DX_BLENDMODE_NOBLEND を代入した際に、デフォルトでは第二引数は内部で２５５を指定したことになるが、その自動２５５化をしないかどうかを設定する( TRUE:しない(第二引数の値が使用される)   FALSE:する(第二引数の値は無視されて 255 が常に使用される)(デフォルト) )αチャンネル付き画像に対して描画を行う場合のみ意味がある関数
-	extern	int			SetDrawValidAlphaChannelGraphCreateFlag(int Flag);									// SetDrawScreen の引数として渡せる( 描画対象として使用できる )αチャンネル付きグラフィックハンドルを作成するかどうかを設定する( SetDrawValidGraphCreateFlag 関数で描画対象として使用できるグラフィックハンドルを作成するように設定されていないと効果ありません )( TRUE:αチャンネル付き   FALSE:αチャンネルなし( デフォルト ) )
-	extern	int			GetDrawValidAlphaChannelGraphCreateFlag(void);										// SetDrawScreen の引数として渡せる( 描画対象として使用できる )αチャンネル付きグラフィックハンドルを作成するかどうかを取得する
-	extern	int			SetDrawValidFloatTypeGraphCreateFlag(int Flag);									// SetDrawScreen の引数として渡せる( 描画対象として使用できる )ピクセルフォーマットが浮動小数点型のグラフィックハンドルを作成するかどうかを設定する( SetDrawValidGraphCreateFlag 関数で描画対象として使用できるグラフィックハンドルを作成するように設定されていないと効果ありません )、グラフィックスデバイスが浮動小数点型のピクセルフォーマットに対応していない場合はグラフィックハンドルの作成に失敗する( TRUE:浮動小数点型　　FALSE:整数型( デフォルト ) )
-	extern	int			GetDrawValidFloatTypeGraphCreateFlag(void);										// SetDrawScreen の引数として渡せる( 描画対象として使用できる )ピクセルフォーマットが浮動小数点型のグラフィックハンドルを作成するかどうかを取得する
-	extern	int			SetDrawValidGraphCreateZBufferFlag(int Flag);									// SetDrawScreen の引数として渡せる( 描画対象として使用できる )グラフィックハンドルを作成する際に専用のＺバッファも作成するかどうかを設定する( TRUE:専用のＺバッファを作成する( デフォルト )  FALSE:専用のＺバッファは作成しない )
-	extern	int			GetDrawValidGraphCreateZBufferFlag(void);										// SetDrawScreen の引数として渡せる( 描画対象として使用できる )グラフィックハンドルを作成する際に専用のＺバッファも作成するかどうかを取得する
-	extern	int			SetCreateDrawValidGraphZBufferBitDepth(int BitDepth);								// SetDrawScreen の引数として渡せる( 描画対象として使用できる )グラフィックハンドルに適用するＺバッファのビット深度を設定する( BitDepth:ビット深度( 指定可能な値は 16, 24, 32 の何れか( SetDrawValidGraphCreateFlag 関数で描画対象として使用できるグラフィックハンドルを作成するように設定されていないと効果ありません )
-	extern	int			GetCreateDrawValidGraphZBufferBitDepth(void);										// SetDrawScreen の引数として渡せる( 描画対象として使用できる )グラフィックハンドルに適用するＺバッファのビット深度を取得する
-	extern	int			SetCreateDrawValidGraphMipLevels(int MipLevels);								// SetDrawScreen の引数として渡せる( 描画対象として使用できる )グラフィックハンドルに適用するMipMapのレベルを設定する
-	extern	int			GetCreateDrawValidGraphMipLevels(void);										// SetDrawScreen の引数として渡せる( 描画対象として使用できる )グラフィックハンドルに適用するMipMapのレベルを取得する
-	extern	int			SetCreateDrawValidGraphChannelNum(int ChannelNum);								// SetDrawScreen の引数として渡せる( 描画対象として使用できる )グラフィックハンドルに適用する色のチャンネル数を設定する( ChannelNum:チャンネル数( 指定可能な値は 1, 2, 4 の何れか( SetDrawValidGraphCreateFlag 関数で描画対象として使用できるグラフィックハンドルを作成するように設定されていないと効果ありません )
-	extern	int			GetCreateDrawValidGraphChannelNum(void);										// SetDrawScreen の引数として渡せる( 描画対象として使用できる )グラフィックハンドルに適用する色のチャンネル数を取得する
-	extern	int			SetCreateDrawValidGraphMultiSample(int Samples, int Quality);					// SetDrawScreen の引数として渡せる( 描画対象として使用できる )グラフィックハンドルに適用するマルチサンプリング( アンチエイリアシング )設定を行う( Samples:マルチサンプル処理に使用するドット数( 多いほど重くなります )  Quality:マルチサンプル処理の品質 )
-	extern	int			SetDrawValidMultiSample(int Samples, int Quality);					// SetCreateDrawValidGraphMultiSample の旧名称
-	extern	int			GetMultiSampleQuality(int Samples);									// 指定のマルチサンプル数で使用できる最大クオリティ値を取得する( 戻り値がマイナスの場合は引数のサンプル数が使用できないことを示します )
-	extern	int			SetUseTransColor(int Flag);									// 透過色機能を使用するかどうかを設定する( TRUE:使用する( デフォルト )  FALSE:使用しない )
-	extern	int			SetUseTransColorGraphCreateFlag(int Flag);									// 透過色機能を使用することを前提とした画像データの読み込み処理を行うかどうかを設定する( TRUE にすると SetDrawMode( DX_DRAWMODE_BILINEAR ); をした状態で DrawGraphF 等の浮動小数点型座標を受け取る関数で小数点以下の値を指定した場合に発生する描画結果の不自然を緩和する効果があります ( デフォルトは FALSE ) )
-	extern 	int			SetUseGraphAlphaChannel(int Flag);									// SetUseAlphaChannelGraphCreateFlag の旧名称
-	extern 	int			GetUseGraphAlphaChannel(void);										// GetUseAlphaChannelGraphCreateFlag の旧名称
-	extern 	int			SetUseAlphaChannelGraphCreateFlag(int Flag);									// αチャンネル付きグラフィックハンドルを作成するかどうかを設定する( TRUE:αチャンネル付き   FALSE:αチャンネル無し )
-	extern 	int			GetUseAlphaChannelGraphCreateFlag(void);										// αチャンネル付きグラフィックハンドルを作成するかどうかを取得する( TRUE:αチャンネル付き   FALSE:αチャンネル無し )
-	extern	int			SetUseNotManageTextureFlag(int Flag);									// Direct3D の管理テクスチャ機能を使用するグラフィックハンドルを作成するかどうかを設定する( TRUE:管理機能を使用する( デフォルト )  FALSE:管理機能を使用しない )、管理機能を使用するとグラフィックスデバイスのＶＲＡＭ容量以上の画像を扱うことができる代わりにシステムメモリの使用量が増えます
-	extern	int			GetUseNotManageTextureFlag(void);										// Direct3D の管理テクスチャ機能を使用するグラフィックハンドルを作成するかどうかを取得する
-	extern	int			SetUsePlatformTextureFormat(int PlatformTextureFormat);					// 作成するグラフィックハンドルで使用する環境依存のテクスチャフォーマットを指定する( Direct3D9環境なら DX_TEXTUREFORMAT_DIRECT3D9_R8G8B8 など、0 を渡すと解除 )
-	extern	int			GetUsePlatformTextureFormat(void);										// 作成するグラフィックハンドルで使用する環境依存のテクスチャフォーマットを取得する
-	extern	int			SetTransColor(int Red, int Green, int Blue);				// 作成するグラフィックハンドルに適用する透過色を設定する( Red,Green,Blue:透過色を光の３原色で表したもの( 各色０～２５５ ) )
-	extern	int			GetTransColor(int *Red, int *Green, int *Blue);				// 作成するグラフィックハンドルに適用する透過色を取得する
-	extern	int			SetUseDivGraphFlag(int Flag);									// ２のｎ乗ではないサイズの画像を複数のテクスチャを使用してＶＲＡＭの無駄を省くかどうかを設定する( TRUE:複数のテクスチャを使用する   FALSE:なるべく一枚のテクスチャで済ます( デフォルト ) )、複数のテクスチャを使用する場合はＶＲＡＭ容量の節約ができる代わりに速度の低下やバイリニアフィルタリング描画時にテクスチャとテクスチャの境目が良く見るとわかる等の弊害があります
-	extern	int			SetUseAlphaImageLoadFlag(int Flag);									// LoadGraph などの際にファイル名の末尾に _a が付いたアルファチャンネル用の画像ファイルを追加で読み込む処理を行うかどうかを設定する( TRUE:行う( デフォルト )  FALSE:行わない )
-	extern	int			SetUseMaxTextureSize(int Size);									// 使用するテクスチャーの最大サイズを設定する( デフォルトではグラフィックスデバイスが対応している最大テクスチャーサイズ、引数に 0 を渡すとデフォルト設定になります )
-	extern	int			SetUseGraphBaseDataBackup(int Flag);									// グラフィックハンドルを作成する際に使用した画像データのバックアップをして Direct3DDevice のデバイスロスト時に使用するかどうかを設定する( TRUE:バックアップをする( デフォルト )  FALSE:バックアップをしない )、バックアップをしないとメモリの節約になりますが、復帰に掛かる時間が長くなり、メモリ上のファイルイメージからグラフィックハンドルを作成した場合は自動復帰ができないなどの弊害があります
-	extern	int			GetUseGraphBaseDataBackup(void);										// グラフィックハンドルを作成する際に使用した画像データのバックアップをして Direct3DDevice のデバイスロスト時に使用するかどうかを取得する
-	extern	int			SetUseSystemMemGraphCreateFlag(int Flag);									// ( 現在効果なし )グラフィックハンドルが持つ画像データをシステムメモリ上に作成するかどうかを設定する( TRUE:システムメモリ上に作成  FALSE:ＶＲＡＭ上に作成( デフォルト ) )
-	extern	int			GetUseSystemMemGraphCreateFlag(void);										// ( 現在効果なし )グラフィックハンドルが持つ画像データをシステムメモリ上に作成するかどうかを取得する
-
-	// 画像情報関係関数
-	extern	const unsigned int *GetFullColorImage(int GrHandle);																// 指定のグラフィックハンドルのＡＲＧＢ８イメージを取得する( 現在動画ファイルをグラフィックハンドルで読み込んだ場合のみ使用可能 )
-
-	extern	int			GraphLock(int GrHandle, int *PitchBuf, void **DataPointBuf, COLORDATA * *ColorDataPP = NULL, int WriteOnly = FALSE);	// グラフィックメモリ領域のロック
-	extern	int			GraphUnLock(int GrHandle);																							// グラフィックメモリ領域のロック解除
-
-	extern	int			SetUseGraphZBuffer(int GrHandle, int UseFlag, int BitDepth = -1);										// グラフィックハンドル専用のＺバッファを持つかどうかを設定する( GrHandle:対象となるグラフィックハンドル( 描画対象として使用可能なグラフィックハンドルのみ有効 )  UseFlag:専用のＺバッファを持つかどうか( TRUE:持つ( デフォルト )  FALSE:持たない )  BitDepth:ビット深度( 16 or 24 or 32 ) )
-	extern	int			CopyGraphZBufferImage(int DestGrHandle, int SrcGrHandle);													// グラフィックハンドルのＺバッファの状態を別のグラフィックハンドルのＺバッファにコピーする( DestGrHandle も SrcGrHandle もＺバッファを持っている描画対象にできるグラフィックハンドルで、サイズが同じであり、且つマルチサンプリング( アンチエイリアス )設定が無いことが条件 )
-
-	extern	int			SetDeviceLostDeleteGraphFlag(int GrHandle, int DeleteFlag);														// グラフィックスデバイスのデバイスロスト発生時に指定のグラフィックハンドルを削除するかどうかを設定する( TRUE:デバイスロスト時に削除する  FALSE:デバイスロストが発生しても削除しない )
-
-	extern	int			GetGraphSize(int GrHandle, int *SizeXBuf, int *SizeYBuf);										// グラフィックハンドルが持つ画像のサイズを得る
-	extern	int			GetGraphSizeF(int GrHandle, float *SizeXBuf, float *SizeYBuf);										// グラフィックハンドルが持つ画像のサイズを得る( float型 )
-	extern	int			GetGraphTextureSize(int GrHandle, int *SizeXBuf, int *SizeYBuf);										// グラフィックハンドルが持つ一つ目のテクスチャのサイズを得る
-	extern	int			GetGraphUseBaseGraphArea(int GrHandle, int *UseX, int *UseY, int *UseSizeX, int *UseSizeY);			// LoadDivGraph や DerivationGraph で元画像の一部分を使用している場合に、指定のグラフィックハンドルが使用している元画像の範囲を取得する
-	extern	int			GetGraphMipmapCount(int GrHandle);																		// グラフィックハンドルが持つテクスチャのミップマップレベル数を取得する
-	extern	int			GetGraphFilePath(int GrHandle, TCHAR * FilePathBuffer);													// グラフィックハンドルが画像ファイルから読み込まれていた場合、その画像のファイルパスを取得する
-	extern	int			CheckDrawValidGraph(int GrHandle);																		// 指定のグラフィックハンドルが描画対象にできる( SetDrawScreen の引数に渡せる )グラフィックハンドルかどうかを取得する( 戻り値　TRUE:描画対象にできるグラフィックハンドル　FALSE:描画対象にできないグラフィックハンドル )
-
-	extern	const COLORDATA *GetTexColorData(int AlphaCh, int AlphaTest, int ColorBitDepth, int DrawValid = FALSE);				// カラーデータを得る
-	extern	const COLORDATA *GetTexColorData(const IMAGEFORMATDESC * Format);														// フォーマットに基づいたカラーデータを得る
-	extern	const COLORDATA *GetTexColorData(int FormatIndex);																		// 指定のフォーマットインデックスのカラーデータを得る
-	extern	int			GetMaxGraphTextureSize(int *SizeX, int *SizeY);																// グラフィックスデバイスが対応している最大テクスチャサイズを取得する
-	extern	int			GetValidRestoreShredPoint(void);																				// グラフィックハンドルの画像を復元する関数が登録されているかどうかを取得する( TRUE:登録されている  FALSE:登録されていない )
-	extern	int			GetCreateGraphColorData(COLORDATA * ColorData, IMAGEFORMATDESC * Format);										// ( 現在効果なし )これから新たにグラフィックを作成する場合に使用するカラー情報を取得する
-
-	// 画像パレット操作関係関数( ソフトウエア画像のみ使用可能 )
-	extern	int			GetGraphPalette(int GrHandle, int ColorIndex, int *Red, int *Green, int *Blue);						// グラフィックハンドルのパレットを取得する( ソフトウエアレンダリングモードで、且つパレット画像の場合のみ使用可能 )
-	extern  int			GetGraphOriginalPalette(int GrHandle, int ColorIndex, int *Red, int *Green, int *Blue);						// グラフィックハンドルの SetGraphPalette で変更する前のパレットを取得する( ソフトウエアレンダリングモードで、且つパレット画像の場合のみ使用可能 )
-	extern	int			SetGraphPalette(int GrHandle, int ColorIndex, unsigned int Color);									// グラフィックハンドルのパレットを変更する( ソフトウエアレンダリングモードで、且つパレット画像の場合のみ使用可能 )
-	extern	int			ResetGraphPalette(int GrHandle);																		// SetGraphPalette で変更したパレットを全て元に戻す( ソフトウエアレンダリングモードで、且つパレット画像の場合のみ使用可能 )
-
-	// 図形描画関数
-//	extern	int			DrawLine(int   x1, int   y1, int   x2, int   y2, unsigned int Color, int   Thickness = 1);							// 線を描画する
-	extern	int			DrawLineAA(float x1, float y1, float x2, float y2, unsigned int Color, float Thickness = 1.0f);							// 線を描画する( アンチエイリアス付き )
-//	extern	int			DrawBox(int   x1, int   y1, int   x2, int   y2, unsigned int Color, int FillFlag);										// 四角形を描画する
-	extern	int			DrawBoxAA(float x1, float y1, float x2, float y2, unsigned int Color, int FillFlag, float LineThickness = 1.0f);			// 四角形を描画する( アンチエイリアス付き )
-	extern	int			DrawFillBox(int   x1, int   y1, int   x2, int   y2, unsigned int Color);													// 中身を塗りつぶす四角形を描画する
-	extern	int			DrawLineBox(int   x1, int   y1, int   x2, int   y2, unsigned int Color);													// 枠だけの四角形の描画 する
-//	extern	int			DrawCircle(int   x, int   y, int   r, unsigned int Color, int FillFlag = TRUE, int   LineThickness = 1);	// 円を描画する
-	extern	int			DrawCircleAA(float x, float y, float r, int posnum, unsigned int Color, int FillFlag = TRUE, float LineThickness = 1.0f);	// 円を描画する( アンチエイリアス付き )
-	extern	int			DrawOval(int   x, int   y, int   rx, int   ry, unsigned int Color, int FillFlag, int   LineThickness = 1);	// 楕円を描画する
-	extern	int			DrawOvalAA(float x, float y, float rx, float ry, int posnum, unsigned int Color, int FillFlag, float LineThickness = 1.0f);	// 楕円を描画する( アンチエイリアス付き )
-	extern	int			DrawOval_Rect(int   x1, int   y1, int   x2, int   y2, unsigned int Color, int FillFlag);										// 指定の矩形に収まる円( 楕円 )を描画する
-//	extern	int			DrawTriangle(int   x1, int   y1, int   x2, int   y2, int   x3, int   y3, unsigned int Color, int FillFlag);										// 三角形を描画する
-	extern	int			DrawTriangleAA(float x1, float y1, float x2, float y2, float x3, float y3, unsigned int Color, int FillFlag, float LineThickness = 1.0f);			// 三角形を描画する( アンチエイリアス付き )
-	extern	int			DrawQuadrangle(int   x1, int   y1, int   x2, int   y2, int   x3, int   y3, int   x4, int   y4, unsigned int Color, int FillFlag);										// 四角形を描画する
-	extern	int			DrawQuadrangleAA(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, unsigned int Color, int FillFlag, float LineThickness = 1.0f);			// 四角形を描画する( アンチエイリアス付き )
-	extern	int			DrawRoundRect(int   x1, int   y1, int   x2, int   y2, int   rx, int   ry, unsigned int Color, int FillFlag);										// 角の丸い四角形を描画する
-	extern	int			DrawRoundRectAA(float x1, float y1, float x2, float y2, float rx, float ry, int posnum, unsigned int Color, int FillFlag, float LineThickness = 1.0f);			// 角の丸い四角形を描画する( アンチエイリアス付き )
-	extern	int			BeginAADraw(void);																																					// DrawTriangleAA などのアンチエイリアス付き図形描画の準備を行う
-	extern	int			EndAADraw(void);																																					// DrawTriangleAA などのアンチエイリアス付き図形描画の後始末を行う
-//	extern 	int			DrawPixel(int   x, int   y, unsigned int Color);													// 点を描画する
-
-	extern	int			Paint(int x, int y, unsigned int FillColor, ULONGLONG BoundaryColor = ULL_PARAM(0xffffffffffffffff));								// 指定点から境界色があるところまで塗りつぶす(境界色を -1 にすると指定点の色の領域を塗りつぶす)
-
-	extern 	int			DrawPixelSet(const POINTDATA * PointDataArray, int Num);																					// 点の集合を描画する
-	extern	int			DrawLineSet(const LINEDATA * LineDataArray, int Num);																					// 線の集合を描画する
-
-	extern	int			DrawPixel3D(VECTOR   Pos, unsigned int Color);							// ３Ｄの点を描画する
-	extern	int			DrawPixel3DD(VECTOR_D Pos, unsigned int Color);							// ３Ｄの点を描画する
-	extern	int			DrawLine3D(VECTOR   Pos1, VECTOR   Pos2, unsigned int Color);							// ３Ｄの線分を描画する
-	extern	int			DrawLine3DD(VECTOR_D Pos1, VECTOR_D Pos2, unsigned int Color);							// ３Ｄの線分を描画する
-	extern	int			DrawTriangle3D(VECTOR   Pos1, VECTOR   Pos2, VECTOR   Pos3, unsigned int Color, int FillFlag);				// ３Ｄの三角形を描画する
-	extern	int			DrawTriangle3DD(VECTOR_D Pos1, VECTOR_D Pos2, VECTOR_D Pos3, unsigned int Color, int FillFlag);				// ３Ｄの三角形を描画する
-	extern	int			DrawCube3D(VECTOR   Pos1, VECTOR   Pos2, unsigned int DifColor, unsigned int SpcColor, int FillFlag);		// ３Ｄの立方体を描画する
-	extern	int			DrawCube3DD(VECTOR_D Pos1, VECTOR_D Pos2, unsigned int DifColor, unsigned int SpcColor, int FillFlag);		// ３Ｄの立方体を描画する
-	extern	int			DrawSphere3D(VECTOR   CenterPos, float  r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag);		// ３Ｄの球体を描画する
-	extern	int			DrawSphere3DD(VECTOR_D CenterPos, double r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag);		// ３Ｄの球体を描画する
-	extern	int			DrawCapsule3D(VECTOR   Pos1, VECTOR   Pos2, float  r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag);		// ３Ｄのカプセルを描画する
-	extern	int			DrawCapsule3DD(VECTOR_D Pos1, VECTOR_D Pos2, double r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag);		// ３Ｄのカプセルを描画する
-	extern	int			DrawCone3D(VECTOR   TopPos, VECTOR   BottomPos, float  r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag);		// ３Ｄの円錐を描画する
-	extern	int			DrawCone3DD(VECTOR_D TopPos, VECTOR_D BottomPos, double r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag);		// ３Ｄの円錐を描画する
-
-	// 画像描画関数
-	extern	int			LoadGraphScreen(int x, int y, const TCHAR * GraphName, int TransFlag);										// 画像ファイルを読みこんで画面に描画する
-	extern	int			LoadGraphScreenWithStrLen(int x, int y, const TCHAR * GraphName, size_t GraphNameLength, int TransFlag);										// 画像ファイルを読みこんで画面に描画する
-
-//	extern	int			DrawGraph(int x, int y, int GrHandle, int TransFlag);															// 画像の等倍描画
-//	extern	int			DrawExtendGraph(int x1, int y1, int x2, int y2, int GrHandle, int TransFlag);															// 画像の拡大描画
-//	extern	int			DrawRotaGraph(int x, int y, double ExRate, double Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の回転描画
-	extern	int			DrawRotaGraph2(int x, int y, int cx, int cy, double ExtRate, double Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の回転描画２( 回転中心指定付き )
-	extern	int			DrawRotaGraph3(int x, int y, int cx, int cy, double ExtRateX, double ExtRateY, double Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE); 	// 画像の回転描画３( 回転中心指定付き＋縦横拡大率別指定版 )
-	extern	int			DrawRotaGraphFast(int x, int y, float  ExRate, float  Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の回転描画( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
-	extern	int			DrawRotaGraphFast2(int x, int y, int cx, int cy, float  ExtRate, float  Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の回転描画２( 回転中心指定付き )( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
-	extern	int			DrawRotaGraphFast3(int x, int y, int cx, int cy, float  ExtRateX, float  ExtRateY, float  Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE); 	// 画像の回転描画３( 回転中心指定付き＋縦横拡大率別指定版 )( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
-	extern	int			DrawModiGraph(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, int GrHandle, int TransFlag);															// 画像の自由変形描画
-	extern	int			DrawTurnGraph(int x, int y, int GrHandle, int TransFlag);															// 画像の左右反転描画
-	extern	int			DrawReverseGraph(int x, int y, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の反転描画
-
-	extern	int			DrawGraphF(float xf, float yf, int GrHandle, int TransFlag);															// 画像の描画( 座標指定が float 版 )
-	extern	int			DrawExtendGraphF(float x1f, float y1f, float x2f, float y2, int GrHandle, int TransFlag);															// 画像の拡大描画( 座標指定が float 版 )
-	extern	int			DrawRotaGraphF(float xf, float yf, double ExRate, double Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の回転描画( 座標指定が float 版 )
-	extern	int			DrawRotaGraph2F(float xf, float yf, float cxf, float cyf, double ExtRate, double Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の回転描画２( 回転中心指定付き )( 座標指定が float 版 )
-	extern	int			DrawRotaGraph3F(float xf, float yf, float cxf, float cyf, double ExtRateX, double ExtRateY, double Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE); 	// 画像の回転描画３( 回転中心指定付き＋縦横拡大率別指定版 )( 座標指定が float 版 )
-	extern	int			DrawRotaGraphFastF(float xf, float yf, float  ExRate, float  Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の回転描画( 座標指定が float 版 )( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
-	extern	int			DrawRotaGraphFast2F(float xf, float yf, float cxf, float cyf, float  ExtRate, float  Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の回転描画２( 回転中心指定付き )( 座標指定が float 版 )( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
-	extern	int			DrawRotaGraphFast3F(float xf, float yf, float cxf, float cyf, float  ExtRateX, float  ExtRateY, float  Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE); 	// 画像の回転描画３( 回転中心指定付き＋縦横拡大率別指定版 )( 座標指定が float 版 )( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
-	extern	int			DrawModiGraphF(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, int GrHandle, int TransFlag);															// 画像の自由変形描画( 座標指定が float 版 )
-	extern	int			DrawTurnGraphF(float xf, float yf, int GrHandle, int TransFlag);															// 画像の左右反転描画( 座標指定が float 版 )
-	extern	int			DrawReverseGraphF(float xf, float yf, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の反転描画( 座標指定が float 版 )
-
-	extern	int			DrawChipMap(int Sx, int Sy, int XNum, int YNum, const int *MapData, int ChipTypeNum, int MapDataPitch, const int *ChipGrHandle, int TransFlag);																											// チップ画像を使った２Ｄマップ描画
-	extern	int			DrawChipMap(int MapWidth, int MapHeight, const int *MapData, int ChipTypeNum, const int *ChipGrHandle, int TransFlag, int MapDrawPointX, int MapDrawPointY, int MapDrawWidth, int MapDrawHeight, int ScreenX, int ScreenY);	// チップ画像を使った２Ｄマップ描画
-	extern	int			DrawTile(int x1, int y1, int x2, int y2, int Tx, int Ty, double ExtRate, double Angle, int GrHandle, int TransFlag);																																	// 画像を指定領域にタイル状に描画する
-
-	extern	int			DrawRectGraph(int DestX, int DestY, int SrcX, int SrcY, int    Width, int    Height, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);				// 画像の指定矩形部分のみを等倍描画
-	extern	int			DrawRectExtendGraph(int DestX1, int DestY1, int DestX2, int DestY2, int SrcX, int SrcY, int SrcWidth, int SrcHeight, int GraphHandle, int TransFlag);																	// 画像の指定矩形部分のみを拡大描画
-	extern	int			DrawRectRotaGraph(int x, int y, int SrcX, int SrcY, int Width, int Height, double ExtRate, double Angle, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);				// 画像の指定矩形部分のみを回転描画
-	extern	int			DrawRectRotaGraph2(int x, int y, int SrcX, int SrcY, int Width, int Height, int cx, int cy, double ExtRate, double Angle, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);				// 画像の指定矩形部分のみを回転描画２( 回転中心指定付き )
-	extern	int			DrawRectRotaGraph3(int x, int y, int SrcX, int SrcY, int Width, int Height, int cx, int cy, double ExtRateX, double ExtRateY, double Angle, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);				// 画像の指定矩形部分のみを回転描画３( 回転中心指定付き＋縦横拡大率別指定版 )
-	extern	int			DrawRectRotaGraphFast(int x, int y, int SrcX, int SrcY, int Width, int Height, float ExtRate, float Angle, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);				// 画像の指定矩形部分のみを回転描画( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
-	extern	int			DrawRectRotaGraphFast2(int x, int y, int SrcX, int SrcY, int Width, int Height, int cx, int cy, float ExtRate, float Angle, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);				// 画像の指定矩形部分のみを回転描画２( 回転中心指定付き )( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
-	extern	int			DrawRectRotaGraphFast3(int x, int y, int SrcX, int SrcY, int Width, int Height, int cx, int cy, float ExtRateX, float ExtRateY, float Angle, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);				// 画像の指定矩形部分のみを回転描画３( 回転中心指定付き＋縦横拡大率別指定版 )( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
-	extern	int			DrawRectModiGraph(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, int SrcX, int SrcY, int Width, int Height, int GraphHandle, int TransFlag);																	// 画像の指定矩形部分のみを自由変形描画
-
-	extern	int			DrawRectGraphF(float DestX, float DestY, int SrcX, int SrcY, int    Width, int    Height, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の指定矩形部分のみを等倍描画( 座標指定が float 版 )
-	extern	int			DrawRectExtendGraphF(float DestX1, float DestY1, float DestX2, float DestY2, int SrcX, int SrcY, int SrcWidth, int SrcHeight, int GraphHandle, int TransFlag);															// 画像の指定矩形部分のみを拡大描画( 座標指定が float 版 )
-	extern	int			DrawRectRotaGraphF(float x, float y, int SrcX, int SrcY, int Width, int Height, double ExtRate, double Angle, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の指定矩形部分のみを回転描画( 座標指定が float 版 )
-	extern	int			DrawRectRotaGraph2F(float x, float y, int SrcX, int SrcY, int Width, int Height, float cxf, float cyf, double ExtRate, double Angle, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の指定矩形部分のみを回転描画２( 回転中心指定付き )( 座標指定が float 版 )
-	extern	int			DrawRectRotaGraph3F(float x, float y, int SrcX, int SrcY, int Width, int Height, float cxf, float cyf, double ExtRateX, double ExtRateY, double Angle, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の指定矩形部分のみを回転描画３( 回転中心指定付き＋縦横拡大率別指定版 )( 座標指定が float 版 )
-	extern	int			DrawRectRotaGraphFastF(float x, float y, int SrcX, int SrcY, int Width, int Height, float ExtRate, float  Angle, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の指定矩形部分のみを回転描画( 座標指定が float 版 )( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
-	extern	int			DrawRectRotaGraphFast2F(float x, float y, int SrcX, int SrcY, int Width, int Height, float cxf, float cyf, float ExtRate, float  Angle, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の指定矩形部分のみを回転描画２( 回転中心指定付き )( 座標指定が float 版 )( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
-	extern	int			DrawRectRotaGraphFast3F(float x, float y, int SrcX, int SrcY, int Width, int Height, float cxf, float cyf, float ExtRateX, float  ExtRateY, float  Angle, int GraphHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// 画像の指定矩形部分のみを回転描画３( 回転中心指定付き＋縦横拡大率別指定版 )( 座標指定が float 版 )( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
-	extern	int			DrawRectModiGraphF(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, int SrcX, int SrcY, int Width, int Height, int GraphHandle, int TransFlag);															// 画像の指定矩形部分のみを自由変形描画( 座標指定が float 版 )
-
-	extern	int			DrawBlendGraph(int x, int y, int GrHandle, int TransFlag, int BlendGraph, int BorderParam, int BorderRange);									// ブレンド画像と合成して画像を等倍描画する
-	extern	int			DrawBlendGraphPos(int x, int y, int GrHandle, int TransFlag, int bx, int by, int BlendGraph, int BorderParam, int BorderRange);									// ブレンド画像と合成して画像を等倍描画する( ブレンド画像の起点座標を指定する引数付き )
-
-	extern	int			DrawCircleGauge(int CenterX, int CenterY, double Percent, int GrHandle, double StartPercent = 0.0, double Scale = 1.0, int ReverseX = FALSE, int ReverseY = FALSE);										// 円グラフ的な描画を行う( GrHandle の画像の上下左右の端は透過色にしておく必要があります )
-
-	extern	int			DrawGraphToZBuffer(int X, int Y, int GrHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */);														// Ｚバッファに対して画像の等倍描画
-	extern	int			DrawTurnGraphToZBuffer(int x, int y, int GrHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */);														// Ｚバッファに対して画像の左右反転描画
-	extern	int			DrawReverseGraphToZBuffer(int x, int y, int GrHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// Ｚバッファに対して画像の反転描画
-	extern	int			DrawExtendGraphToZBuffer(int x1, int y1, int x2, int y2, int GrHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */);														// Ｚバッファに対して画像の拡大描画
-	extern	int			DrawRotaGraphToZBuffer(int x, int y, double ExRate, double Angle, int GrHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// Ｚバッファに対して画像の回転描画
-	extern	int			DrawRotaGraph2ToZBuffer(int x, int y, int cx, int cy, double ExtRate, double Angle, int GrHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// Ｚバッファに対して画像の回転描画２( 回転中心指定付き )
-	extern	int			DrawRotaGraph3ToZBuffer(int x, int y, int cx, int cy, double ExtRateX, double ExtRateY, double Angle, int GrHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE); 	// Ｚバッファに対して画像の回転描画３( 回転中心指定付き＋縦横拡大率別指定版 )
-	extern	int			DrawRotaGraphFastToZBuffer(int x, int y, float ExRate, float Angle, int GrHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// Ｚバッファに対して画像の回転描画( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
-	extern	int			DrawRotaGraphFast2ToZBuffer(int x, int y, int cx, int cy, float ExtRate, float Angle, int GrHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);	// Ｚバッファに対して画像の回転描画２( 回転中心指定付き )( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
-	extern	int			DrawRotaGraphFast3ToZBuffer(int x, int y, int cx, int cy, float ExtRateX, float ExtRateY, float Angle, int GrHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE); 	// Ｚバッファに対して画像の回転描画３( 回転中心指定付き＋縦横拡大率別指定版 )( 高速版、座標計算のアルゴリズムが簡略化されています、描画結果に不都合が無ければこちらの方が高速です )
-	extern	int			DrawModiGraphToZBuffer(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, int GrHandle, int WriteZMode /* DX_ZWRITE_MASK 等 */);														// Ｚバッファに対して画像の自由変形描画
-	extern	int			DrawBoxToZBuffer(int x1, int y1, int x2, int y2, int FillFlag, int WriteZMode /* DX_ZWRITE_MASK 等 */);														// Ｚバッファに対して矩形の描画
-	extern	int			DrawCircleToZBuffer(int x, int y, int r, int FillFlag, int WriteZMode /* DX_ZWRITE_MASK 等 */);														// Ｚバッファに対して円の描画
-	extern	int			DrawTriangleToZBuffer(int x1, int y1, int x2, int y2, int x3, int y3, int FillFlag, int WriteZMode /* DX_ZWRITE_MASK 等 */);														// Ｚバッファに対して三角形を描画する
-	extern	int			DrawQuadrangleToZBuffer(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4, int FillFlag, int WriteZMode /* DX_ZWRITE_MASK 等 */);														// Ｚバッファに対して四角形を描画する
-	extern	int			DrawRoundRectToZBuffer(int x1, int y1, int x2, int y2, int rx, int ry, int FillFlag, int WriteZMode /* DX_ZWRITE_MASK 等 */);														// Ｚバッファに対して角の丸い四角形を描画する
-
-	extern	int			DrawPolygon(const VERTEX * VertexArray, int PolygonNum, int GrHandle, int TransFlag, int UVScaling = FALSE);		// ２Ｄポリゴンを描画する( Vertex:三角形を形成する頂点配列の先頭アドレス( 頂点の数はポリゴンの数×３ )  PolygonNum:描画するポリゴンの数  GrHandle:使用するグラフィックハンドル  TransFlag:透過色処理を行うかどうか( TRUE:行う  FALSE:行わない )  UVScaling:基本FALSEでOK )
-	extern	int			DrawPolygon2D(const VERTEX2D * VertexArray, int PolygonNum, int GrHandle, int TransFlag);							// ２Ｄポリゴンを描画する
-	extern	int			DrawPolygon3D(const VERTEX3D * VertexArray, int PolygonNum, int GrHandle, int TransFlag);							// ３Ｄポリゴンを描画する
-	extern	int			DrawPolygonIndexed2D(const VERTEX2D * VertexArray, int VertexNum, const unsigned short *IndexArray, int PolygonNum, int GrHandle, int TransFlag);							// ２Ｄポリゴンを描画する( 頂点インデックスを使用 )
-	extern	int			DrawPolygonIndexed3D(const VERTEX3D * VertexArray, int VertexNum, const unsigned short *IndexArray, int PolygonNum, int GrHandle, int TransFlag);							// ３Ｄポリゴンを描画する( 頂点インデックスを使用 )
-	extern	int			DrawPolygonIndexed3DBase(const VERTEX_3D * VertexArray, int VertexNum, const unsigned short *IndexArray, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */, int GrHandle, int TransFlag);							// ３Ｄポリゴンを描画する( 頂点インデックスを使用 )( 旧バージョン用 )
-	extern	int			DrawPolygon3DBase(const VERTEX_3D * VertexArray, int VertexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */, int GrHandle, int TransFlag);							// ３Ｄポリゴンを描画する( 旧バージョン用 )
-	extern	int			DrawPolygon3D(const VERTEX_3D * VertexArray, int PolygonNum, int GrHandle, int TransFlag);							// ３Ｄポリゴンを描画する( 旧バージョン用 )
-
-	extern	int			DrawPolygonBase(const VERTEX * VertexArray, int VertexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */, int GrHandle, int TransFlag, int UVScaling = FALSE);		// ２Ｄプリミティブを描画する
-	extern	int			DrawPrimitive2D(const VERTEX2D * VertexArray, int VertexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */, int GrHandle, int TransFlag);							// ２Ｄプリミティブを描画する
-	extern	int			DrawPrimitive3D(const VERTEX3D * VertexArray, int VertexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */, int GrHandle, int TransFlag);							// ３Ｄプリミティブを描画する
-	extern	int			DrawPrimitiveIndexed2D(const VERTEX2D * VertexArray, int VertexNum, const unsigned short *IndexArray, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */, int GrHandle, int TransFlag);							// ２Ｄプリミティブを描画する(頂点インデックス使用)
-	extern	int			DrawPrimitiveIndexed3D(const VERTEX3D * VertexArray, int VertexNum, const unsigned short *IndexArray, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */, int GrHandle, int TransFlag);							// ３Ｄプリミティブを描画する(頂点インデックス使用)
-
-	extern	int			DrawPolygon3D_UseVertexBuffer(int VertexBufHandle, int GrHandle, int TransFlag);		// 頂点バッファを使用して３Ｄポリゴンを描画する
-	extern	int			DrawPrimitive3D_UseVertexBuffer(int VertexBufHandle, int PrimitiveType  /* DX_PRIMTYPE_TRIANGLELIST 等 */, int GrHandle, int TransFlag);		// 頂点バッファを使用して３Ｄプリミティブを描画する
-	extern	int			DrawPrimitive3D_UseVertexBuffer2(int VertexBufHandle, int PrimitiveType  /* DX_PRIMTYPE_TRIANGLELIST 等 */, int StartVertex, int UseVertexNum, int GrHandle, int TransFlag);		// 頂点バッファを使用して３Ｄプリミティブを描画する
-	extern	int			DrawPolygonIndexed3D_UseVertexBuffer(int VertexBufHandle, int IndexBufHandle, int GrHandle, int TransFlag);		// 頂点バッファとインデックスバッファを使用して３Ｄポリゴンを描画する
-	extern	int			DrawPrimitiveIndexed3D_UseVertexBuffer(int VertexBufHandle, int IndexBufHandle, int PrimitiveType  /* DX_PRIMTYPE_TRIANGLELIST 等 */, int GrHandle, int TransFlag);		// 頂点バッファとインデックスバッファを使用して３Ｄプリミティブを描画する
-	extern	int			DrawPrimitiveIndexed3D_UseVertexBuffer2(int VertexBufHandle, int IndexBufHandle, int PrimitiveType  /* DX_PRIMTYPE_TRIANGLELIST 等 */, int BaseVertex, int StartVertex, int UseVertexNum, int StartIndex, int UseIndexNum, int GrHandle, int TransFlag);		// 頂点バッファとインデックスバッファを使用して３Ｄプリミティブを描画する
-
-	extern	int			DrawGraph3D(float x, float y, float z, int GrHandle, int TransFlag);																// 画像の３Ｄ描画
-	extern	int			DrawExtendGraph3D(float x, float y, float z, double ExRateX, double ExRateY, int GrHandle, int TransFlag);																// 画像の拡大３Ｄ描画
-	extern	int			DrawRotaGraph3D(float x, float y, float z, double ExRate, double Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);		// 画像の回転３Ｄ描画
-	extern	int			DrawRota2Graph3D(float x, float y, float z, float cx, float cy, double ExtRateX, double ExtRateY, double Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);		// 画像の回転３Ｄ描画(回転中心指定型)
-	extern	int			DrawModiBillboard3D(VECTOR Pos, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4, int GrHandle, int TransFlag);																// 画像の自由変形３Ｄ描画
-	extern	int			DrawBillboard3D(VECTOR Pos, float cx, float cy, float Size, float Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);		// ３Ｄ空間上に画像を描画
-
-
-	// 描画設定関係関数
-//	extern	int			SetDrawMode(int DrawMode);												// 描画モードを設定する
-//	extern	int			GetDrawMode(void);														// 描画モードを取得する
-//	extern	int			SetDrawBlendMode(int BlendMode, int BlendParam);								// 描画ブレンドモードを設定する
-//	extern	int			GetDrawBlendMode(int *BlendMode, int *BlendParam);								// 描画ブレンドモードを取得する
-	extern	int			SetDrawAlphaTest(int TestMode, int TestParam);									// 描画時のアルファテストの設定を行う( TestMode:テストモード( DX_CMP_GREATER等 -1でデフォルト動作に戻す )  TestParam:描画アルファ値との比較に使用する値( 0～255 ) )
-	extern	int			GetDrawAlphaTest(int *TestMode, int *TestParam);								// 描画時のアルファテストの設定を取得する( TestMode:テストモード( DX_CMP_GREATER等 -1でデフォルト動作に戻す )  TestParam:描画アルファ値との比較に使用する値( 0～255 ) )
-	extern	int			SetBlendGraph(int BlendGraph, int BorderParam, int BorderRange);			// ( SetBlendGraphParam の BlendType = DX_BLENDGRAPHTYPE_WIPE の処理を行う旧関数 )描画処理時に描画する画像とブレンドするαチャンネル付き画像をセットする( BlendGraph を -1 でブレンド機能を無効 )
-	extern	int			SetBlendGraphParam(int BlendGraph, int BlendType, ...);							// 描画処理時に描画する画像とブレンドする画像のブレンド設定を行う、BlendGraph を -1 にすれば設定を解除、その場合 BlendType とその後ろのパラメータは無視される
-	//		int			SetBlendGraphParam(					int BlendGraph, int BlendType = DX_BLENDGRAPHTYPE_NORMAL, int Ratio = ( 0( ブレンド率０％ )～255( ブレンド率１００％ ) ) ) ;
-	//		int			SetBlendGraphParam(					int BlendGraph, int BlendType = DX_BLENDGRAPHTYPE_WIPE, int BorderParam = 境界位置(０～２５５), int BorderRange = 境界幅(指定できる値は１、６４、１２８、２５５の４つ) ) ;
-	//		int			SetBlendGraphParam(					int BlendGraph, int BlendType = DX_BLENDGRAPHTYPE_ALPHA ) ;
-	extern	int			SetBlendGraphPosition(int x, int y);												// ブレンド画像の起点座標をセットする
-	extern	int			SetBlendGraphPositionMode(int BlendGraphPositionMode /* DX_BLENDGRAPH_POSMODE_DRAWGRAPH など */);	// ブレンド画像の適応座標モードを設定する
-	extern	int			SetDrawBright(int RedBright, int GreenBright, int BlueBright);				// 描画輝度を設定する
-	extern	int			GetDrawBright(int *Red, int *Green, int *Blue);								// 描画輝度を取得する
-	extern	int			SetWriteAlphaChannelFlag(int Flag);													// 描画先のアルファチャンネルの内容を書き換えるかを設定する( FALSE:書き換えない  TRUE:書き換える( デフォルト ) )
-	extern	int			GetWriteAlphaChannelFlag(void);														// 描画先のアルファチャンネルの内容を書き換えるかを取得する( FALSE:書き換えない  TRUE:書き換える( デフォルト ) )
-	extern	int			CheckSeparateAlphaBlendEnable(void);														// 描画先のアルファチャンネルの内容を書き換えないことができるかどうかを取得する( TRUE:書き換えないことができる  FALSE:書き換えないことができない )
-	extern	int			SetIgnoreDrawGraphColor(int EnableFlag);												// 描画する画像のＲＧＢ成分を無視するかどうかを指定する( EnableFlag:この機能を使うかどうか( TRUE:使う  FALSE:使わない( デフォルト ) ) )
-	extern	int			SetMaxAnisotropy(int MaxAnisotropy);											// 最大異方性値を設定する
-	extern	int			SetUseLarge3DPositionSupport(int UseFlag);													// ３Ｄ処理で使用する座標値が 10000000.0f などの大きな値になっても描画の崩れを小さく抑える処理を使用するかどうかを設定する、DxLib_Init の呼び出し前でのみ使用可能( TRUE:描画の崩れを抑える処理を使用する( CPU負荷が上がります )　　FALSE:描画の崩れを抑える処理は使用しない( デフォルト ) )
-
-	extern	int			SetUseZBufferFlag(int Flag);													// Ｚバッファを使用するかどうかを設定する( ２Ｄと３Ｄ描画に影響 )( TRUE:Ｚバッファを使用する  FALSE:Ｚバッファを使用しない( デフォルト ) )
-	extern	int			SetWriteZBufferFlag(int Flag);													// Ｚバッファに書き込みを行うかどうかを設定する( ２Ｄと３Ｄ描画に影響 )( TRUE:書き込みを行う  FALSE:書き込みを行わない( デフォルト ) )
-	extern	int			SetZBufferCmpType(int CmpType /* DX_CMP_NEVER 等 */);							// ＺバッファのＺ値と書き込むＺ値との比較モードを設定する( ２Ｄと３Ｄ描画に影響 )( CmpType:DX_CMP_NEVER等( デフォルト:DX_CMP_LESSEQUAL ) )
-	extern	int			SetZBias(int Bias);													// 書き込むＺ値のバイアスを設定する( ２Ｄと３Ｄ描画に影響 )( Bias:バイアス値( デフォルト:0 ) )
-	extern	int			SetUseZBuffer3D(int Flag);													// Ｚバッファを使用するかどうかを設定する( ３Ｄ描画のみに影響 )( TRUE:Ｚバッファを使用する  FALSE:Ｚバッファを使用しない( デフォルト ) )
-	extern	int			SetWriteZBuffer3D(int Flag);													// Ｚバッファに書き込みを行うかどうかを設定する( ３Ｄ描画のみに影響 )( TRUE:書き込みを行う  FALSE:書き込みを行わない( デフォルト ) )
-	extern	int			SetZBufferCmpType3D(int CmpType /* DX_CMP_NEVER 等 */);							// ＺバッファのＺ値と書き込むＺ値との比較モードを設定する( ３Ｄ描画のみに影響 )( CmpType:DX_CMP_NEVER等( デフォルト:DX_CMP_LESSEQUAL ) )
-	extern	int			SetZBias3D(int Bias);													// 書き込むＺ値のバイアスを設定する( ３Ｄ描画のみに影響 )( Bias:バイアス値( デフォルト:0 ) )
-	extern	int			SetDrawZ(float Z);														// ２Ｄ描画でＺバッファに書き込むＺ値を設定する( Z:書き込むＺ値( デフォルト:0.2f ) )
-
-//	extern	int			SetDrawArea(int x1, int y1, int x2, int y2);								// 描画可能領域の設定する
-//	extern	int			GetDrawArea(RECT * Rect);													// 描画可能領域を取得する
-//	extern	int			SetDrawAreaFull(void);														// 描画可能領域を描画対象画面全体にする
-//	extern	int			SetDraw3DScale(float Scale);													// ３Ｄ描画の拡大率を設定する
-
-	extern	int			SetRestoreShredPoint(void (*ShredPoint)(void));								// SetRestoreGraphCallback の旧名
-	extern	int			SetRestoreGraphCallback(void (*Callback)(void));									// グラフィックハンドル復元関数を登録する
-	extern	int			RunRestoreShred(void);														// グラフィック復元関数を実行する
-	extern	int			SetGraphicsDeviceRestoreCallbackFunction(void (*Callback)(void *Data), void *CallbackData);	// グラフィックスデバイスがロストから復帰した際に呼ばれるコールバック関数を設定する
-	extern	int			SetGraphicsDeviceLostCallbackFunction(void (*Callback)(void *Data), void *CallbackData);	// グラフィックスデバイスがロストから復帰する前に呼ばれるコールバック関数を設定する
-
-	extern	int			SetTransformTo2D(const MATRIX * Matrix);										// ２Ｄ描画に使用される変換行列を設定する
-	extern	int			SetTransformTo2DD(const MATRIX_D * Matrix);										// ２Ｄ描画に使用される変換行列を設定する
-	extern	int			ResetTransformTo2D(void);														// ２Ｄ描画用に使用する変換行列の設定を初期状態に戻す
-	extern	int			SetTransformToWorld(const MATRIX * Matrix);										// ローカル座標からワールド座標に変換するための行列を設定する
-	extern	int			SetTransformToWorldD(const MATRIX_D * Matrix);										// ローカル座標からワールド座標に変換するための行列を設定する
-	extern	int			GetTransformToWorldMatrix(MATRIX * MatBuf);										// ローカル座標からワールド座標に変換するための行列を取得する
-	extern	int			GetTransformToWorldMatrixD(MATRIX_D * MatBuf);										// ローカル座標からワールド座標に変換するための行列を取得する
-	extern	int			SetTransformToView(const MATRIX * Matrix);										// ワールド座標からビュー座標に変換するための行列を設定する
-	extern	int			SetTransformToViewD(const MATRIX_D * Matrix);										// ワールド座標からビュー座標に変換するための行列を設定する
-	extern	int			GetTransformToViewMatrix(MATRIX * MatBuf);										// ワールド座標からビュー座標に変換するための行列を取得する
-	extern	int			GetTransformToViewMatrixD(MATRIX_D * MatBuf);										// ワールド座標からビュー座標に変換するための行列を取得する
-	extern	int			SetTransformToProjection(const MATRIX * Matrix);										// ビュー座標からプロジェクション座標に変換するための行列を設定する
-	extern	int			SetTransformToProjectionD(const MATRIX_D * Matrix);										// ビュー座標からプロジェクション座標に変換するための行列を設定する
-	extern	int			GetTransformToProjectionMatrix(MATRIX * MatBuf);										// ビュー座標からプロジェクション座標に変換するための行列を取得する
-	extern	int			GetTransformToProjectionMatrixD(MATRIX_D * MatBuf);										// ビュー座標からプロジェクション座標に変換するための行列を取得する
-	extern	int			SetTransformToViewport(const MATRIX * Matrix);										// ビューポート行列を設定する
-	extern	int			SetTransformToViewportD(const MATRIX_D * Matrix);										// ビューポート行列を設定する
-	extern	int			GetTransformToViewportMatrix(MATRIX * MatBuf);											// ビューポート行列を取得する
-	extern	int			GetTransformToViewportMatrixD(MATRIX_D * MatBuf);											// ビューポート行列を取得する
-	extern	int			GetTransformToAPIViewportMatrix(MATRIX * MatBuf);											// Direct3Dで自動適用されるビューポート行列を取得する
-	extern	int			GetTransformToAPIViewportMatrixD(MATRIX_D * MatBuf);											// Direct3Dで自動適用されるビューポート行列を取得する
-	extern	int			SetDefTransformMatrix(void);														// デフォルトの変換行列を設定する
-	extern	int			GetTransformPosition(VECTOR * LocalPos, float *x, float *y);					// ローカル座標からスクリーン座標を取得する
-	extern	int			GetTransformPositionD(VECTOR_D * LocalPos, double *x, double *y);					// ローカル座標からスクリーン座標を取得する
-	extern	float		GetBillboardPixelSize(VECTOR   WorldPos, float  WorldSize);							// ワールド空間上のビルボードのサイズからスクリーンに投影した場合のピクセル単位のサイズを取得する
-	extern	double		GetBillboardPixelSizeD(VECTOR_D WorldPos, double WorldSize);							// ワールド空間上のビルボードのサイズからスクリーンに投影した場合のピクセル単位のサイズを取得する
-	extern	VECTOR		ConvWorldPosToViewPos(VECTOR   WorldPos);											// ワールド座標をビュー座標に変換する
-	extern	VECTOR_D	ConvWorldPosToViewPosD(VECTOR_D WorldPos);											// ワールド座標をビュー座標に変換する
-	extern	VECTOR		ConvWorldPosToScreenPos(VECTOR   WorldPos);											// ワールド座標をスクリーン座標に変換する
-	extern	VECTOR_D	ConvWorldPosToScreenPosD(VECTOR_D WorldPos);											// ワールド座標をスクリーン座標に変換する
-	extern	FLOAT4		ConvWorldPosToScreenPosPlusW(VECTOR   WorldPos);											// ワールド座標をスクリーン座標に変換する、最後のＸＹＺ座標をＷで割る前の値を得る
-	extern	DOUBLE4		ConvWorldPosToScreenPosPlusWD(VECTOR_D WorldPos);											// ワールド座標をスクリーン座標に変換する、最後のＸＹＺ座標をＷで割る前の値を得る
-	extern	VECTOR		ConvScreenPosToWorldPos(VECTOR   ScreenPos);											// スクリーン座標をワールド座標に変換する
-	extern	VECTOR_D	ConvScreenPosToWorldPosD(VECTOR_D ScreenPos);											// スクリーン座標をワールド座標に変換する
-	extern	VECTOR		ConvScreenPosToWorldPos_ZLinear(VECTOR   ScreenPos);											// スクリーン座標をワールド座標に変換する( Z座標が線形 )
-	extern	VECTOR_D	ConvScreenPosToWorldPos_ZLinearD(VECTOR_D ScreenPos);											// スクリーン座標をワールド座標に変換する( Z座標が線形 )
-
-	extern	int			SetUseCullingFlag(int Flag);													// SetUseBackCulling の旧名称
-	extern	int			SetUseBackCulling(int Flag /* DX_CULLING_LEFT 等 */);							// ポリゴンカリングモードを設定する
-	extern	int			GetUseBackCulling(void);														// ポリゴンカリングモードを取得する
-
-	extern	int			SetTextureAddressMode(int Mode /* DX_TEXADDRESS_WRAP 等 */, int Stage = -1);		// テクスチャアドレスモードを設定する
-	extern	int			SetTextureAddressModeUV(int ModeU, int ModeV, int Stage = -1);						// テクスチャアドレスモードを設定する( U と V を別々に設定する )
-	extern	int			SetTextureAddressTransform(float TransU, float TransV, float ScaleU, float ScaleV, float RotCenterU, float RotCenterV, float Rotate);	// テクスチャ座標変換パラメータを設定する
-	extern	int			SetTextureAddressTransformMatrix(MATRIX Matrix);												// テクスチャ座標変換行列を設定する
-	extern	int			ResetTextureAddressTransform(void);														// テクスチャ座標変換設定をリセットする
-
-	extern	int			SetFogEnable(int Flag);													// フォグを有効にするかどうかを設定する( TRUE:有効  FALSE:無効 )
-	extern	int			GetFogEnable(void);														// フォグが有効かどうかを取得する( TRUE:有効  FALSE:無効 )
-	extern	int			SetFogMode(int Mode /* DX_FOGMODE_NONE 等 */);							// フォグモードを設定する
-	extern	int			GetFogMode(void);														// フォグモードを取得する
-	extern	int			SetFogColor(int  r, int  g, int  b);										// フォグカラーを設定する
-	extern	int			GetFogColor(int *r, int *g, int *b);										// フォグカラーを取得する
-	extern	int			SetFogStartEnd(float  start, float  end);									// フォグが始まる距離と終了する距離を設定する( 0.0f ～ 1.0f )
-	extern	int			GetFogStartEnd(float *start, float *end);									// フォグが始まる距離と終了する距離を取得する( 0.0f ～ 1.0f )
-	extern	int			SetFogDensity(float density);												// フォグの密度を設定する( 0.0f ～ 1.0f )
-	extern	float		GetFogDensity(void);														// フォグの密度を取得する( 0.0f ～ 1.0f )
-
-
-	// 画面関係関数
-	extern	unsigned int	GetPixel(int x, int y);																// 指定座標の色を取得する
-	extern	COLOR_F			GetPixelF(int x, int y);																// 指定座標の色を取得する( float型 )
-	extern	int				SetBackgroundColor(int Red, int  Green, int  Blue, int  Alpha = 0);							// メインウインドウの背景色を設定する( Red,Green,Blue,Alpha:それぞれ ０～２５５ )
-	extern	int				GetBackgroundColor(int *Red, int *Green, int *Blue, int *Alpha = NULL);							// メインウインドウの背景色を取得する( Red,Green,Blue,Alpha:それぞれ ０～２５５ )
-	extern	int				GetDrawScreenGraph(int x1, int y1, int x2, int y2, int GrHandle, int UseClientFlag = TRUE);	// 描画先の画面から指定領域の画像情報をグラフィックハンドルに転送する
-	extern	int				BltDrawValidGraph(int TargetDrawValidGrHandle, int x1, int y1, int x2, int y2, int DestX, int DestY, int DestGrHandle);							// SetDrawScreen で描画対象にできるグラフィックハンドルから指定領域の画像情報を別のグラフィックハンドルに転送する
-//	extern 	int				ScreenFlip(void);																		// 裏画面と表画面の内容を交換する
-//	extern 	int				ScreenCopy(void);																		// 裏画面の内容を表画面に転送する
-//	extern	int				WaitVSync(int SyncNum);																	// 垂直同期信号を待つ
-//	extern	int				ClearDrawScreen(const RECT * ClearRect = NULL);												// 画面をクリアする
-	extern	int				ClearDrawScreenZBuffer(const RECT * ClearRect = NULL);												// 画面のＺバッファをクリアする
-	extern	int				ClsDrawScreen(void);																		// ClearDrawScreenの旧名称
-//	extern	int				SetDrawScreen(int DrawScreen);																// 描画先画面を設定する( MakeScreen で作成したグラフィックハンドルも渡すことができます )
-//	extern	int				GetDrawScreen(void);																		// 描画先画面を取得する
-	extern	int				GetActiveGraph(void);																		// GetDrawScreen の旧名称
-	extern	int				SetUseSetDrawScreenSettingReset(int UseFlag);																	// SetDrawScreen を実行した際にカメラや描画範囲の設定をリセットするかを設定する( UseFlag  TRUE:リセットする( デフォルト )  FALSE:リセットしない )
-	extern	int				GetUseSetDrawScreenSettingReset(void);																		// SetDrawScreen を実行した際にカメラや描画範囲の設定をリセットするかを取得する
-	extern	int				SetDrawZBuffer(int DrawScreen);																// 描画先Ｚバッファのセット( DrawScreen 付属のＺバッファを描画先Ｚバッファにする、DrawScreen を -1 にするとデフォルトの描画先Ｚバッファに戻る )
-//	extern	int				SetGraphMode(int ScreenSizeX, int ScreenSizeY, int ColorBitDepth, int RefreshRate = 60);	// 画面モードを設定する
-	extern	int				SetUserScreenImage(void *Image, int PixelFormat /* DX_USER_SCREEN_PIXEL_FORMAT_R5G6B5 等 */);	// 画面のメモリイメージをセットする( DxLib_Init の前で呼ぶ必要がある( DxLib_Init の前に一度でも呼んでいれば、DxLib_Init 後は Image のアドレスのみの変更目的で呼ぶことは可能 )、PixelFormat に DX_USER_SCREEN_PIXEL_FORMAT_R5G6B5 又は DX_USER_SCREEN_PIXEL_FORMAT_X8R8G8B8 の二つ以外を指定した場合はＤＸライブラリの描画関数は一切使用できなくなります )
-	extern	int				SetFullScreenResolutionMode(int ResolutionMode /* DX_FSRESOLUTIONMODE_NATIVE 等 */);						// フルスクリーン解像度モードを設定する
-	extern	int				GetFullScreenResolutionMode(int *ResolutionMode, int *UseResolutionMode);									// フルスクリーン解像度モードを取得する( UseResolutionMode は実際に使用されている解像度モード( 例えば DX_FSRESOLUTIONMODE_NATIVE を指定していてもモニタが指定の解像度に対応していない場合は UseResolutionMode が DX_FSRESOLUTIONMODE_DESKTOP や DX_FSRESOLUTIONMODE_MAXIMUM になります ) )
-	extern	int				SetFullScreenScalingMode(int ScalingMode /* DX_FSSCALINGMODE_NEAREST 等 */, int FitScaling = FALSE);	// フルスクリーンモード時の画面拡大モードを設定する
-	extern	int				SetEmulation320x240(int Flag);																	// ６４０ｘ４８０の画面で３２０ｘ２４０の画面解像度にするかどうかを設定する、６４０ｘ４８０以外の解像度では無効( TRUE:有効  FALSE:無効 )
-	extern	int				SetZBufferSize(int ZBufferSizeX, int ZBufferSizeY);											// 画面用のＺバッファのサイズを設定する
-	extern	int				SetZBufferBitDepth(int BitDepth);																// 画面用のＺバッファのビット深度を設定する( 16 or 24 or 32 )
-//	extern	int				SetWaitVSyncFlag(int Flag);																	// ScreenFlip 実行時にＶＳＹＮＣ待ちをするかどうかを設定する
-	extern	int				GetWaitVSyncFlag(void);																		// ScreenFlip 実行時にＶＳＹＮＣ待ちをするかどうかを取得する
-	extern	int				SetFullSceneAntiAliasingMode(int Samples, int Quality);													// 画面のフルスクリーンアンチエイリアスモードの設定を行う( DxLib_Init の前でのみ使用可能 )
-	extern	int				SetGraphDisplayArea(int x1, int y1, int x2, int y2);												// ScreenFlip 時に表画面全体に転送する裏画面の領域を設定する( DxLib_Init の前でのみ使用可能 )
-	extern	int				SetChangeScreenModeGraphicsSystemResetFlag(int Flag);																	// 画面モード変更時( とウインドウモード変更時 )にグラフィックスシステムの設定やグラフィックハンドルをリセットするかどうかを設定する( TRUE:リセットする( デフォルト )  FALSE:リセットしない )
-	extern	int				GetScreenState(int *SizeX, int *SizeY, int *ColorBitDepth);									// 現在の画面の解像度とカラービット数を得る 
-	extern	int				GetDrawScreenSize(int *XBuf, int *YBuf);														// 描画先のサイズを取得する
-	extern	int				GetScreenBitDepth(void);																		// 画面のカラービット数を取得する
-	extern	int				GetColorBitDepth(void);																		// GetScreenBitDepth の旧名称
-	extern	int				GetChangeDisplayFlag(void);																		// 画面モードが変更されているかどうかを取得する
-	extern	int				GetVideoMemorySize(int *AllSize, int *FreeSize);													// ( 現在正常に動作しません )ビデオメモリの容量を得る
-	extern	int				GetRefreshRate(void);																		// 現在の画面のリフレッシュレートを取得する
-	extern	int				GetDisplayNum(void);																		// ディスプレイの数を取得
-	extern	int				GetDisplayInfo(int DisplayIndex, int *DesktopRectX, int *DesktopRectY, int *DesktopSizeX, int *DesktopSizeY, int *IsPrimary);	// ディスプレイのデスクトップ上での矩形位置を取得する
-	extern	int				GetDisplayModeNum(int DisplayIndex = 0);														// 変更可能なディスプレイモードの数を取得する
-	extern	DISPLAYMODEDATA	GetDisplayMode(int ModeIndex, int DisplayIndex = 0);											// 変更可能なディスプレイモードの情報を取得する( ModeIndex は 0 ～ GetDisplayModeNum の戻り値-1 )
-	extern	int				GetDisplayMaxResolution(int *SizeX, int *SizeY, int DisplayIndex = 0);								// ディスプレイの最大解像度を取得する
-	extern	const COLORDATA *GetDispColorData(void);																		// ディスプレイのカラーデータアドレスを取得する
-	extern	int				GetMultiDrawScreenNum(void);																		// 同時に描画を行うことができる画面の数を取得する
-	extern	int				GetDrawFloatCoordType(void);																		// DrawGraphF 等の浮動小数点値で座標を指定する関数における座標タイプを取得する( 戻り値 : DX_DRAWFLOATCOORDTYPE_DIRECT3D9 など )
-
-	// その他設定関係関数
-	extern	int			SetUseNormalDrawShader(int Flag);									// 通常描画にプログラマブルシェーダーを使用するかどうかを設定する( TRUE:使用する( デフォルト )  FALSE:使用しない )
-	extern	int			SetUseSoftwareRenderModeFlag(int Flag);									// ソフトウエアレンダリングモードを使用するかどうかを設定する( TRUE:使用する  FALSE:使用しない( デフォルト ) )( DxLib_Init の前に呼ぶ必要があります )
-	extern	int			SetNotUse3DFlag(int Flag);									// ( 同効果のSetUseSoftwareRenderModeFlag を使用して下さい )３Ｄ機能を使わないかどうかを設定する
-	extern	int			SetUse3DFlag(int Flag);									// ( 同効果のSetUseSoftwareRenderModeFlag を使用して下さい )３Ｄ機能を使うかどうかを設定する
-	extern	int			GetUse3DFlag(void);										// 描画に３Ｄ機能を使うかどうかを取得する
-	extern	int			SetScreenMemToVramFlag(int Flag);									// ( 同効果のSetUseSoftwareRenderModeFlag を使用して下さい )画面のピクセルデータをＶＲＡＭに置くかどうかを設定する
-	extern	int			GetScreenMemToSystemMemFlag(void);										// 画面のピクセルデータがシステムメモリ上に存在するかを取得する
-
-	extern	int			SetWindowDrawRect(const RECT * DrawRect);						// 通常使用しない
-	extern	int			RestoreGraphSystem(void);										// ＤＸライブラリのグラフィックス処理関連の復帰処理を行う
-	extern	int			SetUseHardwareVertexProcessing(int Flag);									// ハードウエアの頂点演算処理機能を使用するかどうかを設定する( TRUE:使用する( デフォルト )  FALSE:使用しない )( DxLib_Init の前に呼ぶ必要があります )
-	extern	int			SetUsePixelLighting(int Flag);									// ピクセル単位でライティングを行うかどうかを設定する、要 ShaderModel 3.0( TRUE:ピクセル単位のライティングを行う  FALSE:頂点単位のライティングを行う( デフォルト ) )
-	extern	int			SetUseOldDrawModiGraphCodeFlag(int Flag);									// 古いバージョンの DrawModiGraph 関数のコードを使用するかどうかを設定する
-	extern	int			SetUseVramFlag(int Flag);									// ( 現在効果なし )ＶＲＡＭを使用するかのフラグをセットする
-	extern	int			GetUseVramFlag(void);										// ( 現在効果なし )２Ｄグラフィックサーフェス作成時にシステムメモリーを使用するかのフラグ取得
-	extern	int			SetBasicBlendFlag(int Flag);									// ( 現在効果なし )簡略化ブレンド処理を行うか否かのフラグをセットする
-	extern	int			SetUseBasicGraphDraw3DDeviceMethodFlag(int Flag);									// ( 現在効果なし )単純図形の描画に３Ｄデバイスの機能を使用するかどうかを設定する
-	extern	int			SetUseDisplayIndex(int Index);									// ＤＸライブラリのウインドウを表示するディスプレイデバイスを設定する( -1 を指定するとマウスカーソルがあるディスプレイデバイスにＤＸライブラリのウインドウを表示する )
-	extern	int			RenderVertex(void);										// 頂点バッファに溜まった頂点データを描画する( 特殊用途 )
-
-	// 描画パフォーマンス関係関数
-	extern	int			GetDrawCallCount(void);										// 前々回の ScreenFlip 呼び出しから、前回の ScreenFlip 呼び出しまでの間に行われた描画コールの回数を取得する
-	extern	float		GetFPS(void);										// フレームレート( １秒間に呼ばれる ScreenFlip の回数 )を取得する
 
 #ifndef DX_NON_SAVEFUNCTION
 
