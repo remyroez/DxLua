@@ -195,7 +195,16 @@ application::done_code application::run() {
 				done = call_run(message);
 
 				// 終了ステップ
-				if (done != done_code::exit) {
+				if (done == done_code::reload) {
+					// reload なら実行
+					auto end_done = call_end(message);
+
+					// none 以外なら終了コードの上書き
+					if (end_done != done_code::none) {
+						done = end_done;
+					}
+
+				} else if (done != done_code::exit) {
 					// exit 以外で終了していたら実行しない
 
 				} else {
