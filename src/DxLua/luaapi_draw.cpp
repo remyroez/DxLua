@@ -601,160 +601,145 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 	//extern	int			GetDrawCallCount(void);										// 前々回の ScreenFlip 呼び出しから、前回の ScreenFlip 呼び出しまでの間に行われた描画コールの回数を取得する
 	//extern	float		GetFPS(void);										// フレームレート( １秒間に呼ばれる ScreenFlip の回数 )を取得する
 
-	// ライト関係関数
-	library["SetUseLighting"] = [](sol::variadic_args va) {
-		int Flag = va_get(va, 0, false);
-		return SetUseLighting(Flag);
-	};
-
-#endif // DX_NOTUSE_DRAWFUNCTION
-
-
-#if 0//ndef DX_NOTUSE_DRAWFUNCTION
-
 #ifndef DX_NON_SAVEFUNCTION
 
-// 描画先画面保存関数
-// Jpeg_Quality         = 0:低画質～100:高画質
-// Png_CompressionLevel = 0:無圧縮～  9:最高圧縮
-	extern	int			SaveDrawScreen(int x1, int y1, int x2, int y2, const TCHAR * FileName, int SaveType = DX_IMAGESAVETYPE_BMP, int Jpeg_Quality = 80, int Jpeg_Sample2x1 = TRUE, int Png_CompressionLevel = -1);		// 現在描画対象になっている画面をファイルで保存する
-	extern	int			SaveDrawScreenWithStrLen(int x1, int y1, int x2, int y2, const TCHAR * FileName, size_t FileNameLength, int SaveType = DX_IMAGESAVETYPE_BMP, int Jpeg_Quality = 80, int Jpeg_Sample2x1 = TRUE, int Png_CompressionLevel = -1);		// 現在描画対象になっている画面をファイルで保存する
-	extern	int			SaveDrawScreenToBMP(int x1, int y1, int x2, int y2, const TCHAR * FileName);																																// 現在描画対象になっている画面をＢＭＰ形式で保存する
-	extern	int			SaveDrawScreenToBMPWithStrLen(int x1, int y1, int x2, int y2, const TCHAR * FileName, size_t FileNameLength);																																// 現在描画対象になっている画面をＢＭＰ形式で保存する
-	extern	int			SaveDrawScreenToDDS(int x1, int y1, int x2, int y2, const TCHAR * FileName);																																// 現在描画対象になっている画面をＤＤＳ形式で保存する
-	extern	int			SaveDrawScreenToDDSWithStrLen(int x1, int y1, int x2, int y2, const TCHAR * FileName, size_t FileNameLength);																																// 現在描画対象になっている画面をＤＤＳ形式で保存する
-	extern	int			SaveDrawScreenToJPEG(int x1, int y1, int x2, int y2, const TCHAR * FileName, int Quality = 80, int Sample2x1 = TRUE);																						// 現在描画対象になっている画面をＪＰＥＧ形式で保存する Quality = 画質、値が大きいほど低圧縮高画質,0～100 
-	extern	int			SaveDrawScreenToJPEGWithStrLen(int x1, int y1, int x2, int y2, const TCHAR * FileName, size_t FileNameLength, int Quality = 80, int Sample2x1 = TRUE);																						// 現在描画対象になっている画面をＪＰＥＧ形式で保存する Quality = 画質、値が大きいほど低圧縮高画質,0～100 
-	extern	int			SaveDrawScreenToPNG(int x1, int y1, int x2, int y2, const TCHAR * FileName, int CompressionLevel = -1);																										// 現在描画対象になっている画面をＰＮＧ形式で保存する CompressionLevel = 圧縮率、値が大きいほど高圧縮率高負荷、０は無圧縮,0～9
-	extern	int			SaveDrawScreenToPNGWithStrLen(int x1, int y1, int x2, int y2, const TCHAR * FileName, size_t FileNameLength, int CompressionLevel = -1);																										// 現在描画対象になっている画面をＰＮＧ形式で保存する CompressionLevel = 圧縮率、値が大きいほど高圧縮率高負荷、０は無圧縮,0～9
+	// 描画先画面保存関数
+	//extern	int			SaveDrawScreen(int x1, int y1, int x2, int y2, const TCHAR *FileName, int SaveType = DX_IMAGESAVETYPE_BMP, int Jpeg_Quality = 80, int Jpeg_Sample2x1 = TRUE, int Png_CompressionLevel = -1);		// 現在描画対象になっている画面をファイルで保存する
+	//extern	int			SaveDrawScreenWithStrLen(int x1, int y1, int x2, int y2, const TCHAR *FileName, size_t FileNameLength, int SaveType = DX_IMAGESAVETYPE_BMP, int Jpeg_Quality = 80, int Jpeg_Sample2x1 = TRUE, int Png_CompressionLevel = -1);		// 現在描画対象になっている画面をファイルで保存する
+	//extern	int			SaveDrawScreenToBMP(int x1, int y1, int x2, int y2, const TCHAR *FileName);																																// 現在描画対象になっている画面をＢＭＰ形式で保存する
+	//extern	int			SaveDrawScreenToBMPWithStrLen(int x1, int y1, int x2, int y2, const TCHAR *FileName, size_t FileNameLength);																																// 現在描画対象になっている画面をＢＭＰ形式で保存する
+	//extern	int			SaveDrawScreenToDDS(int x1, int y1, int x2, int y2, const TCHAR *FileName);																																// 現在描画対象になっている画面をＤＤＳ形式で保存する
+	//extern	int			SaveDrawScreenToDDSWithStrLen(int x1, int y1, int x2, int y2, const TCHAR *FileName, size_t FileNameLength);																																// 現在描画対象になっている画面をＤＤＳ形式で保存する
+	//extern	int			SaveDrawScreenToJPEG(int x1, int y1, int x2, int y2, const TCHAR *FileName, int Quality = 80, int Sample2x1 = TRUE);																						// 現在描画対象になっている画面をＪＰＥＧ形式で保存する Quality = 画質、値が大きいほど低圧縮高画質,0～100 
+	//extern	int			SaveDrawScreenToJPEGWithStrLen(int x1, int y1, int x2, int y2, const TCHAR *FileName, size_t FileNameLength, int Quality = 80, int Sample2x1 = TRUE);																						// 現在描画対象になっている画面をＪＰＥＧ形式で保存する Quality = 画質、値が大きいほど低圧縮高画質,0～100 
+	//extern	int			SaveDrawScreenToPNG(int x1, int y1, int x2, int y2, const TCHAR *FileName, int CompressionLevel = -1);																										// 現在描画対象になっている画面をＰＮＧ形式で保存する CompressionLevel = 圧縮率、値が大きいほど高圧縮率高負荷、０は無圧縮,0～9
+	//extern	int			SaveDrawScreenToPNGWithStrLen(int x1, int y1, int x2, int y2, const TCHAR *FileName, size_t FileNameLength, int CompressionLevel = -1);																										// 現在描画対象になっている画面をＰＮＧ形式で保存する CompressionLevel = 圧縮率、値が大きいほど高圧縮率高負荷、０は無圧縮,0～9
 
 	// 描画対象にできるグラフィックハンドル保存関数
-	// Jpeg_Quality         = 0:低画質～100:高画質
-	// Png_CompressionLevel = 0:無圧縮～  9:最高圧縮
-	extern	int			SaveDrawValidGraph(int GrHandle, int x1, int y1, int x2, int y2, const TCHAR * FileName, int SaveType = DX_IMAGESAVETYPE_BMP, int Jpeg_Quality = 80, int Jpeg_Sample2x1 = TRUE, int Png_CompressionLevel = -1);		// 描画対象にできるグラフィックハンドルをファイルで保存する
-	extern	int			SaveDrawValidGraphWithStrLen(int GrHandle, int x1, int y1, int x2, int y2, const TCHAR * FileName, size_t FileNameLength, int SaveType = DX_IMAGESAVETYPE_BMP, int Jpeg_Quality = 80, int Jpeg_Sample2x1 = TRUE, int Png_CompressionLevel = -1);		// 描画対象にできるグラフィックハンドルをファイルで保存する
-	extern	int			SaveDrawValidGraphToBMP(int GrHandle, int x1, int y1, int x2, int y2, const TCHAR * FileName);																																// 描画対象にできるグラフィックハンドルをＢＭＰ形式で保存する
-	extern	int			SaveDrawValidGraphToBMPWithStrLen(int GrHandle, int x1, int y1, int x2, int y2, const TCHAR * FileName, size_t FileNameLength);																																// 描画対象にできるグラフィックハンドルをＢＭＰ形式で保存する
-	extern	int			SaveDrawValidGraphToDDS(int GrHandle, int x1, int y1, int x2, int y2, const TCHAR * FileName);																																// 描画対象にできるグラフィックハンドルをＤＤＳ形式で保存する
-	extern	int			SaveDrawValidGraphToDDSWithStrLen(int GrHandle, int x1, int y1, int x2, int y2, const TCHAR * FileName, size_t FileNameLength);																																// 描画対象にできるグラフィックハンドルをＤＤＳ形式で保存する
-	extern	int			SaveDrawValidGraphToJPEG(int GrHandle, int x1, int y1, int x2, int y2, const TCHAR * FileName, int Quality = 80, int Sample2x1 = TRUE);																						// 描画対象にできるグラフィックハンドルをＪＰＥＧ形式で保存する Quality = 画質、値が大きいほど低圧縮高画質,0～100 
-	extern	int			SaveDrawValidGraphToJPEGWithStrLen(int GrHandle, int x1, int y1, int x2, int y2, const TCHAR * FileName, size_t FileNameLength, int Quality = 80, int Sample2x1 = TRUE);																						// 描画対象にできるグラフィックハンドルをＪＰＥＧ形式で保存する Quality = 画質、値が大きいほど低圧縮高画質,0～100 
-	extern	int			SaveDrawValidGraphToPNG(int GrHandle, int x1, int y1, int x2, int y2, const TCHAR * FileName, int CompressionLevel = -1);																									// 描画対象にできるグラフィックハンドルをＰＮＧ形式で保存する CompressionLevel = 圧縮率、値が大きいほど高圧縮率高負荷、０は無圧縮,0～9
-	extern	int			SaveDrawValidGraphToPNGWithStrLen(int GrHandle, int x1, int y1, int x2, int y2, const TCHAR * FileName, size_t FileNameLength, int CompressionLevel = -1);																									// 描画対象にできるグラフィックハンドルをＰＮＧ形式で保存する CompressionLevel = 圧縮率、値が大きいほど高圧縮率高負荷、０は無圧縮,0～9
+	//extern	int			SaveDrawValidGraph(int GrHandle, int x1, int y1, int x2, int y2, const TCHAR *FileName, int SaveType = DX_IMAGESAVETYPE_BMP, int Jpeg_Quality = 80, int Jpeg_Sample2x1 = TRUE, int Png_CompressionLevel = -1);		// 描画対象にできるグラフィックハンドルをファイルで保存する
+	//extern	int			SaveDrawValidGraphWithStrLen(int GrHandle, int x1, int y1, int x2, int y2, const TCHAR *FileName, size_t FileNameLength, int SaveType = DX_IMAGESAVETYPE_BMP, int Jpeg_Quality = 80, int Jpeg_Sample2x1 = TRUE, int Png_CompressionLevel = -1);		// 描画対象にできるグラフィックハンドルをファイルで保存する
+	//extern	int			SaveDrawValidGraphToBMP(int GrHandle, int x1, int y1, int x2, int y2, const TCHAR *FileName);																																// 描画対象にできるグラフィックハンドルをＢＭＰ形式で保存する
+	//extern	int			SaveDrawValidGraphToBMPWithStrLen(int GrHandle, int x1, int y1, int x2, int y2, const TCHAR *FileName, size_t FileNameLength);																																// 描画対象にできるグラフィックハンドルをＢＭＰ形式で保存する
+	//extern	int			SaveDrawValidGraphToDDS(int GrHandle, int x1, int y1, int x2, int y2, const TCHAR *FileName);																																// 描画対象にできるグラフィックハンドルをＤＤＳ形式で保存する
+	//extern	int			SaveDrawValidGraphToDDSWithStrLen(int GrHandle, int x1, int y1, int x2, int y2, const TCHAR *FileName, size_t FileNameLength);																																// 描画対象にできるグラフィックハンドルをＤＤＳ形式で保存する
+	//extern	int			SaveDrawValidGraphToJPEG(int GrHandle, int x1, int y1, int x2, int y2, const TCHAR *FileName, int Quality = 80, int Sample2x1 = TRUE);																						// 描画対象にできるグラフィックハンドルをＪＰＥＧ形式で保存する Quality = 画質、値が大きいほど低圧縮高画質,0～100 
+	//extern	int			SaveDrawValidGraphToJPEGWithStrLen(int GrHandle, int x1, int y1, int x2, int y2, const TCHAR *FileName, size_t FileNameLength, int Quality = 80, int Sample2x1 = TRUE);																						// 描画対象にできるグラフィックハンドルをＪＰＥＧ形式で保存する Quality = 画質、値が大きいほど低圧縮高画質,0～100 
+	//extern	int			SaveDrawValidGraphToPNG(int GrHandle, int x1, int y1, int x2, int y2, const TCHAR *FileName, int CompressionLevel = -1);																									// 描画対象にできるグラフィックハンドルをＰＮＧ形式で保存する CompressionLevel = 圧縮率、値が大きいほど高圧縮率高負荷、０は無圧縮,0～9
+	//extern	int			SaveDrawValidGraphToPNGWithStrLen(int GrHandle, int x1, int y1, int x2, int y2, const TCHAR *FileName, size_t FileNameLength, int CompressionLevel = -1);																									// 描画対象にできるグラフィックハンドルをＰＮＧ形式で保存する CompressionLevel = 圧縮率、値が大きいほど高圧縮率高負荷、０は無圧縮,0～9
 
 #endif // DX_NON_SAVEFUNCTION
 
-// 頂点バッファ関係関数
-	extern	int			CreateVertexBuffer(int VertexNum, int VertexType /* DX_VERTEX_TYPE_NORMAL_3D 等 */);						// 頂点バッファを作成する( -1:エラー  0以上:頂点バッファハンドル )
-	extern	int			DeleteVertexBuffer(int VertexBufHandle);																	// 頂点バッファを削除する
-	extern	int			InitVertexBuffer(void);																				// すべての頂点バッファを削除する
-	extern	int			SetVertexBufferData(int SetIndex, const void *VertexArray, int VertexNum, int VertexBufHandle);			// 頂点バッファに頂点データを転送する
-	extern	void *GetBufferVertexBuffer(int VertexBufHandle);																	// 頂点バッファハンドルの頂点バッファのアドレスを取得する
-	extern	int			UpdateVertexBuffer(int VertexBufHandle, int UpdateStartIndex, int UpdateVertexNum);						// 頂点バッファハンドルの頂点バッファへの変更を適用する( GetBufferVertexBuffer で取得したバッファへの変更を反映する )
-	extern	int			CreateIndexBuffer(int IndexNum, int IndexType /* DX_INDEX_TYPE_16BIT 等 */);							// インデックスバッファを作成する( -1:エラー　0以上：インデックスバッファハンドル )
-	extern	int			DeleteIndexBuffer(int IndexBufHandle);																	// インデックスバッファを削除する
-	extern	int			InitIndexBuffer(void);																				// すべてのインデックスバッファを削除する
-	extern	int			SetIndexBufferData(int SetIndex, const void *IndexArray, int IndexNum, int IndexBufHandle);				// インデックスバッファにインデックスデータを転送する
-	extern	void *GetBufferIndexBuffer(int IndexBufHandle);																	// インデックスバッファハンドルのインデックスバッファのアドレスを取得する
-	extern	int			UpdateIndexBuffer(int IndexBufHandle, int UpdateStartIndex, int UpdateIndexNum);						// インデックスバッファハンドルのインデックスバッファへの変更を適用する( GetBufferIndexBuffer で取得したバッファへの変更を反映する )
-	extern	int			GetMaxPrimitiveCount(void);																				// グラフィックスデバイスが対応している一度に描画できるプリミティブの最大数を取得する
-	extern	int			GetMaxVertexIndex(void);																				// グラフィックスデバイスが対応している一度に使用することのできる最大頂点数を取得する
+	// 頂点バッファ関係関数
+	//extern	int			CreateVertexBuffer(int VertexNum, int VertexType /* DX_VERTEX_TYPE_NORMAL_3D 等 */);						// 頂点バッファを作成する( -1:エラー  0以上:頂点バッファハンドル )
+	//extern	int			DeleteVertexBuffer(int VertexBufHandle);																	// 頂点バッファを削除する
+	//extern	int			InitVertexBuffer(void);																				// すべての頂点バッファを削除する
+	//extern	int			SetVertexBufferData(int SetIndex, const void *VertexArray, int VertexNum, int VertexBufHandle);			// 頂点バッファに頂点データを転送する
+	//extern	void *GetBufferVertexBuffer(int VertexBufHandle);																	// 頂点バッファハンドルの頂点バッファのアドレスを取得する
+	//extern	int			UpdateVertexBuffer(int VertexBufHandle, int UpdateStartIndex, int UpdateVertexNum);						// 頂点バッファハンドルの頂点バッファへの変更を適用する( GetBufferVertexBuffer で取得したバッファへの変更を反映する )
+	//extern	int			CreateIndexBuffer(int IndexNum, int IndexType /* DX_INDEX_TYPE_16BIT 等 */);							// インデックスバッファを作成する( -1:エラー　0以上：インデックスバッファハンドル )
+	//extern	int			DeleteIndexBuffer(int IndexBufHandle);																	// インデックスバッファを削除する
+	//extern	int			InitIndexBuffer(void);																				// すべてのインデックスバッファを削除する
+	//extern	int			SetIndexBufferData(int SetIndex, const void *IndexArray, int IndexNum, int IndexBufHandle);				// インデックスバッファにインデックスデータを転送する
+	//extern	void *GetBufferIndexBuffer(int IndexBufHandle);																	// インデックスバッファハンドルのインデックスバッファのアドレスを取得する
+	//extern	int			UpdateIndexBuffer(int IndexBufHandle, int UpdateStartIndex, int UpdateIndexNum);						// インデックスバッファハンドルのインデックスバッファへの変更を適用する( GetBufferIndexBuffer で取得したバッファへの変更を反映する )
+	//extern	int			GetMaxPrimitiveCount(void);																				// グラフィックスデバイスが対応している一度に描画できるプリミティブの最大数を取得する
+	//extern	int			GetMaxVertexIndex(void);																				// グラフィックスデバイスが対応している一度に使用することのできる最大頂点数を取得する
 
 	// シェーダー関係関数
-	extern	int			GetValidShaderVersion(void);												// 使用できるシェーダーのバージョンを取得する( 0=使えない  200=シェーダーモデル２．０が使用可能  300=シェーダーモデル３．０が使用可能 )
+	//extern	int			GetValidShaderVersion(void);												// 使用できるシェーダーのバージョンを取得する( 0=使えない  200=シェーダーモデル２．０が使用可能  300=シェーダーモデル３．０が使用可能 )
 
-	extern	int			LoadVertexShader(const TCHAR * FileName);		// 頂点シェーダーバイナリをファイルから読み込み頂点シェーダーハンドルを作成する( 戻り値 -1:エラー  -1以外:シェーダーハンドル )
-	extern	int			LoadVertexShaderWithStrLen(const TCHAR * FileName, size_t FileNameLength);		// 頂点シェーダーバイナリをファイルから読み込み頂点シェーダーハンドルを作成する( 戻り値 -1:エラー  -1以外:シェーダーハンドル )
-	extern	int			LoadGeometryShader(const TCHAR * FileName);		// ジオメトリシェーダーバイナリをファイルから読み込みジオメトリシェーダーハンドルを作成する( 戻り値 -1:エラー  -1以外:シェーダーハンドル )
-	extern	int			LoadGeometryShaderWithStrLen(const TCHAR * FileName, size_t FileNameLength);		// ジオメトリシェーダーバイナリをファイルから読み込みジオメトリシェーダーハンドルを作成する( 戻り値 -1:エラー  -1以外:シェーダーハンドル )
-	extern	int			LoadPixelShader(const TCHAR * FileName);		// ピクセルシェーダーバイナリをファイルから読み込みピクセルシェーダーハンドルを作成する( 戻り値 -1:エラー  -1以外:シェーダーハンドル )
-	extern	int			LoadPixelShaderWithStrLen(const TCHAR * FileName, size_t FileNameLength);		// ピクセルシェーダーバイナリをファイルから読み込みピクセルシェーダーハンドルを作成する( 戻り値 -1:エラー  -1以外:シェーダーハンドル )
-	extern	int			LoadVertexShaderFromMem(const void *ImageAddress, int ImageSize);				// メモリに読み込まれた頂点シェーダーバイナリから頂点シェーダーハンドルを作成する( 戻り値 -1:エラー  -1以外:シェーダーハンドル )
-	extern	int			LoadGeometryShaderFromMem(const void *ImageAddress, int ImageSize);				// メモリに読み込まれたジオメトリシェーダーバイナリからジオメトリシェーダーハンドルを作成する( 戻り値 -1:エラー  -1以外:シェーダーハンドル )
-	extern	int			LoadPixelShaderFromMem(const void *ImageAddress, int ImageSize);				// メモリに読み込まれたピクセルシェーダーバイナリからピクセルシェーダーハンドルを作成する( 戻り値 -1:エラー  -1以外:シェーダーハンドル )
-	extern	int			DeleteShader(int ShaderHandle);									// シェーダーハンドルの削除( 頂点シェーダー・ピクセルシェーダー共通 )
-	extern	int			InitShader(void);												// シェーダーハンドルを全て削除する( 頂点シェーダーハンドル・ピクセルシェーダーハンドルどちらもすべて削除 )
+	//extern	int			LoadVertexShader(const TCHAR *FileName);		// 頂点シェーダーバイナリをファイルから読み込み頂点シェーダーハンドルを作成する( 戻り値 -1:エラー  -1以外:シェーダーハンドル )
+	//extern	int			LoadVertexShaderWithStrLen(const TCHAR *FileName, size_t FileNameLength);		// 頂点シェーダーバイナリをファイルから読み込み頂点シェーダーハンドルを作成する( 戻り値 -1:エラー  -1以外:シェーダーハンドル )
+	//extern	int			LoadGeometryShader(const TCHAR *FileName);		// ジオメトリシェーダーバイナリをファイルから読み込みジオメトリシェーダーハンドルを作成する( 戻り値 -1:エラー  -1以外:シェーダーハンドル )
+	//extern	int			LoadGeometryShaderWithStrLen(const TCHAR *FileName, size_t FileNameLength);		// ジオメトリシェーダーバイナリをファイルから読み込みジオメトリシェーダーハンドルを作成する( 戻り値 -1:エラー  -1以外:シェーダーハンドル )
+	//extern	int			LoadPixelShader(const TCHAR *FileName);		// ピクセルシェーダーバイナリをファイルから読み込みピクセルシェーダーハンドルを作成する( 戻り値 -1:エラー  -1以外:シェーダーハンドル )
+	//extern	int			LoadPixelShaderWithStrLen(const TCHAR *FileName, size_t FileNameLength);		// ピクセルシェーダーバイナリをファイルから読み込みピクセルシェーダーハンドルを作成する( 戻り値 -1:エラー  -1以外:シェーダーハンドル )
+	//extern	int			LoadVertexShaderFromMem(const void *ImageAddress, int ImageSize);				// メモリに読み込まれた頂点シェーダーバイナリから頂点シェーダーハンドルを作成する( 戻り値 -1:エラー  -1以外:シェーダーハンドル )
+	//extern	int			LoadGeometryShaderFromMem(const void *ImageAddress, int ImageSize);				// メモリに読み込まれたジオメトリシェーダーバイナリからジオメトリシェーダーハンドルを作成する( 戻り値 -1:エラー  -1以外:シェーダーハンドル )
+	//extern	int			LoadPixelShaderFromMem(const void *ImageAddress, int ImageSize);				// メモリに読み込まれたピクセルシェーダーバイナリからピクセルシェーダーハンドルを作成する( 戻り値 -1:エラー  -1以外:シェーダーハンドル )
+	//extern	int			DeleteShader(int ShaderHandle);									// シェーダーハンドルの削除( 頂点シェーダー・ピクセルシェーダー共通 )
+	//extern	int			InitShader(void);												// シェーダーハンドルを全て削除する( 頂点シェーダーハンドル・ピクセルシェーダーハンドルどちらもすべて削除 )
 
-	extern	int			GetConstIndexToShader(const TCHAR * ConstantName, int ShaderHandle);	// 指定の名前を持つ定数が使用するシェーダー定数の番号を取得する
-	extern	int			GetConstIndexToShaderWithStrLen(const TCHAR * ConstantName, size_t ConstantNameLength, int ShaderHandle);	// 指定の名前を持つ定数が使用するシェーダー定数の番号を取得する
-	extern	int			GetConstCountToShader(const TCHAR * ConstantName, int ShaderHandle);	// 指定の名前を持つ定数が使用するシェーダー定数の数を取得する
-	extern	int			GetConstCountToShaderWithStrLen(const TCHAR * ConstantName, size_t ConstantNameLength, int ShaderHandle);	// 指定の名前を持つ定数が使用するシェーダー定数の数を取得する
-	extern	const FLOAT4 *GetConstDefaultParamFToShader(const TCHAR * ConstantName, int ShaderHandle);	// 指定の名前を持つ浮動小数点数定数のデフォルトパラメータが格納されているメモリアドレスを取得する
-	extern	const FLOAT4 *GetConstDefaultParamFToShaderWithStrLen(const TCHAR * ConstantName, size_t ConstantNameLength, int ShaderHandle);	// 指定の名前を持つ浮動小数点数定数のデフォルトパラメータが格納されているメモリアドレスを取得する
-	extern	int			SetVSConstSF(int ConstantIndex, float  Param);						// 頂点シェーダーの float 型定数を設定する
-	extern	int			SetVSConstF(int ConstantIndex, FLOAT4 Param);						// 頂点シェーダーの float 型定数を設定する
-	extern	int			SetVSConstFMtx(int ConstantIndex, MATRIX Param);						// 頂点シェーダーの float 型定数に行列を設定する
-	extern	int			SetVSConstFMtxT(int ConstantIndex, MATRIX Param);						// 頂点シェーダーの float 型定数に転置した行列を設定する
-	extern	int			SetVSConstSI(int ConstantIndex, int    Param);						// 頂点シェーダーの int   型定数を設定する
-	extern	int			SetVSConstI(int ConstantIndex, INT4   Param);						// 頂点シェーダーの int   型定数を設定する
-	extern	int			SetVSConstB(int ConstantIndex, BOOL   Param);						// 頂点シェーダーの BOOL  型定数を設定する
-	extern	int			SetVSConstSFArray(int ConstantIndex, const float *ParamArray, int ParamNum);	// 頂点シェーダーの float 型定数を設定する( 配列を使って連番インデックスに一度に設定 )
-	extern	int			SetVSConstFArray(int ConstantIndex, const FLOAT4 * ParamArray, int ParamNum);	// 頂点シェーダーの float 型定数を設定する( 配列を使って連番インデックスに一度に設定 )
-	extern	int			SetVSConstFMtxArray(int ConstantIndex, const MATRIX * ParamArray, int ParamNum);	// 頂点シェーダーの float 型定数に行列を設定する( 配列を使って連番インデックスに一度に設定 )
-	extern	int			SetVSConstFMtxTArray(int ConstantIndex, const MATRIX * ParamArray, int ParamNum);	// 頂点シェーダーの float 型定数に転置した行列を設定する( 配列を使って連番インデックスに一度に設定 )
-	extern	int			SetVSConstSIArray(int ConstantIndex, const int *ParamArray, int ParamNum);	// 頂点シェーダーの int   型定数を設定する( 配列を使って連番インデックスに一度に設定 )
-	extern	int			SetVSConstIArray(int ConstantIndex, const INT4 * ParamArray, int ParamNum);	// 頂点シェーダーの int   型定数を設定する( 配列を使って連番インデックスに一度に設定 )
-	extern	int			SetVSConstBArray(int ConstantIndex, const BOOL * ParamArray, int ParamNum);	// 頂点シェーダーの BOOL  型定数を設定する( 配列を使って連番インデックスに一度に設定 )
-	extern	int			ResetVSConstF(int ConstantIndex, int ParamNum);							// 頂点シェーダーの float 型定数の設定をリセットする
-	extern	int			ResetVSConstI(int ConstantIndex, int ParamNum);							// 頂点シェーダーの int   型定数の設定をリセットする
-	extern	int			ResetVSConstB(int ConstantIndex, int ParamNum);							// 頂点シェーダーの BOOL  型定数の設定をリセットする
+	//extern	int			GetConstIndexToShader(const TCHAR *ConstantName, int ShaderHandle);	// 指定の名前を持つ定数が使用するシェーダー定数の番号を取得する
+	//extern	int			GetConstIndexToShaderWithStrLen(const TCHAR *ConstantName, size_t ConstantNameLength, int ShaderHandle);	// 指定の名前を持つ定数が使用するシェーダー定数の番号を取得する
+	//extern	int			GetConstCountToShader(const TCHAR *ConstantName, int ShaderHandle);	// 指定の名前を持つ定数が使用するシェーダー定数の数を取得する
+	//extern	int			GetConstCountToShaderWithStrLen(const TCHAR *ConstantName, size_t ConstantNameLength, int ShaderHandle);	// 指定の名前を持つ定数が使用するシェーダー定数の数を取得する
+	//extern	const FLOAT4 *GetConstDefaultParamFToShader(const TCHAR *ConstantName, int ShaderHandle);	// 指定の名前を持つ浮動小数点数定数のデフォルトパラメータが格納されているメモリアドレスを取得する
+	//extern	const FLOAT4 *GetConstDefaultParamFToShaderWithStrLen(const TCHAR *ConstantName, size_t ConstantNameLength, int ShaderHandle);	// 指定の名前を持つ浮動小数点数定数のデフォルトパラメータが格納されているメモリアドレスを取得する
+	//extern	int			SetVSConstSF(int ConstantIndex, float  Param);						// 頂点シェーダーの float 型定数を設定する
+	//extern	int			SetVSConstF(int ConstantIndex, FLOAT4 Param);						// 頂点シェーダーの float 型定数を設定する
+	//extern	int			SetVSConstFMtx(int ConstantIndex, MATRIX Param);						// 頂点シェーダーの float 型定数に行列を設定する
+	//extern	int			SetVSConstFMtxT(int ConstantIndex, MATRIX Param);						// 頂点シェーダーの float 型定数に転置した行列を設定する
+	//extern	int			SetVSConstSI(int ConstantIndex, int    Param);						// 頂点シェーダーの int   型定数を設定する
+	//extern	int			SetVSConstI(int ConstantIndex, INT4   Param);						// 頂点シェーダーの int   型定数を設定する
+	//extern	int			SetVSConstB(int ConstantIndex, BOOL   Param);						// 頂点シェーダーの BOOL  型定数を設定する
+	//extern	int			SetVSConstSFArray(int ConstantIndex, const float *ParamArray, int ParamNum);	// 頂点シェーダーの float 型定数を設定する( 配列を使って連番インデックスに一度に設定 )
+	//extern	int			SetVSConstFArray(int ConstantIndex, const FLOAT4 *ParamArray, int ParamNum);	// 頂点シェーダーの float 型定数を設定する( 配列を使って連番インデックスに一度に設定 )
+	//extern	int			SetVSConstFMtxArray(int ConstantIndex, const MATRIX *ParamArray, int ParamNum);	// 頂点シェーダーの float 型定数に行列を設定する( 配列を使って連番インデックスに一度に設定 )
+	//extern	int			SetVSConstFMtxTArray(int ConstantIndex, const MATRIX *ParamArray, int ParamNum);	// 頂点シェーダーの float 型定数に転置した行列を設定する( 配列を使って連番インデックスに一度に設定 )
+	//extern	int			SetVSConstSIArray(int ConstantIndex, const int *ParamArray, int ParamNum);	// 頂点シェーダーの int   型定数を設定する( 配列を使って連番インデックスに一度に設定 )
+	//extern	int			SetVSConstIArray(int ConstantIndex, const INT4 *ParamArray, int ParamNum);	// 頂点シェーダーの int   型定数を設定する( 配列を使って連番インデックスに一度に設定 )
+	//extern	int			SetVSConstBArray(int ConstantIndex, const BOOL *ParamArray, int ParamNum);	// 頂点シェーダーの BOOL  型定数を設定する( 配列を使って連番インデックスに一度に設定 )
+	//extern	int			ResetVSConstF(int ConstantIndex, int ParamNum);							// 頂点シェーダーの float 型定数の設定をリセットする
+	//extern	int			ResetVSConstI(int ConstantIndex, int ParamNum);							// 頂点シェーダーの int   型定数の設定をリセットする
+	//extern	int			ResetVSConstB(int ConstantIndex, int ParamNum);							// 頂点シェーダーの BOOL  型定数の設定をリセットする
 
-	extern	int			SetPSConstSF(int ConstantIndex, float  Param);						// ピクセルシェーダーの float 型定数を設定する
-	extern	int			SetPSConstF(int ConstantIndex, FLOAT4 Param);						// ピクセルシェーダーの float 型定数を設定する
-	extern	int			SetPSConstFMtx(int ConstantIndex, MATRIX Param);						// ピクセルシェーダーの float 型定数に行列を設定する
-	extern	int			SetPSConstFMtxT(int ConstantIndex, MATRIX Param);						// ピクセルシェーダーの float 型定数に転置した行列を設定する
-	extern	int			SetPSConstSI(int ConstantIndex, int    Param);						// ピクセルシェーダーの int   型定数を設定する
-	extern	int			SetPSConstI(int ConstantIndex, INT4   Param);						// ピクセルシェーダーの int   型定数を設定する
-	extern	int			SetPSConstB(int ConstantIndex, BOOL   Param);						// ピクセルシェーダーの BOOL  型定数を設定する
-	extern	int			SetPSConstSFArray(int ConstantIndex, const float *ParamArray, int ParamNum);	// ピクセルシェーダーの float 型定数を設定する( 配列を使って連番インデックスに一度に設定 )
-	extern	int			SetPSConstFArray(int ConstantIndex, const FLOAT4 * ParamArray, int ParamNum);	// ピクセルシェーダーの float 型定数を設定する( 配列を使って連番インデックスに一度に設定 )
-	extern	int			SetPSConstFMtxArray(int ConstantIndex, const MATRIX * ParamArray, int ParamNum);	// ピクセルシェーダーの float 型定数に行列を設定する( 配列を使って連番インデックスに一度に設定 )
-	extern	int			SetPSConstFMtxTArray(int ConstantIndex, const MATRIX * ParamArray, int ParamNum);	// ピクセルシェーダーの float 型定数に転置した行列を設定する( 配列を使って連番インデックスに一度に設定 )
-	extern	int			SetPSConstSIArray(int ConstantIndex, const int *ParamArray, int ParamNum);	// ピクセルシェーダーの int   型定数を設定する( 配列を使って連番インデックスに一度に設定 )
-	extern	int			SetPSConstIArray(int ConstantIndex, const INT4 * ParamArray, int ParamNum);	// ピクセルシェーダーの int   型定数を設定する( 配列を使って連番インデックスに一度に設定 )
-	extern	int			SetPSConstBArray(int ConstantIndex, const BOOL * ParamArray, int ParamNum);	// ピクセルシェーダーの BOOL  型定数を設定する( 配列を使って連番インデックスに一度に設定 )
-	extern	int			ResetPSConstF(int ConstantIndex, int ParamNum);							// ピクセルシェーダーの float 型定数の設定をリセットする
-	extern	int			ResetPSConstI(int ConstantIndex, int ParamNum);							// ピクセルシェーダーの int   型定数の設定をリセットする
-	extern	int			ResetPSConstB(int ConstantIndex, int ParamNum);							// ピクセルシェーダーの BOOL  型定数の設定をリセットする
+	//extern	int			SetPSConstSF(int ConstantIndex, float  Param);						// ピクセルシェーダーの float 型定数を設定する
+	//extern	int			SetPSConstF(int ConstantIndex, FLOAT4 Param);						// ピクセルシェーダーの float 型定数を設定する
+	//extern	int			SetPSConstFMtx(int ConstantIndex, MATRIX Param);						// ピクセルシェーダーの float 型定数に行列を設定する
+	//extern	int			SetPSConstFMtxT(int ConstantIndex, MATRIX Param);						// ピクセルシェーダーの float 型定数に転置した行列を設定する
+	//extern	int			SetPSConstSI(int ConstantIndex, int    Param);						// ピクセルシェーダーの int   型定数を設定する
+	//extern	int			SetPSConstI(int ConstantIndex, INT4   Param);						// ピクセルシェーダーの int   型定数を設定する
+	//extern	int			SetPSConstB(int ConstantIndex, BOOL   Param);						// ピクセルシェーダーの BOOL  型定数を設定する
+	//extern	int			SetPSConstSFArray(int ConstantIndex, const float *ParamArray, int ParamNum);	// ピクセルシェーダーの float 型定数を設定する( 配列を使って連番インデックスに一度に設定 )
+	//extern	int			SetPSConstFArray(int ConstantIndex, const FLOAT4 *ParamArray, int ParamNum);	// ピクセルシェーダーの float 型定数を設定する( 配列を使って連番インデックスに一度に設定 )
+	//extern	int			SetPSConstFMtxArray(int ConstantIndex, const MATRIX *ParamArray, int ParamNum);	// ピクセルシェーダーの float 型定数に行列を設定する( 配列を使って連番インデックスに一度に設定 )
+	//extern	int			SetPSConstFMtxTArray(int ConstantIndex, const MATRIX *ParamArray, int ParamNum);	// ピクセルシェーダーの float 型定数に転置した行列を設定する( 配列を使って連番インデックスに一度に設定 )
+	//extern	int			SetPSConstSIArray(int ConstantIndex, const int *ParamArray, int ParamNum);	// ピクセルシェーダーの int   型定数を設定する( 配列を使って連番インデックスに一度に設定 )
+	//extern	int			SetPSConstIArray(int ConstantIndex, const INT4 *ParamArray, int ParamNum);	// ピクセルシェーダーの int   型定数を設定する( 配列を使って連番インデックスに一度に設定 )
+	//extern	int			SetPSConstBArray(int ConstantIndex, const BOOL *ParamArray, int ParamNum);	// ピクセルシェーダーの BOOL  型定数を設定する( 配列を使って連番インデックスに一度に設定 )
+	//extern	int			ResetPSConstF(int ConstantIndex, int ParamNum);							// ピクセルシェーダーの float 型定数の設定をリセットする
+	//extern	int			ResetPSConstI(int ConstantIndex, int ParamNum);							// ピクセルシェーダーの int   型定数の設定をリセットする
+	//extern	int			ResetPSConstB(int ConstantIndex, int ParamNum);							// ピクセルシェーダーの BOOL  型定数の設定をリセットする
 
-	extern	int			SetRenderTargetToShader(int TargetIndex, int DrawScreen, int SurfaceIndex = 0, int MipLevel = 0);	// シェーダーを使用した描画での描画先を設定する( DrawScreen に -1 を渡すと無効化 )
-	extern	int			SetUseTextureToShader(int StageIndex, int GraphHandle);						// シェーダーを使用した描画で使用するグラフィックハンドルを設定する
-	extern	int			SetUseVertexShader(int ShaderHandle);										// シェーダーを使用した描画に使用する頂点シェーダーを設定する( -1を渡すと解除 )
-	extern	int			SetUseGeometryShader(int ShaderHandle);										// シェーダーを使用した描画に使用するジオメトリシェーダーを設定する( -1を渡すと解除 )
-	extern	int			SetUsePixelShader(int ShaderHandle);										// シェーダーを使用した描画に使用するピクセルシェーダーを設定する( -1を渡すと解除 )
+	//extern	int			SetRenderTargetToShader(int TargetIndex, int DrawScreen, int SurfaceIndex = 0, int MipLevel = 0);	// シェーダーを使用した描画での描画先を設定する( DrawScreen に -1 を渡すと無効化 )
+	//extern	int			SetUseTextureToShader(int StageIndex, int GraphHandle);						// シェーダーを使用した描画で使用するグラフィックハンドルを設定する
+	//extern	int			SetUseVertexShader(int ShaderHandle);										// シェーダーを使用した描画に使用する頂点シェーダーを設定する( -1を渡すと解除 )
+	//extern	int			SetUseGeometryShader(int ShaderHandle);										// シェーダーを使用した描画に使用するジオメトリシェーダーを設定する( -1を渡すと解除 )
+	//extern	int			SetUsePixelShader(int ShaderHandle);										// シェーダーを使用した描画に使用するピクセルシェーダーを設定する( -1を渡すと解除 )
 
-	extern	int			CalcPolygonBinormalAndTangentsToShader(VERTEX3DSHADER * VertexArray, int PolygonNum);														// ポリゴンの頂点の接線と従法線をＵＶ座標から計算してセットする
-	extern	int			CalcPolygonIndexedBinormalAndTangentsToShader(VERTEX3DSHADER * VertexArray, int VertexNum, const unsigned short *IndexArray, int PolygonNum);		// ポリゴンの頂点の接線と従法線をＵＶ座標から計算してセットする( 頂点インデックスを使用する )
+	//extern	int			CalcPolygonBinormalAndTangentsToShader(VERTEX3DSHADER *VertexArray, int PolygonNum);														// ポリゴンの頂点の接線と従法線をＵＶ座標から計算してセットする
+	//extern	int			CalcPolygonIndexedBinormalAndTangentsToShader(VERTEX3DSHADER *VertexArray, int VertexNum, const unsigned short *IndexArray, int PolygonNum);		// ポリゴンの頂点の接線と従法線をＵＶ座標から計算してセットする( 頂点インデックスを使用する )
 
-	extern	int			DrawBillboard3DToShader(VECTOR Pos, float cx, float cy, float Size, float Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);							// シェーダーを使ってビルボードを描画する
-	extern	int			DrawPolygon2DToShader(const VERTEX2DSHADER * VertexArray, int PolygonNum);																											// シェーダーを使って２Ｄポリゴンを描画する
-	extern	int			DrawPolygon3DToShader(const VERTEX3DSHADER * VertexArray, int PolygonNum);																											// シェーダーを使って３Ｄポリゴンを描画する
-	extern	int			DrawPolygonIndexed2DToShader(const VERTEX2DSHADER * VertexArray, int VertexNum, const unsigned short *IndexArray, int PolygonNum);															// シェーダーを使って２Ｄポリゴンを描画する( 頂点インデックスを使用する )
-	extern	int			DrawPolygonIndexed3DToShader(const VERTEX3DSHADER * VertexArray, int VertexNum, const unsigned short *IndexArray, int PolygonNum);															// シェーダーを使って３Ｄポリゴンを描画する( 頂点インデックスを使用する )
-	extern	int			DrawPrimitive2DToShader(const VERTEX2DSHADER * VertexArray, int VertexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */);		// シェーダーを使って２Ｄプリミティブを描画する
-	extern	int			DrawPrimitive3DToShader(const VERTEX3DSHADER * VertexArray, int VertexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */);		// シェーダーを使って３Ｄプリミティブを描画する
-	extern	int			DrawPrimitiveIndexed2DToShader(const VERTEX2DSHADER * VertexArray, int VertexNum, const unsigned short *IndexArray, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */);		// シェーダーを使って２Ｄプリミティブを描画する( 頂点インデックスを使用する )
-	extern	int			DrawPrimitiveIndexed3DToShader(const VERTEX3DSHADER * VertexArray, int VertexNum, const unsigned short *IndexArray, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */);		// シェーダーを使って３Ｄプリミティブを描画する( 頂点インデックスを使用する )
-	extern	int			DrawPolygon3DToShader_UseVertexBuffer(int VertexBufHandle);																														// シェーダーを使って３Ｄポリゴンを描画する( 頂点バッファ使用版 )
-	extern	int			DrawPolygonIndexed3DToShader_UseVertexBuffer(int VertexBufHandle, int IndexBufHandle);																									// シェーダーを使って３Ｄポリゴンを描画する( 頂点バッファとインデックスバッファ使用版 )
-	extern	int			DrawPrimitive3DToShader_UseVertexBuffer(int VertexBufHandle, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */);												// シェーダーを使って３Ｄプリミティブを描画する( 頂点バッファ使用版 )
-	extern	int			DrawPrimitive3DToShader_UseVertexBuffer2(int VertexBufHandle, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */, int StartVertex, int UseVertexNum);			// シェーダーを使って３Ｄプリミティブを描画する( 頂点バッファ使用版 )
-	extern	int			DrawPrimitiveIndexed3DToShader_UseVertexBuffer(int VertexBufHandle, int IndexBufHandle, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */);												// シェーダーを使って３Ｄプリミティブを描画する( 頂点バッファとインデックスバッファ使用版 )
-	extern	int			DrawPrimitiveIndexed3DToShader_UseVertexBuffer2(int VertexBufHandle, int IndexBufHandle, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */, int BaseVertex, int StartVertex, int UseVertexNum, int StartIndex, int UseIndexNum);	// シェーダーを使って３Ｄプリミティブを描画する( 頂点バッファとインデックスバッファ使用版 )
+	//extern	int			DrawBillboard3DToShader(VECTOR Pos, float cx, float cy, float Size, float Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);							// シェーダーを使ってビルボードを描画する
+	//extern	int			DrawPolygon2DToShader(const VERTEX2DSHADER *VertexArray, int PolygonNum);																											// シェーダーを使って２Ｄポリゴンを描画する
+	//extern	int			DrawPolygon3DToShader(const VERTEX3DSHADER *VertexArray, int PolygonNum);																											// シェーダーを使って３Ｄポリゴンを描画する
+	//extern	int			DrawPolygonIndexed2DToShader(const VERTEX2DSHADER *VertexArray, int VertexNum, const unsigned short *IndexArray, int PolygonNum);															// シェーダーを使って２Ｄポリゴンを描画する( 頂点インデックスを使用する )
+	//extern	int			DrawPolygonIndexed3DToShader(const VERTEX3DSHADER *VertexArray, int VertexNum, const unsigned short *IndexArray, int PolygonNum);															// シェーダーを使って３Ｄポリゴンを描画する( 頂点インデックスを使用する )
+	//extern	int			DrawPrimitive2DToShader(const VERTEX2DSHADER *VertexArray, int VertexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */);		// シェーダーを使って２Ｄプリミティブを描画する
+	//extern	int			DrawPrimitive3DToShader(const VERTEX3DSHADER *VertexArray, int VertexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */);		// シェーダーを使って３Ｄプリミティブを描画する
+	//extern	int			DrawPrimitiveIndexed2DToShader(const VERTEX2DSHADER *VertexArray, int VertexNum, const unsigned short *IndexArray, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */);		// シェーダーを使って２Ｄプリミティブを描画する( 頂点インデックスを使用する )
+	//extern	int			DrawPrimitiveIndexed3DToShader(const VERTEX3DSHADER *VertexArray, int VertexNum, const unsigned short *IndexArray, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */);		// シェーダーを使って３Ｄプリミティブを描画する( 頂点インデックスを使用する )
+	//extern	int			DrawPolygon3DToShader_UseVertexBuffer(int VertexBufHandle);																														// シェーダーを使って３Ｄポリゴンを描画する( 頂点バッファ使用版 )
+	//extern	int			DrawPolygonIndexed3DToShader_UseVertexBuffer(int VertexBufHandle, int IndexBufHandle);																									// シェーダーを使って３Ｄポリゴンを描画する( 頂点バッファとインデックスバッファ使用版 )
+	//extern	int			DrawPrimitive3DToShader_UseVertexBuffer(int VertexBufHandle, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */);												// シェーダーを使って３Ｄプリミティブを描画する( 頂点バッファ使用版 )
+	//extern	int			DrawPrimitive3DToShader_UseVertexBuffer2(int VertexBufHandle, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */, int StartVertex, int UseVertexNum);			// シェーダーを使って３Ｄプリミティブを描画する( 頂点バッファ使用版 )
+	//extern	int			DrawPrimitiveIndexed3DToShader_UseVertexBuffer(int VertexBufHandle, int IndexBufHandle, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */);												// シェーダーを使って３Ｄプリミティブを描画する( 頂点バッファとインデックスバッファ使用版 )
+	//extern	int			DrawPrimitiveIndexed3DToShader_UseVertexBuffer2(int VertexBufHandle, int IndexBufHandle, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */, int BaseVertex, int StartVertex, int UseVertexNum, int StartIndex, int UseIndexNum);	// シェーダーを使って３Ｄプリミティブを描画する( 頂点バッファとインデックスバッファ使用版 )
 
 	// シェーダー用定数バッファ関係関数
-	extern	int			InitShaderConstantBuffer(void);																					// 全てのシェーダー用定数バッファハンドルを削除する
-	extern	int			CreateShaderConstantBuffer(int BufferSize);																			// シェーダー用定数バッファハンドルを初期化する
-	extern	int			DeleteShaderConstantBuffer(int SConstBufHandle);																		// シェーダー用定数バッファハンドルを削除する
-	extern	void *GetBufferShaderConstantBuffer(int SConstBufHandle);																		// シェーダー用定数バッファハンドルの定数バッファのアドレスを取得する
-	extern	int			UpdateShaderConstantBuffer(int SConstBufHandle);																		// シェーダー用定数バッファハンドルの定数バッファへの変更を適用する
-	extern	int			SetShaderConstantBuffer(int SConstBufHandle, int TargetShader /* DX_SHADERTYPE_VERTEX など */, int Slot);		// シェーダー用定数バッファハンドルの定数バッファを指定のシェーダーの指定のスロットにセットする
+	//extern	int			InitShaderConstantBuffer(void);																					// 全てのシェーダー用定数バッファハンドルを削除する
+	//extern	int			CreateShaderConstantBuffer(int BufferSize);																			// シェーダー用定数バッファハンドルを初期化する
+	//extern	int			DeleteShaderConstantBuffer(int SConstBufHandle);																		// シェーダー用定数バッファハンドルを削除する
+	//extern	void *GetBufferShaderConstantBuffer(int SConstBufHandle);																		// シェーダー用定数バッファハンドルの定数バッファのアドレスを取得する
+	//extern	int			UpdateShaderConstantBuffer(int SConstBufHandle);																		// シェーダー用定数バッファハンドルの定数バッファへの変更を適用する
+	//extern	int			SetShaderConstantBuffer(int SConstBufHandle, int TargetShader /* DX_SHADERTYPE_VERTEX など */, int Slot);		// シェーダー用定数バッファハンドルの定数バッファを指定のシェーダーの指定のスロットにセットする
 
 	// フィルター関係関数
 #ifndef DX_NON_FILTER
-	extern	int			GraphFilter(int    GrHandle, int FilterType /* DX_GRAPH_FILTER_GAUSS 等 */, ...);		// 画像にフィルター処理を行う
-	extern	int			GraphFilterBlt(int SrcGrHandle, int DestGrHandle, int FilterType /* DX_GRAPH_FILTER_GAUSS 等 */, ...);		// 画像のフィルター付き転送を行う
-	extern	int			GraphFilterRectBlt(int SrcGrHandle, int DestGrHandle, int SrcX1, int SrcY1, int SrcX2, int SrcY2, int DestX, int DestY, int FilterType /* DX_GRAPH_FILTER_GAUSS 等 */, ...);		// 画像のフィルター付き転送を行う( 矩形指定 )
+	//extern	int			GraphFilter(int    GrHandle, int FilterType /* DX_GRAPH_FILTER_GAUSS 等 */, ...);		// 画像にフィルター処理を行う
+	//extern	int			GraphFilterBlt(int SrcGrHandle, int DestGrHandle, int FilterType /* DX_GRAPH_FILTER_GAUSS 等 */, ...);		// 画像のフィルター付き転送を行う
+	//extern	int			GraphFilterRectBlt(int SrcGrHandle, int DestGrHandle, int SrcX1, int SrcY1, int SrcX2, int SrcY2, int DestX, int DestY, int FilterType /* DX_GRAPH_FILTER_GAUSS 等 */, ...);		// 画像のフィルター付き転送を行う( 矩形指定 )
 	//		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_MONO, int Cb = 青色差( -255 ～ 255 ), int Cr = 赤色差( -255 ～ 255 ) ) ;
 	//		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_GAUSS, int PixelWidth = 使用ピクセル幅( 8 , 16 , 32 の何れか ), int Param = ぼかしパラメータ( 100 で約1ピクセル分の幅 ) ) ;
 	//		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_DOWN_SCALE, int DivNum = 元のサイズの何分の１か、という値( 2 , 4 , 8 の何れか ) ) ;
@@ -774,9 +759,9 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 	//		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_BICUBIC_SCALE, int DestSizeX = スケーリング後の横ピクセル数, int DestSizeY = スケーリング後の縦ピクセル数 ) ;
 	//		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_LANCZOS3_SCALE, int DestSizeX = スケーリング後の横ピクセル数, int DestSizeY = スケーリング後の縦ピクセル数 ) ;
 
-	extern	int			GraphBlend(int    GrHandle, int BlendGrHandle, int BlendRatio /* ブレンド効果の影響度( 0:０％  255:１００％ ) */, int BlendType /* DX_GRAPH_BLEND_ADD 等 */, ...);	// 二つの画像をブレンドする
-	extern	int			GraphBlendBlt(int SrcGrHandle, int BlendGrHandle, int DestGrHandle, int BlendRatio /* ブレンド効果の影響度( 0:０％  255:１００％ ) */, int BlendType /* DX_GRAPH_BLEND_ADD 等 */, ...);	// 二つの画像をブレンドして結果を指定の画像に出力する
-	extern	int			GraphBlendRectBlt(int SrcGrHandle, int BlendGrHandle, int DestGrHandle, int SrcX1, int SrcY1, int SrcX2, int SrcY2, int BlendX, int BlendY, int DestX, int DestY, int BlendRatio /* ブレンド効果の影響度( 0:０％  255:１００％ ) */, int BlendType /* DX_GRAPH_BLEND_ADD 等 */, ...);	// 二つの画像をブレンドして結果を指定の画像に出力する( 矩形指定 )
+	//extern	int			GraphBlend(int    GrHandle, int BlendGrHandle, int BlendRatio /* ブレンド効果の影響度( 0:０％  255:１００％ ) */, int BlendType /* DX_GRAPH_BLEND_ADD 等 */, ...);	// 二つの画像をブレンドする
+	//extern	int			GraphBlendBlt(int SrcGrHandle, int BlendGrHandle, int DestGrHandle, int BlendRatio /* ブレンド効果の影響度( 0:０％  255:１００％ ) */, int BlendType /* DX_GRAPH_BLEND_ADD 等 */, ...);	// 二つの画像をブレンドして結果を指定の画像に出力する
+	//extern	int			GraphBlendRectBlt(int SrcGrHandle, int BlendGrHandle, int DestGrHandle, int SrcX1, int SrcY1, int SrcX2, int SrcY2, int BlendX, int BlendY, int DestX, int DestY, int BlendRatio /* ブレンド効果の影響度( 0:０％  255:１００％ ) */, int BlendType /* DX_GRAPH_BLEND_ADD 等 */, ...);	// 二つの画像をブレンドして結果を指定の画像に出力する( 矩形指定 )
 	//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_NORMAL ) ;
 	//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_RGBA_SELECT_MIX, int SelectR = ( 出力の赤分となる成分 DX_RGBA_SELECT_SRC_R 等 ), int SelectG = ( 出力の緑成分となる成分 DX_RGBA_SELECT_SRC_R 等 ), int SelectB = ( 出力の青成分となる成分 DX_RGBA_SELECT_SRC_R 等 ), int SelectA = ( 出力のα成分となる成分 DX_RGBA_SELECT_SRC_R 等 ) ) ;
 	//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_MULTIPLE ) ;
@@ -797,228 +782,224 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 	//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_PMA_MULTIPLE_A_ONLY ) ;
 #endif // DX_NON_FILTER
 
+	// ムービーグラフィック関係関数
 #ifndef DX_NON_MOVIE
-// ムービーグラフィック関係関数
-	extern	int			PlayMovie(const TCHAR * FileName, int ExRate, int PlayType);	// 動画ファイルの再生
-	extern	int			PlayMovieWithStrLen(const TCHAR * FileName, size_t FileNameLength, int ExRate, int PlayType);	// 動画ファイルの再生
-	extern	int			GetMovieImageSize_File(const TCHAR * FileName, int *SizeX, int *SizeY);	// 動画ファイルの横ピクセル数と縦ピクセル数を取得する
-	extern	int			GetMovieImageSize_File_WithStrLen(const TCHAR * FileName, size_t FileNameLength, int *SizeX, int *SizeY);	// 動画ファイルの横ピクセル数と縦ピクセル数を取得する
-	extern	int			GetMovieImageSize_Mem(const void *FileImage, int FileImageSize, int *SizeX, int *SizeY);		// メモリ上に展開された動画ファイルの横ピクセル数と縦ピクセル数を取得する
-	extern	int			OpenMovieToGraph(const TCHAR * FileName, int FullColor = TRUE);		// 動画ファイルを開く
-	extern	int			OpenMovieToGraphWithStrLen(const TCHAR * FileName, size_t FileNameLength, int FullColor = TRUE);		// 動画ファイルを開く
-	extern 	int			PlayMovieToGraph(int GraphHandle, int PlayType = DX_PLAYTYPE_BACK, int SysPlay = 0);		// 動画ファイルを使用するグラフィックハンドルの動画ファイルの再生を開始する
-	extern 	int			PauseMovieToGraph(int GraphHandle, int SysPause = 0);										// 動画ファイルを使用するグラフィックハンドルの動画ファイルの再生を停止する
-	extern	int			AddMovieFrameToGraph(int GraphHandle, unsigned int FrameNum);									// 動画ファイルの再生フレームを進める、戻すことは出来ない( 動画ファイルが停止状態で、且つ Ogg Theora のみ有効 )
-	extern	int			SeekMovieToGraph(int GraphHandle, int Time);												// 動画ファイルの再生位置を設定する(ミリ秒単位)
-	extern	int			SetPlaySpeedRateMovieToGraph(int GraphHandle, double SpeedRate);										// 動画ファイルの再生速度を設定する( 1.0 = 等倍速  2.0 = ２倍速 )、一部のファイルフォーマットのみで有効な機能です
-	extern 	int			GetMovieStateToGraph(int GraphHandle);															// 動画ファイルの再生状態を得る
-	extern	int			SetMovieVolumeToGraph(int Volume, int GraphHandle);												// 動画ファイルの音量を設定する(0～10000)
-	extern	int			ChangeMovieVolumeToGraph(int Volume, int GraphHandle);												// 動画ファイルの音量を設定する(0～255)
-	extern	const BASEIMAGE *GetMovieBaseImageToGraph(int GraphHandle, int *ImageUpdateFlag = NULL, int ImageUpdateFlagSetOnly = FALSE);	// 動画ファイルの基本イメージデータを取得する( ImageUpdateFlag に int 型変数のアドレスを渡すと、イメージが更新された場合は 1 が、更新されていない場合は 0 が格納されます、 ImageUpdateFlagSetOnly を TRUE にすると戻り値の BASEIMAGE は有効な画像データではなくなりますが、BASEIMAGE の更新処理が行われませんので、ImageUpdateFlag を利用して画像が更新されたかどうかだけをチェックしたい場合は TRUE にしてください )
-	extern	int			GetMovieTotalFrameToGraph(int GraphHandle);															// 動画ファイルの総フレーム数を得る( Ogg Theora でのみ有効 )
-	extern	int			TellMovieToGraph(int GraphHandle);															// 動画ファイルの再生位置を取得する(ミリ秒単位)
-	extern	int			TellMovieToGraphToFrame(int GraphHandle);															// 動画ファイルの再生位置を取得する(フレーム単位)
-	extern	int			SeekMovieToGraphToFrame(int GraphHandle, int Frame);												// 動画ファイルの再生位置を設定する(フレーム単位)
-	extern	LONGLONG	GetOneFrameTimeMovieToGraph(int GraphHandle);															// 動画ファイルの１フレームあたりの時間を取得する(戻り値：１フレームの時間(単位:マイクロ秒))
-	extern	int			GetLastUpdateTimeMovieToGraph(int GraphHandle);															// 動画ファイルのイメージを最後に更新した時間を得る(ミリ秒単位)
-	extern	int			SetMovieRightImageAlphaFlag(int Flag);																// 読み込む動画ファイル映像の右半分の赤成分をα情報として扱うかどうかをセットする( TRUE:α情報として扱う  FALSE:α情報として扱わない( デフォルト ) )
-	extern	int			SetMovieColorA8R8G8B8Flag(int Flag);																// 読み込む動画ファイルが32bitカラーだった場合、A8R8G8B8 形式として扱うかどうかをセットする、32bitカラーではない動画ファイルに対しては無効( Flag  TRUE:A8R8G8B8として扱う  FALSE:X8R8G8B8として扱う( デフォルト ) )
-	extern	int			SetMovieUseYUVFormatSurfaceFlag(int Flag);																// ＹＵＶフォーマットのサーフェスが使用できる場合はＹＵＶフォーマットのサーフェスを使用するかどうかを設定する( TRUE:使用する( デフォルト ) FALSE:ＲＧＢフォーマットのサーフェスを使用する )
+	//extern	int			PlayMovie(const TCHAR * FileName, int ExRate, int PlayType);	// 動画ファイルの再生
+	//extern	int			PlayMovieWithStrLen(const TCHAR * FileName, size_t FileNameLength, int ExRate, int PlayType);	// 動画ファイルの再生
+	//extern	int			GetMovieImageSize_File(const TCHAR * FileName, int *SizeX, int *SizeY);	// 動画ファイルの横ピクセル数と縦ピクセル数を取得する
+	//extern	int			GetMovieImageSize_File_WithStrLen(const TCHAR * FileName, size_t FileNameLength, int *SizeX, int *SizeY);	// 動画ファイルの横ピクセル数と縦ピクセル数を取得する
+	//extern	int			GetMovieImageSize_Mem(const void *FileImage, int FileImageSize, int *SizeX, int *SizeY);		// メモリ上に展開された動画ファイルの横ピクセル数と縦ピクセル数を取得する
+	//extern	int			OpenMovieToGraph(const TCHAR * FileName, int FullColor = TRUE);		// 動画ファイルを開く
+	//extern	int			OpenMovieToGraphWithStrLen(const TCHAR * FileName, size_t FileNameLength, int FullColor = TRUE);		// 動画ファイルを開く
+	//extern 	int			PlayMovieToGraph(int GraphHandle, int PlayType = DX_PLAYTYPE_BACK, int SysPlay = 0);		// 動画ファイルを使用するグラフィックハンドルの動画ファイルの再生を開始する
+	//extern 	int			PauseMovieToGraph(int GraphHandle, int SysPause = 0);										// 動画ファイルを使用するグラフィックハンドルの動画ファイルの再生を停止する
+	//extern	int			AddMovieFrameToGraph(int GraphHandle, unsigned int FrameNum);									// 動画ファイルの再生フレームを進める、戻すことは出来ない( 動画ファイルが停止状態で、且つ Ogg Theora のみ有効 )
+	//extern	int			SeekMovieToGraph(int GraphHandle, int Time);												// 動画ファイルの再生位置を設定する(ミリ秒単位)
+	//extern	int			SetPlaySpeedRateMovieToGraph(int GraphHandle, double SpeedRate);										// 動画ファイルの再生速度を設定する( 1.0 = 等倍速  2.0 = ２倍速 )、一部のファイルフォーマットのみで有効な機能です
+	//extern 	int			GetMovieStateToGraph(int GraphHandle);															// 動画ファイルの再生状態を得る
+	//extern	int			SetMovieVolumeToGraph(int Volume, int GraphHandle);												// 動画ファイルの音量を設定する(0～10000)
+	//extern	int			ChangeMovieVolumeToGraph(int Volume, int GraphHandle);												// 動画ファイルの音量を設定する(0～255)
+	//extern	const BASEIMAGE *GetMovieBaseImageToGraph(int GraphHandle, int *ImageUpdateFlag = NULL, int ImageUpdateFlagSetOnly = FALSE);	// 動画ファイルの基本イメージデータを取得する( ImageUpdateFlag に int 型変数のアドレスを渡すと、イメージが更新された場合は 1 が、更新されていない場合は 0 が格納されます、 ImageUpdateFlagSetOnly を TRUE にすると戻り値の BASEIMAGE は有効な画像データではなくなりますが、BASEIMAGE の更新処理が行われませんので、ImageUpdateFlag を利用して画像が更新されたかどうかだけをチェックしたい場合は TRUE にしてください )
+	//extern	int			GetMovieTotalFrameToGraph(int GraphHandle);															// 動画ファイルの総フレーム数を得る( Ogg Theora でのみ有効 )
+	//extern	int			TellMovieToGraph(int GraphHandle);															// 動画ファイルの再生位置を取得する(ミリ秒単位)
+	//extern	int			TellMovieToGraphToFrame(int GraphHandle);															// 動画ファイルの再生位置を取得する(フレーム単位)
+	//extern	int			SeekMovieToGraphToFrame(int GraphHandle, int Frame);												// 動画ファイルの再生位置を設定する(フレーム単位)
+	//extern	LONGLONG	GetOneFrameTimeMovieToGraph(int GraphHandle);															// 動画ファイルの１フレームあたりの時間を取得する(戻り値：１フレームの時間(単位:マイクロ秒))
+	//extern	int			GetLastUpdateTimeMovieToGraph(int GraphHandle);															// 動画ファイルのイメージを最後に更新した時間を得る(ミリ秒単位)
+	//extern	int			SetMovieRightImageAlphaFlag(int Flag);																// 読み込む動画ファイル映像の右半分の赤成分をα情報として扱うかどうかをセットする( TRUE:α情報として扱う  FALSE:α情報として扱わない( デフォルト ) )
+	//extern	int			SetMovieColorA8R8G8B8Flag(int Flag);																// 読み込む動画ファイルが32bitカラーだった場合、A8R8G8B8 形式として扱うかどうかをセットする、32bitカラーではない動画ファイルに対しては無効( Flag  TRUE:A8R8G8B8として扱う  FALSE:X8R8G8B8として扱う( デフォルト ) )
+	//extern	int			SetMovieUseYUVFormatSurfaceFlag(int Flag);																// ＹＵＶフォーマットのサーフェスが使用できる場合はＹＵＶフォーマットのサーフェスを使用するかどうかを設定する( TRUE:使用する( デフォルト ) FALSE:ＲＧＢフォーマットのサーフェスを使用する )
 #endif // DX_NON_MOVIE
 
-// カメラ関係関数
-	extern	int			SetCameraNearFar(float  Near, float  Far);												// カメラの Nearクリップ面と Farクリップ面の距離を設定する
-	extern	int			SetCameraNearFarD(double Near, double Far);												// カメラの Nearクリップ面と Farクリップ面の距離を設定する
-	extern	int			SetCameraPositionAndTarget_UpVecY(VECTOR    Position, VECTOR   Target);									// カメラの視点、注視点、アップベクトルを設定する( アップベクトルはＹ軸方向から導き出す )
-	extern	int			SetCameraPositionAndTarget_UpVecYD(VECTOR_D  Position, VECTOR_D Target);									// カメラの視点、注視点、アップベクトルを設定する( アップベクトルはＹ軸方向から導き出す )
-	extern	int			SetCameraPositionAndTargetAndUpVec(VECTOR    Position, VECTOR   TargetPosition, VECTOR   UpVector);		// カメラの視点、注視点、アップベクトルを設定する
-	extern	int			SetCameraPositionAndTargetAndUpVecD(VECTOR_D Position, VECTOR_D TargetPosition, VECTOR_D UpVector);		// カメラの視点、注視点、アップベクトルを設定する
-	extern	int			SetCameraPositionAndAngle(VECTOR   Position, float  VRotate, float  HRotate, float  TRotate);	// カメラの視点、注視点、アップベクトルを設定する( 注視点とアップベクトルは垂直回転角度、水平回転角度、捻り回転角度から導き出す )
-	extern	int			SetCameraPositionAndAngleD(VECTOR_D Position, double VRotate, double HRotate, double TRotate);	// カメラの視点、注視点、アップベクトルを設定する( 注視点とアップベクトルは垂直回転角度、水平回転角度、捻り回転角度から導き出す )
-	extern	int			SetCameraViewMatrix(MATRIX   ViewMatrix);													// ビュー行列を直接設定する
-	extern	int			SetCameraViewMatrixD(MATRIX_D ViewMatrix);													// ビュー行列を直接設定する
-	extern	int			SetCameraScreenCenter(float x, float y);													// 画面上におけるカメラが見ている映像の中心の座標を設定する
-	extern	int			SetCameraScreenCenterD(double x, double y);													// 画面上におけるカメラが見ている映像の中心の座標を設定する
+	// カメラ関係関数
+	//extern	int			SetCameraNearFar(float  Near, float  Far);												// カメラの Nearクリップ面と Farクリップ面の距離を設定する
+	//extern	int			SetCameraNearFarD(double Near, double Far);												// カメラの Nearクリップ面と Farクリップ面の距離を設定する
+	//extern	int			SetCameraPositionAndTarget_UpVecY(VECTOR    Position, VECTOR   Target);									// カメラの視点、注視点、アップベクトルを設定する( アップベクトルはＹ軸方向から導き出す )
+	//extern	int			SetCameraPositionAndTarget_UpVecYD(VECTOR_D  Position, VECTOR_D Target);									// カメラの視点、注視点、アップベクトルを設定する( アップベクトルはＹ軸方向から導き出す )
+	//extern	int			SetCameraPositionAndTargetAndUpVec(VECTOR    Position, VECTOR   TargetPosition, VECTOR   UpVector);		// カメラの視点、注視点、アップベクトルを設定する
+	//extern	int			SetCameraPositionAndTargetAndUpVecD(VECTOR_D Position, VECTOR_D TargetPosition, VECTOR_D UpVector);		// カメラの視点、注視点、アップベクトルを設定する
+	//extern	int			SetCameraPositionAndAngle(VECTOR   Position, float  VRotate, float  HRotate, float  TRotate);	// カメラの視点、注視点、アップベクトルを設定する( 注視点とアップベクトルは垂直回転角度、水平回転角度、捻り回転角度から導き出す )
+	//extern	int			SetCameraPositionAndAngleD(VECTOR_D Position, double VRotate, double HRotate, double TRotate);	// カメラの視点、注視点、アップベクトルを設定する( 注視点とアップベクトルは垂直回転角度、水平回転角度、捻り回転角度から導き出す )
+	//extern	int			SetCameraViewMatrix(MATRIX   ViewMatrix);													// ビュー行列を直接設定する
+	//extern	int			SetCameraViewMatrixD(MATRIX_D ViewMatrix);													// ビュー行列を直接設定する
+	//extern	int			SetCameraScreenCenter(float x, float y);													// 画面上におけるカメラが見ている映像の中心の座標を設定する
+	//extern	int			SetCameraScreenCenterD(double x, double y);													// 画面上におけるカメラが見ている映像の中心の座標を設定する
 
-	extern	int			SetupCamera_Perspective(float  Fov);															// 遠近法カメラをセットアップする
-	extern	int			SetupCamera_PerspectiveD(double Fov);															// 遠近法カメラをセットアップする
-	extern	int			SetupCamera_Ortho(float  Size);															// 正射影カメラをセットアップする
-	extern	int			SetupCamera_OrthoD(double Size);															// 正射影カメラをセットアップする
-	extern	int			SetupCamera_ProjectionMatrix(MATRIX   ProjectionMatrix);											// 射影行列を直接設定する
-	extern	int			SetupCamera_ProjectionMatrixD(MATRIX_D ProjectionMatrix);											// 射影行列を直接設定する
-	extern	int			SetCameraDotAspect(float  DotAspect);													// カメラのドットアスペクト比を設定する
-	extern	int			SetCameraDotAspectD(double DotAspect);													// カメラのドットアスペクト比を設定する
+	//extern	int			SetupCamera_Perspective(float  Fov);															// 遠近法カメラをセットアップする
+	//extern	int			SetupCamera_PerspectiveD(double Fov);															// 遠近法カメラをセットアップする
+	//extern	int			SetupCamera_Ortho(float  Size);															// 正射影カメラをセットアップする
+	//extern	int			SetupCamera_OrthoD(double Size);															// 正射影カメラをセットアップする
+	//extern	int			SetupCamera_ProjectionMatrix(MATRIX   ProjectionMatrix);											// 射影行列を直接設定する
+	//extern	int			SetupCamera_ProjectionMatrixD(MATRIX_D ProjectionMatrix);											// 射影行列を直接設定する
+	//extern	int			SetCameraDotAspect(float  DotAspect);													// カメラのドットアスペクト比を設定する
+	//extern	int			SetCameraDotAspectD(double DotAspect);													// カメラのドットアスペクト比を設定する
 
-	extern	int			CheckCameraViewClip(VECTOR   CheckPos);													// 指定の座標がカメラの視界に入っているかどうかを判定する( 戻り値 TRUE:視界に入っていない  FALSE:視界に入っている )
-	extern	int			CheckCameraViewClipD(VECTOR_D CheckPos);													// 指定の座標がカメラの視界に入っているかどうかを判定する( 戻り値 TRUE:視界に入っていない  FALSE:視界に入っている )
-	extern	int			CheckCameraViewClip_Dir(VECTOR   CheckPos);													// 指定の座標がカメラの視界に入っているかどうかを判定する、戻り値で外れている方向も知ることができる( 戻り値 0:視界に入っている  0以外:視界に入っていない( DX_CAMERACLIP_LEFT や DX_CAMERACLIP_RIGHT が or 演算で混合されたもの、and 演算で方向を確認できる ) )
-	extern	int			CheckCameraViewClip_DirD(VECTOR_D CheckPos);													// 指定の座標がカメラの視界に入っているかどうかを判定する、戻り値で外れている方向も知ることができる( 戻り値 0:視界に入っている  0以外:視界に入っていない( DX_CAMERACLIP_LEFT や DX_CAMERACLIP_RIGHT が or 演算で混合されたもの、and 演算で方向を確認できる ) )
-	extern	int			CheckCameraViewClip_Box(VECTOR   BoxPos1, VECTOR   BoxPos2);									// 二つの座標で表されるボックスがカメラの視界に入っているかどうかを判定する( 戻り値 TRUE:視界に入っていない  FALSE:視界に入っている )
-	extern	int			CheckCameraViewClip_BoxD(VECTOR_D BoxPos1, VECTOR_D BoxPos2);									// 二つの座標で表されるボックスがカメラの視界に入っているかどうかを判定する( 戻り値 TRUE:視界に入っていない  FALSE:視界に入っている )
+	//extern	int			CheckCameraViewClip(VECTOR   CheckPos);													// 指定の座標がカメラの視界に入っているかどうかを判定する( 戻り値 TRUE:視界に入っていない  FALSE:視界に入っている )
+	//extern	int			CheckCameraViewClipD(VECTOR_D CheckPos);													// 指定の座標がカメラの視界に入っているかどうかを判定する( 戻り値 TRUE:視界に入っていない  FALSE:視界に入っている )
+	//extern	int			CheckCameraViewClip_Dir(VECTOR   CheckPos);													// 指定の座標がカメラの視界に入っているかどうかを判定する、戻り値で外れている方向も知ることができる( 戻り値 0:視界に入っている  0以外:視界に入っていない( DX_CAMERACLIP_LEFT や DX_CAMERACLIP_RIGHT が or 演算で混合されたもの、and 演算で方向を確認できる ) )
+	//extern	int			CheckCameraViewClip_DirD(VECTOR_D CheckPos);													// 指定の座標がカメラの視界に入っているかどうかを判定する、戻り値で外れている方向も知ることができる( 戻り値 0:視界に入っている  0以外:視界に入っていない( DX_CAMERACLIP_LEFT や DX_CAMERACLIP_RIGHT が or 演算で混合されたもの、and 演算で方向を確認できる ) )
+	//extern	int			CheckCameraViewClip_Box(VECTOR   BoxPos1, VECTOR   BoxPos2);									// 二つの座標で表されるボックスがカメラの視界に入っているかどうかを判定する( 戻り値 TRUE:視界に入っていない  FALSE:視界に入っている )
+	//extern	int			CheckCameraViewClip_BoxD(VECTOR_D BoxPos1, VECTOR_D BoxPos2);									// 二つの座標で表されるボックスがカメラの視界に入っているかどうかを判定する( 戻り値 TRUE:視界に入っていない  FALSE:視界に入っている )
 
-	extern	float		GetCameraNear(void);																// カメラの Near クリップ面の距離を取得する
-	extern	double		GetCameraNearD(void);																// カメラの Near クリップ面の距離を取得する
-	extern	float		GetCameraFar(void);																// カメラの Far クリップ面の距離を取得する
-	extern	double		GetCameraFarD(void);																// カメラの Far クリップ面の距離を取得する
+	//extern	float		GetCameraNear(void);																// カメラの Near クリップ面の距離を取得する
+	//extern	double		GetCameraNearD(void);																// カメラの Near クリップ面の距離を取得する
+	//extern	float		GetCameraFar(void);																// カメラの Far クリップ面の距離を取得する
+	//extern	double		GetCameraFarD(void);																// カメラの Far クリップ面の距離を取得する
 
-	extern	VECTOR		GetCameraPosition(void);																// カメラの位置を取得する
-	extern	VECTOR_D	GetCameraPositionD(void);																// カメラの位置を取得する
-	extern	VECTOR		GetCameraTarget(void);																// カメラの注視点を取得する
-	extern	VECTOR_D	GetCameraTargetD(void);																// カメラの注視点を取得する
-	extern	VECTOR		GetCameraUpVector(void);																// カメラの正面方向に垂直な上方向のベクトルを取得する
-	extern	VECTOR_D	GetCameraUpVectorD(void);																// カメラの正面方向に垂直な上方向のベクトルを取得する
-	extern	VECTOR		GetCameraDownVector(void);																// カメラの正面方向に垂直な下方向のベクトルを取得する
-	extern	VECTOR_D	GetCameraDownVectorD(void);																// カメラの正面方向に垂直な下方向のベクトルを取得する
-	extern	VECTOR		GetCameraRightVector(void);																// カメラの正面方向に垂直な右方向のベクトルを取得する
-	extern	VECTOR_D	GetCameraRightVectorD(void);																// カメラの正面方向に垂直な右方向のベクトルを取得する
-	extern	VECTOR		GetCameraLeftVector(void);																// カメラの正面方向に垂直な左方向のベクトルを取得する
-	extern	VECTOR_D	GetCameraLeftVectorD(void);																// カメラの正面方向に垂直な左方向のベクトルを取得する
-	extern	VECTOR		GetCameraFrontVector(void);																// カメラの正面方向のベクトルを取得する
-	extern	VECTOR_D	GetCameraFrontVectorD(void);																// カメラの正面方向のベクトルを取得する
-	extern	VECTOR		GetCameraBackVector(void);																// カメラの後ろ方向のベクトルを取得する
-	extern	VECTOR_D	GetCameraBackVectorD(void);																// カメラの後ろ方向のベクトルを取得する
-	extern	float		GetCameraAngleHRotate(void);																// カメラの水平方向の向きを取得する
-	extern	double		GetCameraAngleHRotateD(void);																// カメラの水平方向の向きを取得する
-	extern	float		GetCameraAngleVRotate(void);																// カメラの垂直方向の向きを取得する
-	extern	double		GetCameraAngleVRotateD(void);																// カメラの垂直方向の向きを取得する
-	extern	float		GetCameraAngleTRotate(void);																// カメラの向きの捻り角度を取得する
-	extern	double		GetCameraAngleTRotateD(void);																// カメラの向きの捻り角度を取得する
+	//extern	VECTOR		GetCameraPosition(void);																// カメラの位置を取得する
+	//extern	VECTOR_D	GetCameraPositionD(void);																// カメラの位置を取得する
+	//extern	VECTOR		GetCameraTarget(void);																// カメラの注視点を取得する
+	//extern	VECTOR_D	GetCameraTargetD(void);																// カメラの注視点を取得する
+	//extern	VECTOR		GetCameraUpVector(void);																// カメラの正面方向に垂直な上方向のベクトルを取得する
+	//extern	VECTOR_D	GetCameraUpVectorD(void);																// カメラの正面方向に垂直な上方向のベクトルを取得する
+	//extern	VECTOR		GetCameraDownVector(void);																// カメラの正面方向に垂直な下方向のベクトルを取得する
+	//extern	VECTOR_D	GetCameraDownVectorD(void);																// カメラの正面方向に垂直な下方向のベクトルを取得する
+	//extern	VECTOR		GetCameraRightVector(void);																// カメラの正面方向に垂直な右方向のベクトルを取得する
+	//extern	VECTOR_D	GetCameraRightVectorD(void);																// カメラの正面方向に垂直な右方向のベクトルを取得する
+	//extern	VECTOR		GetCameraLeftVector(void);																// カメラの正面方向に垂直な左方向のベクトルを取得する
+	//extern	VECTOR_D	GetCameraLeftVectorD(void);																// カメラの正面方向に垂直な左方向のベクトルを取得する
+	//extern	VECTOR		GetCameraFrontVector(void);																// カメラの正面方向のベクトルを取得する
+	//extern	VECTOR_D	GetCameraFrontVectorD(void);																// カメラの正面方向のベクトルを取得する
+	//extern	VECTOR		GetCameraBackVector(void);																// カメラの後ろ方向のベクトルを取得する
+	//extern	VECTOR_D	GetCameraBackVectorD(void);																// カメラの後ろ方向のベクトルを取得する
+	//extern	float		GetCameraAngleHRotate(void);																// カメラの水平方向の向きを取得する
+	//extern	double		GetCameraAngleHRotateD(void);																// カメラの水平方向の向きを取得する
+	//extern	float		GetCameraAngleVRotate(void);																// カメラの垂直方向の向きを取得する
+	//extern	double		GetCameraAngleVRotateD(void);																// カメラの垂直方向の向きを取得する
+	//extern	float		GetCameraAngleTRotate(void);																// カメラの向きの捻り角度を取得する
+	//extern	double		GetCameraAngleTRotateD(void);																// カメラの向きの捻り角度を取得する
 
-	extern	MATRIX		GetCameraViewMatrix(void);																// ビュー行列を取得する
-	extern	MATRIX_D	GetCameraViewMatrixD(void);																// ビュー行列を取得する
-	extern	MATRIX		GetCameraBillboardMatrix(void);																// ビルボード行列を取得する
-	extern	MATRIX_D	GetCameraBillboardMatrixD(void);																// ビルボード行列を取得する
-	extern	int			GetCameraScreenCenter(float *x, float *y);												// 画面上におけるカメラが見ている映像の中心の座標を取得する
-	extern	int			GetCameraScreenCenterD(double *x, double *y);												// 画面上におけるカメラが見ている映像の中心の座標を取得する
-	extern	float		GetCameraFov(void);																// カメラの視野角を取得する
-	extern	double		GetCameraFovD(void);																// カメラの視野角を取得する
-	extern	float		GetCameraSize(void);																// カメラの視野サイズを取得する
-	extern	double		GetCameraSizeD(void);																// カメラの視野サイズを取得する
-	extern	MATRIX		GetCameraProjectionMatrix(void);																// 射影行列を取得する
-	extern	MATRIX_D	GetCameraProjectionMatrixD(void);																// 射影行列を取得する
-	extern	float		GetCameraDotAspect(void);																// カメラのドットアスペクト比を得る
-	extern	double		GetCameraDotAspectD(void);																// カメラのドットアスペクト比を得る
-	extern	MATRIX		GetCameraViewportMatrix(void);																// ビューポート行列を取得する
-	extern	MATRIX_D	GetCameraViewportMatrixD(void);																// ビューポート行列を取得する
-	extern	MATRIX		GetCameraAPIViewportMatrix(void);																// Direct3Dで自動適用されるビューポート行列を取得する
-	extern	MATRIX_D	GetCameraAPIViewportMatrixD(void);																// Direct3Dで自動適用されるビューポート行列を取得する
+	//extern	MATRIX		GetCameraViewMatrix(void);																// ビュー行列を取得する
+	//extern	MATRIX_D	GetCameraViewMatrixD(void);																// ビュー行列を取得する
+	//extern	MATRIX		GetCameraBillboardMatrix(void);																// ビルボード行列を取得する
+	//extern	MATRIX_D	GetCameraBillboardMatrixD(void);																// ビルボード行列を取得する
+	//extern	int			GetCameraScreenCenter(float *x, float *y);												// 画面上におけるカメラが見ている映像の中心の座標を取得する
+	//extern	int			GetCameraScreenCenterD(double *x, double *y);												// 画面上におけるカメラが見ている映像の中心の座標を取得する
+	//extern	float		GetCameraFov(void);																// カメラの視野角を取得する
+	//extern	double		GetCameraFovD(void);																// カメラの視野角を取得する
+	//extern	float		GetCameraSize(void);																// カメラの視野サイズを取得する
+	//extern	double		GetCameraSizeD(void);																// カメラの視野サイズを取得する
+	//extern	MATRIX		GetCameraProjectionMatrix(void);																// 射影行列を取得する
+	//extern	MATRIX_D	GetCameraProjectionMatrixD(void);																// 射影行列を取得する
+	//extern	float		GetCameraDotAspect(void);																// カメラのドットアスペクト比を得る
+	//extern	double		GetCameraDotAspectD(void);																// カメラのドットアスペクト比を得る
+	//extern	MATRIX		GetCameraViewportMatrix(void);																// ビューポート行列を取得する
+	//extern	MATRIX_D	GetCameraViewportMatrixD(void);																// ビューポート行列を取得する
+	//extern	MATRIX		GetCameraAPIViewportMatrix(void);																// Direct3Dで自動適用されるビューポート行列を取得する
+	//extern	MATRIX_D	GetCameraAPIViewportMatrixD(void);																// Direct3Dで自動適用されるビューポート行列を取得する
 
 	// ライト関係関数
-	extern	int			SetUseLighting(int Flag);																	// ライティングを使用するかどうかを設定する
-	extern	int			SetMaterialUseVertDifColor(int UseFlag);																	// ３Ｄ描画のライティング計算で頂点カラーのディフューズカラーを使用するかどうかを設定する
-	extern	int			SetMaterialUseVertSpcColor(int UseFlag);																	// ３Ｄ描画のライティング計算で頂点カラーのスペキュラカラーを使用するかどうかを設定する
-	extern	int			SetMaterialParam(MATERIALPARAM Material);														// ３Ｄ描画のライティング計算で使用するマテリアルパラメータを設定する
-	extern	int			SetUseSpecular(int UseFlag);																	// ３Ｄ描画にスペキュラを使用するかどうかを設定する
-	extern	int			SetGlobalAmbientLight(COLOR_F Color);																// グローバルアンビエントライトカラーを設定する
 
-	extern	int			ChangeLightTypeDir(VECTOR Direction);															// デフォルトライトのタイプをディレクショナルライトにする
-	extern	int			ChangeLightTypeSpot(VECTOR Position, VECTOR Direction, float OutAngle, float InAngle, float Range, float Atten0, float Atten1, float Atten2);	// デフォルトライトのタイプをスポットライトにする
-	extern	int			ChangeLightTypePoint(VECTOR Position, float Range, float Atten0, float Atten1, float Atten2);		// デフォルトライトのタイプをポイントライトにする
-	extern	int			GetLightType(void);																		// デフォルトライトのタイプを取得する( 戻り値は DX_LIGHTTYPE_DIRECTIONAL 等 )
-	extern	int			SetLightEnable(int EnableFlag);																// デフォルトライトを使用するかどうかを設定する
-	extern	int			GetLightEnable(void);																		// デフォルトライトを使用するかどうかを取得する( 戻り値　TRUE:有効  FALSE:無効 )
-	extern	int			SetLightDifColor(COLOR_F Color);																// デフォルトライトのディフューズカラーを設定する
-	extern	COLOR_F		GetLightDifColor(void);																		// デフォルトライトのディフューズカラーを取得する
-	extern	int			SetLightSpcColor(COLOR_F Color);																// デフォルトライトのスペキュラカラーを設定する
-	extern	COLOR_F		GetLightSpcColor(void);																		// デフォルトライトのスペキュラカラーを取得する
-	extern	int			SetLightAmbColor(COLOR_F Color);																// デフォルトライトのアンビエントカラーを設定する
-	extern	COLOR_F		GetLightAmbColor(void);																		// デフォルトライトのアンビエントカラーを取得する
-	extern	int			SetLightDirection(VECTOR Direction);															// デフォルトライトの方向を設定する
-	extern	VECTOR		GetLightDirection(void);																		// デフォルトライトの方向を取得する
-	extern	int			SetLightPosition(VECTOR Position);																// デフォルトライトの位置を設定する
-	extern	VECTOR		GetLightPosition(void);																		// デフォルトライトの位置を取得する
-	extern	int			SetLightRangeAtten(float Range, float Atten0, float Atten1, float Atten2);						// デフォルトライトの距離減衰パラメータを設定する( 有効距離、距離減衰係数０、１、２ )
-	extern	int			GetLightRangeAtten(float *Range, float *Atten0, float *Atten1, float *Atten2);					// デフォルトライトの距離減衰パラメータを取得する( 有効距離、距離減衰係数０、１、２ )
-	extern	int			SetLightAngle(float OutAngle, float InAngle);												// デフォルトライトのスポットライトのパラメータを設定する( 外部コーン角度、内部コーン角度 )
-	extern	int			GetLightAngle(float *OutAngle, float *InAngle);												// デフォルトライトのスポットライトのパラメータを取得する( 外部コーン角度、内部コーン角度 )
-	extern	int			SetLightUseShadowMap(int SmSlotIndex, int UseFlag);												// デフォルトライトに SetUseShadowMap で指定したシャドウマップを適用するかどうかを設定する( SmSlotIndex:シャドウマップスロット( SetUseShadowMap の第一引数に設定する値 ) UseFlag:適用にするかどうかのフラグ( TRUE:適用する( デフォルト )  FALSE:適用しない ) )
+	// ライト関係関数
+	library["SetUseLighting"] = [](sol::variadic_args va) {
+		int Flag = va_get(va, 0, false);
+		return SetUseLighting(Flag);
+	};
+	//extern	int			SetMaterialUseVertDifColor(int UseFlag);																	// ３Ｄ描画のライティング計算で頂点カラーのディフューズカラーを使用するかどうかを設定する
+	//extern	int			SetMaterialUseVertSpcColor(int UseFlag);																	// ３Ｄ描画のライティング計算で頂点カラーのスペキュラカラーを使用するかどうかを設定する
+	//extern	int			SetMaterialParam(MATERIALPARAM Material);														// ３Ｄ描画のライティング計算で使用するマテリアルパラメータを設定する
+	//extern	int			SetUseSpecular(int UseFlag);																	// ３Ｄ描画にスペキュラを使用するかどうかを設定する
+	//extern	int			SetGlobalAmbientLight(COLOR_F Color);																// グローバルアンビエントライトカラーを設定する
 
-	extern	int			CreateDirLightHandle(VECTOR Direction);															// ディレクショナルライトハンドルを作成する
-	extern	int			CreateSpotLightHandle(VECTOR Position, VECTOR Direction, float OutAngle, float InAngle, float Range, float Atten0, float Atten1, float Atten2);	// スポットライトハンドルを作成する
-	extern	int			CreatePointLightHandle(VECTOR Position, float Range, float Atten0, float Atten1, float Atten2);		// ポイントライトハンドルを作成する
-	extern	int			DeleteLightHandle(int LHandle);																	// ライトハンドルを削除する
-	extern	int			DeleteLightHandleAll(void);																		// ライトハンドルを全て削除する
-	extern	int			SetLightTypeHandle(int LHandle, int LightType);													// ライトハンドルのライトのタイプを変更する( DX_LIGHTTYPE_DIRECTIONAL 等 )
-	extern	int			SetLightEnableHandle(int LHandle, int EnableFlag);													// ライトハンドルのライト効果の有効、無効を設定する( TRUE:有効  FALSE:無効 )
-	extern	int			SetLightDifColorHandle(int LHandle, COLOR_F Color);													// ライトハンドルのライトのディフューズカラーを設定する
-	extern	int			SetLightSpcColorHandle(int LHandle, COLOR_F Color);													// ライトハンドルのライトのスペキュラカラーを設定する
-	extern	int			SetLightAmbColorHandle(int LHandle, COLOR_F Color);													// ライトハンドルのライトのアンビエントカラーを設定する
-	extern	int			SetLightDirectionHandle(int LHandle, VECTOR Direction);												// ライトハンドルのライトの方向を設定する
-	extern	int			SetLightPositionHandle(int LHandle, VECTOR Position);												// ライトハンドルのライトの位置を設定する
-	extern	int			SetLightRangeAttenHandle(int LHandle, float Range, float Atten0, float Atten1, float Atten2);			// ライトハンドルのライトの距離減衰パラメータを設定する( 有効距離、距離減衰係数０、１、２ )
-	extern	int			SetLightAngleHandle(int LHandle, float OutAngle, float InAngle);									// ライトハンドルのライトのスポットライトのパラメータを設定する( 外部コーン角度、内部コーン角度 )
-	extern	int			SetLightUseShadowMapHandle(int LHandle, int SmSlotIndex, int UseFlag);									// ライトハンドルのライトに SetUseShadowMap で指定したシャドウマップを適用するかどうかを設定する( SmSlotIndex:シャドウマップスロット( SetUseShadowMap の第一引数に設定する値 ) UseFlag:適用にするかどうかのフラグ( TRUE:適用する( デフォルト )  FALSE:適用しない ) )
-	extern	int			GetLightTypeHandle(int LHandle);																	// ライトハンドルのライトのタイプを取得する( 戻り値は DX_LIGHTTYPE_DIRECTIONAL 等 )
-	extern	int			GetLightEnableHandle(int LHandle);																	// ライトハンドルのライト効果の有効、無効を取得する( TRUE:有効  FALSE:無効 )
-	extern	COLOR_F		GetLightDifColorHandle(int LHandle);																	// ライトハンドルのライトのディフューズカラーを取得する
-	extern	COLOR_F		GetLightSpcColorHandle(int LHandle);																	// ライトハンドルのライトのスペキュラカラーを取得する
-	extern	COLOR_F		GetLightAmbColorHandle(int LHandle);																	// ライトハンドルのライトのアンビエントカラーを取得する
-	extern	VECTOR		GetLightDirectionHandle(int LHandle);																	// ライトハンドルのライトの方向を取得する
-	extern	VECTOR		GetLightPositionHandle(int LHandle);																	// ライトハンドルのライトの位置を取得する
-	extern	int			GetLightRangeAttenHandle(int LHandle, float *Range, float *Atten0, float *Atten1, float *Atten2);		// ライトハンドルのライトの距離減衰パラメータを取得する( 有効距離、距離減衰係数０、１、２ )
-	extern	int			GetLightAngleHandle(int LHandle, float *OutAngle, float *InAngle);								// ライトハンドルのライトのスポットライトのパラメータを取得する( 外部コーン角度、内部コーン角度 )
+	//extern	int			ChangeLightTypeDir(VECTOR Direction);															// デフォルトライトのタイプをディレクショナルライトにする
+	//extern	int			ChangeLightTypeSpot(VECTOR Position, VECTOR Direction, float OutAngle, float InAngle, float Range, float Atten0, float Atten1, float Atten2);	// デフォルトライトのタイプをスポットライトにする
+	//extern	int			ChangeLightTypePoint(VECTOR Position, float Range, float Atten0, float Atten1, float Atten2);		// デフォルトライトのタイプをポイントライトにする
+	//extern	int			GetLightType(void);																		// デフォルトライトのタイプを取得する( 戻り値は DX_LIGHTTYPE_DIRECTIONAL 等 )
+	//extern	int			SetLightEnable(int EnableFlag);																// デフォルトライトを使用するかどうかを設定する
+	//extern	int			GetLightEnable(void);																		// デフォルトライトを使用するかどうかを取得する( 戻り値　TRUE:有効  FALSE:無効 )
+	//extern	int			SetLightDifColor(COLOR_F Color);																// デフォルトライトのディフューズカラーを設定する
+	//extern	COLOR_F		GetLightDifColor(void);																		// デフォルトライトのディフューズカラーを取得する
+	//extern	int			SetLightSpcColor(COLOR_F Color);																// デフォルトライトのスペキュラカラーを設定する
+	//extern	COLOR_F		GetLightSpcColor(void);																		// デフォルトライトのスペキュラカラーを取得する
+	//extern	int			SetLightAmbColor(COLOR_F Color);																// デフォルトライトのアンビエントカラーを設定する
+	//extern	COLOR_F		GetLightAmbColor(void);																		// デフォルトライトのアンビエントカラーを取得する
+	//extern	int			SetLightDirection(VECTOR Direction);															// デフォルトライトの方向を設定する
+	//extern	VECTOR		GetLightDirection(void);																		// デフォルトライトの方向を取得する
+	//extern	int			SetLightPosition(VECTOR Position);																// デフォルトライトの位置を設定する
+	//extern	VECTOR		GetLightPosition(void);																		// デフォルトライトの位置を取得する
+	//extern	int			SetLightRangeAtten(float Range, float Atten0, float Atten1, float Atten2);						// デフォルトライトの距離減衰パラメータを設定する( 有効距離、距離減衰係数０、１、２ )
+	//extern	int			GetLightRangeAtten(float *Range, float *Atten0, float *Atten1, float *Atten2);					// デフォルトライトの距離減衰パラメータを取得する( 有効距離、距離減衰係数０、１、２ )
+	//extern	int			SetLightAngle(float OutAngle, float InAngle);												// デフォルトライトのスポットライトのパラメータを設定する( 外部コーン角度、内部コーン角度 )
+	//extern	int			GetLightAngle(float *OutAngle, float *InAngle);												// デフォルトライトのスポットライトのパラメータを取得する( 外部コーン角度、内部コーン角度 )
+	//extern	int			SetLightUseShadowMap(int SmSlotIndex, int UseFlag);												// デフォルトライトに SetUseShadowMap で指定したシャドウマップを適用するかどうかを設定する( SmSlotIndex:シャドウマップスロット( SetUseShadowMap の第一引数に設定する値 ) UseFlag:適用にするかどうかのフラグ( TRUE:適用する( デフォルト )  FALSE:適用しない ) )
 
-	extern	int			GetEnableLightHandleNum(void);																		// 有効になっているライトハンドルの数を取得する
-	extern	int			GetEnableLightHandle(int Index);																	// 有効になっているライトハンドルを取得する
+	//extern	int			CreateDirLightHandle(VECTOR Direction);															// ディレクショナルライトハンドルを作成する
+	//extern	int			CreateSpotLightHandle(VECTOR Position, VECTOR Direction, float OutAngle, float InAngle, float Range, float Atten0, float Atten1, float Atten2);	// スポットライトハンドルを作成する
+	//extern	int			CreatePointLightHandle(VECTOR Position, float Range, float Atten0, float Atten1, float Atten2);		// ポイントライトハンドルを作成する
+	//extern	int			DeleteLightHandle(int LHandle);																	// ライトハンドルを削除する
+	//extern	int			DeleteLightHandleAll(void);																		// ライトハンドルを全て削除する
+	//extern	int			SetLightTypeHandle(int LHandle, int LightType);													// ライトハンドルのライトのタイプを変更する( DX_LIGHTTYPE_DIRECTIONAL 等 )
+	//extern	int			SetLightEnableHandle(int LHandle, int EnableFlag);													// ライトハンドルのライト効果の有効、無効を設定する( TRUE:有効  FALSE:無効 )
+	//extern	int			SetLightDifColorHandle(int LHandle, COLOR_F Color);													// ライトハンドルのライトのディフューズカラーを設定する
+	//extern	int			SetLightSpcColorHandle(int LHandle, COLOR_F Color);													// ライトハンドルのライトのスペキュラカラーを設定する
+	//extern	int			SetLightAmbColorHandle(int LHandle, COLOR_F Color);													// ライトハンドルのライトのアンビエントカラーを設定する
+	//extern	int			SetLightDirectionHandle(int LHandle, VECTOR Direction);												// ライトハンドルのライトの方向を設定する
+	//extern	int			SetLightPositionHandle(int LHandle, VECTOR Position);												// ライトハンドルのライトの位置を設定する
+	//extern	int			SetLightRangeAttenHandle(int LHandle, float Range, float Atten0, float Atten1, float Atten2);			// ライトハンドルのライトの距離減衰パラメータを設定する( 有効距離、距離減衰係数０、１、２ )
+	//extern	int			SetLightAngleHandle(int LHandle, float OutAngle, float InAngle);									// ライトハンドルのライトのスポットライトのパラメータを設定する( 外部コーン角度、内部コーン角度 )
+	//extern	int			SetLightUseShadowMapHandle(int LHandle, int SmSlotIndex, int UseFlag);									// ライトハンドルのライトに SetUseShadowMap で指定したシャドウマップを適用するかどうかを設定する( SmSlotIndex:シャドウマップスロット( SetUseShadowMap の第一引数に設定する値 ) UseFlag:適用にするかどうかのフラグ( TRUE:適用する( デフォルト )  FALSE:適用しない ) )
+	//extern	int			GetLightTypeHandle(int LHandle);																	// ライトハンドルのライトのタイプを取得する( 戻り値は DX_LIGHTTYPE_DIRECTIONAL 等 )
+	//extern	int			GetLightEnableHandle(int LHandle);																	// ライトハンドルのライト効果の有効、無効を取得する( TRUE:有効  FALSE:無効 )
+	//extern	COLOR_F		GetLightDifColorHandle(int LHandle);																	// ライトハンドルのライトのディフューズカラーを取得する
+	//extern	COLOR_F		GetLightSpcColorHandle(int LHandle);																	// ライトハンドルのライトのスペキュラカラーを取得する
+	//extern	COLOR_F		GetLightAmbColorHandle(int LHandle);																	// ライトハンドルのライトのアンビエントカラーを取得する
+	//extern	VECTOR		GetLightDirectionHandle(int LHandle);																	// ライトハンドルのライトの方向を取得する
+	//extern	VECTOR		GetLightPositionHandle(int LHandle);																	// ライトハンドルのライトの位置を取得する
+	//extern	int			GetLightRangeAttenHandle(int LHandle, float *Range, float *Atten0, float *Atten1, float *Atten2);		// ライトハンドルのライトの距離減衰パラメータを取得する( 有効距離、距離減衰係数０、１、２ )
+	//extern	int			GetLightAngleHandle(int LHandle, float *OutAngle, float *InAngle);								// ライトハンドルのライトのスポットライトのパラメータを取得する( 外部コーン角度、内部コーン角度 )
+
+	//extern	int			GetEnableLightHandleNum(void);																		// 有効になっているライトハンドルの数を取得する
+	//extern	int			GetEnableLightHandle(int Index);																	// 有効になっているライトハンドルを取得する
 
 	// 色情報取得用関数
-	extern	int			GetTexFormatIndex(const IMAGEFORMATDESC * Format);												// テクスチャフォーマットのインデックスを得る
-
-
-
-
-
-
-
+	//extern	int			GetTexFormatIndex(const IMAGEFORMATDESC *Format);												// テクスチャフォーマットのインデックスを得る
 
 	// DxMask.cpp 関数プロトタイプ宣言
-
 #ifndef DX_NON_MASK
 
-// マスク関係 
-	extern	int			CreateMaskScreen(void);																						// マスクスクリーンを作成する
-	extern	int			DeleteMaskScreen(void);																						// マスクスクリーンを削除する
-	extern	int			DrawMaskToDirectData(int x, int y, int Width, int Height, const void *MaskData, int TransMode);					// マスクスクリーンにメモリ上のビットマップデータを転送する( MaskData は 1byte で 1dot 表す１ラインあたり Width byte のデータ配列の先頭アドレス )
-	extern	int			DrawFillMaskToDirectData(int x1, int y1, int x2, int y2, int Width, int Height, const void *MaskData);				// マスクスクリーンにメモリ上のビットマップデータで指定矩形内を塗りつぶすように転送する
+	// マスク関係 
+	//extern	int			CreateMaskScreen(void);																						// マスクスクリーンを作成する
+	//extern	int			DeleteMaskScreen(void);																						// マスクスクリーンを削除する
+	//extern	int			DrawMaskToDirectData(int x, int y, int Width, int Height, const void *MaskData, int TransMode);					// マスクスクリーンにメモリ上のビットマップデータを転送する( MaskData は 1byte で 1dot 表す１ラインあたり Width byte のデータ配列の先頭アドレス )
+	//extern	int			DrawFillMaskToDirectData(int x1, int y1, int x2, int y2, int Width, int Height, const void *MaskData);				// マスクスクリーンにメモリ上のビットマップデータで指定矩形内を塗りつぶすように転送する
 
-	extern	int			SetUseMaskScreenFlag(int ValidFlag);																				// マスクスクリーンを使用するかどうかを設定する( ValidFlag:使用するかどうか( TRUE:使用する  FALSE:使用しない( デフォルト ) )
-	extern	int			GetUseMaskScreenFlag(void);																						// マスクスクリーンを使用するかどうかを取得する
-	extern	int			FillMaskScreen(int Flag);																					// マスクスクリーンを指定の色で塗りつぶす
-	extern	int			SetMaskScreenGraph(int GraphHandle);																				// マスクスクリーンとして使用するグラフィックのハンドルを設定する、-1を渡すと解除( 引数で渡すグラフィックハンドルは MakeScreen で作成した「アルファチャンネル付きの描画対象にできるグラフィックハンドル」である必要があります( アルファチャンネルがマスクに使用されます ) )
-	extern	int			SetMaskScreenGraphUseChannel(int UseChannel /* DX_MASKGRAPH_CH_A 等 */);													// マスクスクリーンとして使用するグラフィックの、どのチャンネルをマスクとして使用するかを設定する( デフォルトは DX_MASKGRAPH_CH_A、 尚、DX_MASKGRAPH_CH_A以外を使用する場合はグラフィックスデバイスがシェーダーモデル2.0以降に対応している必要があります )
+	//extern	int			SetUseMaskScreenFlag(int ValidFlag);																				// マスクスクリーンを使用するかどうかを設定する( ValidFlag:使用するかどうか( TRUE:使用する  FALSE:使用しない( デフォルト ) )
+	//extern	int			GetUseMaskScreenFlag(void);																						// マスクスクリーンを使用するかどうかを取得する
+	//extern	int			FillMaskScreen(int Flag);																					// マスクスクリーンを指定の色で塗りつぶす
+	//extern	int			SetMaskScreenGraph(int GraphHandle);																				// マスクスクリーンとして使用するグラフィックのハンドルを設定する、-1を渡すと解除( 引数で渡すグラフィックハンドルは MakeScreen で作成した「アルファチャンネル付きの描画対象にできるグラフィックハンドル」である必要があります( アルファチャンネルがマスクに使用されます ) )
+	//extern	int			SetMaskScreenGraphUseChannel(int UseChannel /* DX_MASKGRAPH_CH_A 等 */);													// マスクスクリーンとして使用するグラフィックの、どのチャンネルをマスクとして使用するかを設定する( デフォルトは DX_MASKGRAPH_CH_A、 尚、DX_MASKGRAPH_CH_A以外を使用する場合はグラフィックスデバイスがシェーダーモデル2.0以降に対応している必要があります )
 
-	extern	int			InitMask(void);																						// マスクハンドルをすべて削除する
-	extern	int			MakeMask(int Width, int Height);																		// マスクハンドルを作成する
-	extern	int			GetMaskSize(int *WidthBuf, int *HeightBuf, int MaskHandle);												// マスクハンドルが持つマスクイメージのサイズを取得する
-	extern	int			GetMaskBaseImageInfo(BASEIMAGE * BaseImage, int MaskHandle);														// マスクハンドルが持つマスクイメージのBASEIMAGEデータを取得する( フォーマットが変更されるような操作をすると正常に動作しなくなります、あと、ReleaseBaseImage は実行する必要はありません )
-	extern	int			SetDataToMask(int Width, int Height, const void *MaskData, int MaskHandle);									// マスクハンドルにビットマップイメージを転送する
-	extern	int			DeleteMask(int MaskHandle);																				// マスクハンドルを削除する
-	extern	int			GraphImageBltToMask(const BASEIMAGE * BaseImage, int ImageX, int ImageY, int MaskHandle);							// マスクハンドルにBASEIMAGEデータを転送する
-	extern	int			LoadMask(const TCHAR * FileName);																			// 画像ファイルを読み込みマスクハンドルを作成する
-	extern	int			LoadMaskWithStrLen(const TCHAR * FileName, size_t FileNameLength);																			// 画像ファイルを読み込みマスクハンドルを作成する
-	extern	int			LoadDivMask(const TCHAR * FileName, int AllNum, int XNum, int YNum, int XSize, int YSize, int *HandleArray);	// 画像ファイルを分割読み込みしてマスクハンドルを作成する
-	extern	int			LoadDivMaskWithStrLen(const TCHAR * FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int XSize, int YSize, int *HandleArray);	// 画像ファイルを分割読み込みしてマスクハンドルを作成する
-	extern	int			CreateMaskFromMem(const void *FileImage, int FileImageSize);																				// メモリ上にある画像ファイルイメージを読み込みマスクハンドルを作成する
-	extern	int			CreateDivMaskFromMem(const void *FileImage, int FileImageSize, int AllNum, int XNum, int YNum, int XSize, int YSize, int *HandleArray);		// メモリ上にある画像ファイルイメージを分割読み込みしてマスクハンドルを作成する
-	extern	int			DrawMask(int x, int y, int MaskHandle, int TransMode);													// マスクスクリーンにマスクハンドルの持つマスクイメージを書き込む
+	//extern	int			InitMask(void);																						// マスクハンドルをすべて削除する
+	//extern	int			MakeMask(int Width, int Height);																		// マスクハンドルを作成する
+	//extern	int			GetMaskSize(int *WidthBuf, int *HeightBuf, int MaskHandle);												// マスクハンドルが持つマスクイメージのサイズを取得する
+	//extern	int			GetMaskBaseImageInfo(BASEIMAGE *BaseImage, int MaskHandle);														// マスクハンドルが持つマスクイメージのBASEIMAGEデータを取得する( フォーマットが変更されるような操作をすると正常に動作しなくなります、あと、ReleaseBaseImage は実行する必要はありません )
+	//extern	int			SetDataToMask(int Width, int Height, const void *MaskData, int MaskHandle);									// マスクハンドルにビットマップイメージを転送する
+	//extern	int			DeleteMask(int MaskHandle);																				// マスクハンドルを削除する
+	//extern	int			GraphImageBltToMask(const BASEIMAGE *BaseImage, int ImageX, int ImageY, int MaskHandle);							// マスクハンドルにBASEIMAGEデータを転送する
+	//extern	int			LoadMask(const TCHAR *FileName);																			// 画像ファイルを読み込みマスクハンドルを作成する
+	//extern	int			LoadMaskWithStrLen(const TCHAR *FileName, size_t FileNameLength);																			// 画像ファイルを読み込みマスクハンドルを作成する
+	//extern	int			LoadDivMask(const TCHAR *FileName, int AllNum, int XNum, int YNum, int XSize, int YSize, int *HandleArray);	// 画像ファイルを分割読み込みしてマスクハンドルを作成する
+	//extern	int			LoadDivMaskWithStrLen(const TCHAR *FileName, size_t FileNameLength, int AllNum, int XNum, int YNum, int XSize, int YSize, int *HandleArray);	// 画像ファイルを分割読み込みしてマスクハンドルを作成する
+	//extern	int			CreateMaskFromMem(const void *FileImage, int FileImageSize);																				// メモリ上にある画像ファイルイメージを読み込みマスクハンドルを作成する
+	//extern	int			CreateDivMaskFromMem(const void *FileImage, int FileImageSize, int AllNum, int XNum, int YNum, int XSize, int YSize, int *HandleArray);		// メモリ上にある画像ファイルイメージを分割読み込みしてマスクハンドルを作成する
+	//extern	int			DrawMask(int x, int y, int MaskHandle, int TransMode);													// マスクスクリーンにマスクハンドルの持つマスクイメージを書き込む
 #ifndef DX_NON_FONT
-	extern	int			DrawFormatStringMask(int x, int y, int Flag, const TCHAR * FormatString, ...);						// 書式指定ありの文字列をマスクスクリーンに描画する
-	extern	int			DrawFormatStringMaskToHandle(int x, int y, int Flag, int FontHandle, const TCHAR * FormatString, ...);						// 書式指定ありの文字列をマスクスクリーンに描画する( フォントハンドル指定版 )( SetFontCacheToTextureFlag( FALSE ) ; にして作成したフォントハンドルのみ使用可能 )
-	extern	int			DrawStringMask(int x, int y, int Flag, const TCHAR * String);									// 文字列をマスクスクリーンに描画する
-	extern	int			DrawNStringMask(int x, int y, int Flag, const TCHAR * String, size_t StringLength);			// 文字列をマスクスクリーンに描画する
-	extern	int			DrawStringMaskToHandle(int x, int y, int Flag, int FontHandle, const TCHAR * String);									// 文字列をマスクスクリーンに描画する( フォントハンドル指定版 )( SetFontCacheToTextureFlag( FALSE ) ; にして作成したフォントハンドルのみ使用可能 )
-	extern	int			DrawNStringMaskToHandle(int x, int y, int Flag, int FontHandle, const TCHAR * String, size_t StringLength);			// 文字列をマスクスクリーンに描画する( フォントハンドル指定版 )( SetFontCacheToTextureFlag( FALSE ) ; にして作成したフォントハンドルのみ使用可能 )
+	//extern	int			DrawFormatStringMask(int x, int y, int Flag, const TCHAR *FormatString, ...);						// 書式指定ありの文字列をマスクスクリーンに描画する
+	//extern	int			DrawFormatStringMaskToHandle(int x, int y, int Flag, int FontHandle, const TCHAR *FormatString, ...);						// 書式指定ありの文字列をマスクスクリーンに描画する( フォントハンドル指定版 )( SetFontCacheToTextureFlag( FALSE ) ; にして作成したフォントハンドルのみ使用可能 )
+	//extern	int			DrawStringMask(int x, int y, int Flag, const TCHAR *String);									// 文字列をマスクスクリーンに描画する
+	//extern	int			DrawNStringMask(int x, int y, int Flag, const TCHAR *String, size_t StringLength);			// 文字列をマスクスクリーンに描画する
+	//extern	int			DrawStringMaskToHandle(int x, int y, int Flag, int FontHandle, const TCHAR *String);									// 文字列をマスクスクリーンに描画する( フォントハンドル指定版 )( SetFontCacheToTextureFlag( FALSE ) ; にして作成したフォントハンドルのみ使用可能 )
+	//extern	int			DrawNStringMaskToHandle(int x, int y, int Flag, int FontHandle, const TCHAR *String, size_t StringLength);			// 文字列をマスクスクリーンに描画する( フォントハンドル指定版 )( SetFontCacheToTextureFlag( FALSE ) ; にして作成したフォントハンドルのみ使用可能 )
 #endif // DX_NON_FONT
-	extern	int			DrawFillMask(int x1, int y1, int x2, int y2, int MaskHandle);												// マスクハンドルが持つマスクイメージをマスクスクリーンいっぱいに描画する( タイル状に並べる )
-	extern	int			SetMaskReverseEffectFlag(int ReverseFlag);																				// マスクイメージ内の数値に対する効果を逆転させる( 旧バージョンとの互換性の為の機能 )
+	//extern	int			DrawFillMask(int x1, int y1, int x2, int y2, int MaskHandle);												// マスクハンドルが持つマスクイメージをマスクスクリーンいっぱいに描画する( タイル状に並べる )
+	//extern	int			SetMaskReverseEffectFlag(int ReverseFlag);																				// マスクイメージ内の数値に対する効果を逆転させる( 旧バージョンとの互換性の為の機能 )
 
-	extern 	int			GetMaskScreenData(int x1, int y1, int x2, int y2, int MaskHandle);												// マスクスクリーンの指定矩形部分をマスクハンドルに転送する
-	extern	int			GetMaskUseFlag(void);																						// マスクスクリーンを使用する設定になっているかどうかを取得する
+	//extern 	int			GetMaskScreenData(int x1, int y1, int x2, int y2, int MaskHandle);												// マスクスクリーンの指定矩形部分をマスクハンドルに転送する
+	//extern	int			GetMaskUseFlag(void);																						// マスクスクリーンを使用する設定になっているかどうかを取得する
 
 #endif // DX_NON_MASK
 
 #endif // DX_NOTUSE_DRAWFUNCTION
-
 }
 
 } // namespace DxLua::detail
