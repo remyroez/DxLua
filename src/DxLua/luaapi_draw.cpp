@@ -11,6 +11,148 @@
 #undef min
 #endif
 
+namespace {
+
+template <typename F, class... Args>
+int forward_GraphFilter(int FilterType, sol::variadic_args va, F f, Args&&... args) {
+	using namespace DxLua::detail;
+
+	int Result = FALSE;
+
+	switch (FilterType) {
+	case DX_GRAPH_FILTER_MONO:
+		{
+			int Cb = va_get(va, 0, 8);
+			int Cr = va_get(va, 1, 0);
+			Result = f(std::forward<Args>(args)..., Cb, Cr);
+			break;
+		}
+	case DX_GRAPH_FILTER_GAUSS:
+		{
+			int PixelWidth = va_get(va, 0, 8);
+			int Param = va_get(va, 1, 0);
+			Result = f(std::forward<Args>(args)..., PixelWidth, Param);
+			break;
+		}
+	case DX_GRAPH_FILTER_DOWN_SCALE:
+		{
+			int DivNum = va_get(va, 0, 2);
+			Result = f(std::forward<Args>(args)..., DivNum);
+			break;
+		}
+	case DX_GRAPH_FILTER_BRIGHT_CLIP:
+		{
+			int CmpType = va_get(va, 0, DX_CMP_LESS);
+			int CmpParam = va_get(va, 1, 0);
+			int ClipFillFlag = va_get(va, 2, false);
+			unsigned int ClipFillColor = va_get(va, 3, 0xFFFFFFFFUL);
+			int ClipFillAlpha = va_get(va, 4, 255);
+			Result = f(
+				std::forward<Args>(args)...,
+				CmpType, CmpParam, ClipFillFlag, ClipFillColor, ClipFillAlpha
+			);
+			break;
+		}
+	case DX_GRAPH_FILTER_BRIGHT_SCALE:
+		{
+			int MinBright = va_get(va, 0, 0);
+			int MaxBright = va_get(va, 1, 0);
+			Result = f(std::forward<Args>(args)..., MinBright, MaxBright);
+			break;
+		}
+	case DX_GRAPH_FILTER_HSB:
+		{
+			int HueType = va_get(va, 0, 0);
+			int Hue = va_get(va, 1, 0);
+			int Saturation = va_get(va, 2, 0);
+			int Bright = va_get(va, 3, 0);
+			Result = f(std::forward<Args>(args)..., HueType, Hue, Saturation, Bright);
+			break;
+		}
+	case DX_GRAPH_FILTER_INVERT:
+		{
+			Result = f(std::forward<Args>(args)...);
+			break;
+		}
+	case DX_GRAPH_FILTER_LEVEL:
+		{
+			int Min = va_get(va, 0, 0);
+			int Max = va_get(va, 1, 0);
+			int Gamma = va_get(va, 2, 0);
+			int AfterMin = va_get(va, 3, 0);
+			int AfterMax = va_get(va, 4, 0);
+			Result = f(std::forward<Args>(args)..., Min, Max, Gamma, AfterMin, AfterMax);
+			break;
+		}
+	case DX_GRAPH_FILTER_TWO_COLOR:
+		{
+			int Threshold = va_get(va, 0, 0);
+			unsigned int LowColor = va_get(va, 1, 0xFFFFFFFFUL);
+			int LowAlpha = va_get(va, 2, 0);
+			unsigned int HighColor = va_get(va, 3, 0xFFFFFFFFUL);
+			int HighAlpha = va_get(va, 4, 0);
+			Result = f(std::forward<Args>(args)..., Threshold, LowColor, LowAlpha, HighColor, HighAlpha);
+			break;
+		}
+	case DX_GRAPH_FILTER_GRADIENT_MAP:
+		{
+			int MapGrHandle = va_get(va, 0, -1);
+			int Reverse = va_get(va, 1, false);
+			Result = f(std::forward<Args>(args)..., MapGrHandle, Reverse);
+			break;
+		}
+	case DX_GRAPH_FILTER_PREMUL_ALPHA:
+		{
+			Result = f(std::forward<Args>(args)...);
+			break;
+		}
+	case DX_GRAPH_FILTER_INTERP_ALPHA:
+		{
+			Result = f(std::forward<Args>(args)...);
+			break;
+		}
+	case DX_GRAPH_FILTER_YUV_TO_RGB:
+		{
+			Result = f(std::forward<Args>(args)...);
+			break;
+		}
+	case DX_GRAPH_FILTER_Y2UV1_TO_RGB:
+		{
+			int UVGrHandle = va_get(va, 0, -1);
+			Result = f(std::forward<Args>(args)..., UVGrHandle);
+			break;
+		}
+	case DX_GRAPH_FILTER_YUV_TO_RGB_RRA:
+		{
+			Result = f(std::forward<Args>(args)...);
+			break;
+		}
+	case DX_GRAPH_FILTER_Y2UV1_TO_RGB_RRA:
+		{
+			int UVGrHandle = va_get(va, 0, -1);
+			Result = f(std::forward<Args>(args)..., UVGrHandle);
+			break;
+		}
+	case DX_GRAPH_FILTER_BICUBIC_SCALE:
+		{
+			int DestSizeX = va_get(va, 0, 0);
+			int DestSizeY = va_get(va, 0, 0);
+			Result = f(std::forward<Args>(args)..., DestSizeX, DestSizeY);
+			break;
+		}
+	case DX_GRAPH_FILTER_LANCZOS3_SCALE:
+		{
+			int DestSizeX = va_get(va, 0, 0);
+			int DestSizeY = va_get(va, 0, 0);
+			Result = f(std::forward<Args>(args)..., DestSizeX, DestSizeY);
+			break;
+		}
+	}
+	return Result;
+}
+
+} // namespace
+
 namespace DxLua::detail {
 
 void port_draw(sol::state_view &lua, sol::table &library) {
@@ -18,7 +160,10 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 
 	// グラフィックハンドル作成関係関数
 	//extern	int			MakeGraph(int SizeX, int SizeY, int NotUse3DFlag = FALSE);							// 指定サイズのグラフィックハンドルを作成する
-	//extern	int			MakeScreen(int SizeX, int SizeY, int UseAlphaChannel = FALSE);						// SetDrawScreen で描画対象にできるグラフィックハンドルを作成する
+	library["MakeScreen"] = [library](int SizeX, int SizeY, sol::variadic_args va) {
+		int UseAlphaChannel = va_get(va, 0, false);
+		return MakeScreen(SizeX, SizeY, UseAlphaChannel);
+	};
 	//extern	int			DerivationGraph(int   SrcX, int   SrcY, int   Width, int   Height, int SrcGraphHandle);	// 指定のグラフィックハンドルの指定部分だけを抜き出して新たなグラフィックハンドルを作成する
 	//extern	int			DerivationGraphF(float SrcX, float SrcY, float Width, float Height, int SrcGraphHandle);	// 指定のグラフィックハンドルの指定部分だけを抜き出して新たなグラフィックハンドルを作成する( float版 )
 	library["DeleteGraph"] = [library](int GrHandle, sol::variadic_args va) {
@@ -521,10 +666,17 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 	//extern	float		GetFogDensity(void);														// フォグの密度を取得する( 0.0f ～ 1.0f )
 
 	// 画面関係関数
-	//extern	unsigned int	GetPixel(int x, int y);																// 指定座標の色を取得する
-	//extern	COLOR_F			GetPixelF(int x, int y);																// 指定座標の色を取得する( float型 )
-	//extern	int				SetBackgroundColor(int Red, int  Green, int  Blue, int  Alpha = 0);							// メインウインドウの背景色を設定する( Red,Green,Blue,Alpha:それぞれ ０～２５５ )
-	//extern	int				GetBackgroundColor(int *Red, int *Green, int *Blue, int *Alpha = NULL);							// メインウインドウの背景色を取得する( Red,Green,Blue,Alpha:それぞれ ０～２５５ )
+	DXLUA_PORT_DX(library, GetPixel);
+	DXLUA_PORT(library, GetPixelF);
+	library["SetBackgroundColor"] = [](int Red, int Green, int Blue, sol::variadic_args va) {
+		int Alpha = va_get(va, 0, 0);
+		return SetBackgroundColor(Red, Green, Blue, Alpha);
+	};
+	library["GetBackgroundColor"] = []() {
+		int Red, Green, Blue, Alpha;
+		auto Result = GetBackgroundColor(&Red, &Green, &Blue, &Alpha);
+		return std::tuple(Result, Red, Green, Blue, Alpha);
+	};
 	//extern	int				GetDrawScreenGraph(int x1, int y1, int x2, int y2, int GrHandle, int UseClientFlag = TRUE);	// 描画先の画面から指定領域の画像情報をグラフィックハンドルに転送する
 	//extern	int				BltDrawValidGraph(int TargetDrawValidGrHandle, int x1, int y1, int x2, int y2, int DestX, int DestY, int DestGrHandle);							// SetDrawScreen で描画対象にできるグラフィックハンドルから指定領域の画像情報を別のグラフィックハンドルに転送する
 	DXLUA_PORT(library, ScreenFlip);
@@ -737,49 +889,18 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 
 	// フィルター関係関数
 #ifndef DX_NON_FILTER
-	//extern	int			GraphFilter(int    GrHandle, int FilterType /* DX_GRAPH_FILTER_GAUSS 等 */, ...);		// 画像にフィルター処理を行う
-	//extern	int			GraphFilterBlt(int SrcGrHandle, int DestGrHandle, int FilterType /* DX_GRAPH_FILTER_GAUSS 等 */, ...);		// 画像のフィルター付き転送を行う
-	//extern	int			GraphFilterRectBlt(int SrcGrHandle, int DestGrHandle, int SrcX1, int SrcY1, int SrcX2, int SrcY2, int DestX, int DestY, int FilterType /* DX_GRAPH_FILTER_GAUSS 等 */, ...);		// 画像のフィルター付き転送を行う( 矩形指定 )
-	//		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_MONO, int Cb = 青色差( -255 ～ 255 ), int Cr = 赤色差( -255 ～ 255 ) ) ;
-	//		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_GAUSS, int PixelWidth = 使用ピクセル幅( 8 , 16 , 32 の何れか ), int Param = ぼかしパラメータ( 100 で約1ピクセル分の幅 ) ) ;
-	//		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_DOWN_SCALE, int DivNum = 元のサイズの何分の１か、という値( 2 , 4 , 8 の何れか ) ) ;
-	//		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_BRIGHT_CLIP, int CmpType = クリップタイプ( DX_CMP_LESS:CmpParam以下をクリップ  又は  DX_CMP_GREATER:CmpParam以上をクリップ ), int CmpParam = クリップパラメータ( 0 ～ 255 ), int ClipFillFlag = クリップしたピクセルを塗りつぶすかどうか( TRUE:塗りつぶす  FALSE:塗りつぶさない ), unsigned int ClipFillColor = クリップしたピクセルに塗る色値( GetColor で取得する )( ClipFillFlag が FALSE の場合は使用しない ), int ClipFillAlpha = クリップしたピクセルに塗るα値( 0 ～ 255 )( ClipFillFlag が FALSE の場合は使用しない ) ) ;
-	//		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_BRIGHT_SCALE, int MinBright = 変換後に真っ暗になる明るさ( 0 ～ 255 ), int MaxBright = 変換後に真っ白になる明るさ( 0 ～ 255 ) ) ;
-	//		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_HSB, int HueType = Hue の意味( 0:相対値  1:絶対値 ), int Hue = 色相パラメータ( HueType が 0 の場合 = ピクセルの色相に対する相対値( -180 ～ 180 )   HueType が 1 の場合 = 色相の絶対値( 0 ～ 360 ) ), int Saturation = 彩度( -255 ～ ), int Bright = 輝度( -255 ～ 255 ) ) ;
-	//		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_INVERT ) ;
-	//		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_LEVEL, int Min = 変換元の下限値( 0 ～ 255 ), int Max = 変換元の上限値( 0 ～ 255 ), int Gamma = ガンマ値( 100 でガンマ補正無し、0 とそれ以下の値は不可 ), int AfterMin = 変換後の最低値( 0 ～ 255 ), int AfterMax = 変換後の最大値( 0 ～ 255 ) ) ;
-	//		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_TWO_COLOR, int Threshold = 閾値( 0 ～ 255 ), unsigned int LowColor = 閾値より値が低かったピクセルの変換後の色値( GetColor で取得する ), int LowAlpha = 閾値より値が低かったピクセルの変換後のα値( 0 ～ 255 ), unsigned int HighColor = 閾値より値が高かったピクセルの変換後の色値( GetColor で取得する ), int HighAlpha = 閾値より値が高かったピクセルの変換後のα値( 0 ～ 255 ) ) ;
-	//		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_GRADIENT_MAP, int MapGrHandle = グラデーションマップのグラフィックハンドル( 元画像の輝度からグラデーションマップ画像の x 座標を算出しますので縦幅は1dotでもＯＫ ), int Reverse = グラデーションマップ左右反転フラグ( TRUE : グラデーションマップを左右反転して使う  FALSE : 左右反転しない ) ) ;
-	//		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_PREMUL_ALPHA ) ;			// 通常のアルファチャンネル付き画像を乗算済みアルファ画像に変換するフィルタ
-	//		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_INTERP_ALPHA ) ;			// 乗算済みα画像を通常のアルファチャンネル付き画像に変換するフィルタ
-	//		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_YUV_TO_RGB ) ;				// YUVカラーをRGBカラーに変換するフィルタ
-	//		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_Y2UV1_TO_RGB, int UVGrHandle = YUVカラーのUV成分のみで、且つYに対して解像度が半分( 若しくは 4 分の 1 )のグラフィックハンドル( U=R, V=G ) ) ;		// YUVカラーをRGBカラーに変換するフィルタ( UV成分が Y成分の半分・又は４分の１( 横・縦片方若しくは両方 )の解像度しかない場合用 )
-	//		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_YUV_TO_RGB_RRA ) ;				// YUVカラーをRGBカラーに変換するフィルタ( 且つ右側半分のRの値をアルファ値として扱う )
-	//		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_Y2UV1_TO_RGB_RRA, int UVGrHandle = YUVカラーのUV成分のみで、且つYに対して解像度が半分( 若しくは 4 分の 1 )のグラフィックハンドル( U=R, V=G ) ) ;		// YUVカラーをRGBカラーに変換するフィルタ( UV成分が Y成分の半分・又は４分の１( 横・縦片方若しくは両方 )の解像度しかない場合用 )( 且つ右側半分のRの値をアルファ値として扱う )
-	//		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_BICUBIC_SCALE, int DestSizeX = スケーリング後の横ピクセル数, int DestSizeY = スケーリング後の縦ピクセル数 ) ;
-	//		int			GraphFilter( int GrHandle, int FilterType = DX_GRAPH_FILTER_LANCZOS3_SCALE, int DestSizeX = スケーリング後の横ピクセル数, int DestSizeY = スケーリング後の縦ピクセル数 ) ;
-
-	//extern	int			GraphBlend(int    GrHandle, int BlendGrHandle, int BlendRatio /* ブレンド効果の影響度( 0:０％  255:１００％ ) */, int BlendType /* DX_GRAPH_BLEND_ADD 等 */, ...);	// 二つの画像をブレンドする
-	//extern	int			GraphBlendBlt(int SrcGrHandle, int BlendGrHandle, int DestGrHandle, int BlendRatio /* ブレンド効果の影響度( 0:０％  255:１００％ ) */, int BlendType /* DX_GRAPH_BLEND_ADD 等 */, ...);	// 二つの画像をブレンドして結果を指定の画像に出力する
-	//extern	int			GraphBlendRectBlt(int SrcGrHandle, int BlendGrHandle, int DestGrHandle, int SrcX1, int SrcY1, int SrcX2, int SrcY2, int BlendX, int BlendY, int DestX, int DestY, int BlendRatio /* ブレンド効果の影響度( 0:０％  255:１００％ ) */, int BlendType /* DX_GRAPH_BLEND_ADD 等 */, ...);	// 二つの画像をブレンドして結果を指定の画像に出力する( 矩形指定 )
-	//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_NORMAL ) ;
-	//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_RGBA_SELECT_MIX, int SelectR = ( 出力の赤分となる成分 DX_RGBA_SELECT_SRC_R 等 ), int SelectG = ( 出力の緑成分となる成分 DX_RGBA_SELECT_SRC_R 等 ), int SelectB = ( 出力の青成分となる成分 DX_RGBA_SELECT_SRC_R 等 ), int SelectA = ( 出力のα成分となる成分 DX_RGBA_SELECT_SRC_R 等 ) ) ;
-	//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_MULTIPLE ) ;
-	//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_DIFFERENCE ) ;
-	//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_ADD ) ;
-	//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_SCREEN ) ;
-	//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_OVERLAY ) ;
-	//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_DODGE ) ;
-	//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_BURN ) ;
-	//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_DARKEN ) ;
-	//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_LIGHTEN ) ;
-	//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_SOFTLIGHT ) ;
-	//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_HARDLIGHT ) ;
-	//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_EXCLUSION ) ;
-	//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_NORMAL_ALPHACH ) ;
-	//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_ADD_ALPHACH ) ;
-	//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_MULTIPLE_A_ONLY ) ;
-	//		int			GraphBlend( int GrHandle, int BlendGrHandle, int BlendRatio, int BlendType = DX_GRAPH_BLEND_PMA_MULTIPLE_A_ONLY ) ;
+	library["GraphFilter"] = [](int GrHandle, int FilterType, sol::variadic_args va) {
+		return ::forward_GraphFilter(FilterType, va, GraphFilter, GrHandle, FilterType);
+	};
+	library["GraphFilterBlt"] = [](int SrcGrHandle, int DestGrHandle, int FilterType, sol::variadic_args va) {
+		return ::forward_GraphFilter(FilterType, va, GraphFilterBlt, SrcGrHandle, DestGrHandle, FilterType);
+	};
+	library["GraphFilterRectBlt"] = [](int SrcGrHandle, int DestGrHandle, int SrcX1, int SrcY1, int SrcX2, int SrcY2, int DestX, int DestY, int FilterType, sol::variadic_args va) {
+		return ::forward_GraphFilter(FilterType, va, GraphFilterRectBlt, SrcGrHandle, DestGrHandle, SrcX1, SrcY1, SrcX2, SrcY2, DestX, DestY, FilterType);
+	};
+	DXLUA_PORT(library, GraphBlend);
+	DXLUA_PORT(library, GraphBlendBlt);
+	DXLUA_PORT(library, GraphBlendRectBlt);
 #endif // DX_NON_FILTER
 
 	// ムービーグラフィック関係関数
@@ -819,6 +940,7 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 	//extern	int			SetCameraPositionAndTargetAndUpVec(VECTOR    Position, VECTOR   TargetPosition, VECTOR   UpVector);		// カメラの視点、注視点、アップベクトルを設定する
 	//extern	int			SetCameraPositionAndTargetAndUpVecD(VECTOR_D Position, VECTOR_D TargetPosition, VECTOR_D UpVector);		// カメラの視点、注視点、アップベクトルを設定する
 	//extern	int			SetCameraPositionAndAngle(VECTOR   Position, float  VRotate, float  HRotate, float  TRotate);	// カメラの視点、注視点、アップベクトルを設定する( 注視点とアップベクトルは垂直回転角度、水平回転角度、捻り回転角度から導き出す )
+	DXLUA_PORT(library, SetCameraPositionAndAngle);
 	//extern	int			SetCameraPositionAndAngleD(VECTOR_D Position, double VRotate, double HRotate, double TRotate);	// カメラの視点、注視点、アップベクトルを設定する( 注視点とアップベクトルは垂直回転角度、水平回転角度、捻り回転角度から導き出す )
 	//extern	int			SetCameraViewMatrix(MATRIX   ViewMatrix);													// ビュー行列を直接設定する
 	//extern	int			SetCameraViewMatrixD(MATRIX_D ViewMatrix);													// ビュー行列を直接設定する
