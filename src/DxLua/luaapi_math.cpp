@@ -162,7 +162,6 @@ void port_math(sol::state_view &lua, sol::table &t) {
 	//extern	int			HitCheck_Sphere_TriangleD(VECTOR_D SphereCenterPos, double SphereR, VECTOR_D TrianglePos1, VECTOR_D TrianglePos2, VECTOR_D TrianglePos3);									// 球と三角形の当たり判定( TRUE:当たっている  FALSE:当たっていない )
 	//extern	int			HitCheck_Capsule_Capsule(VECTOR   Cap1Pos1, VECTOR   Cap1Pos2, float  Cap1R, VECTOR   Cap2Pos1, VECTOR   Cap2Pos2, float  Cap2R);											// カプセル同士の当たり判定( TRUE:当たっている  FALSE:当たっていない )
 	//extern	int			HitCheck_Capsule_CapsuleD(VECTOR_D Cap1Pos1, VECTOR_D Cap1Pos2, double Cap1R, VECTOR_D Cap2Pos1, VECTOR_D Cap2Pos2, double Cap2R);											// カプセル同士の当たり判定( TRUE:当たっている  FALSE:当たっていない )
-	//DXLUA_PORT(t, HitCheck_Capsule_Triangle);
 	t["HitCheck_Capsule_Triangle"] = [](sol::variadic_args va) {
 		auto CapPos1 = va_get(va, 0, VECTOR{ 0, 0, 0 });
 		auto CapPos2 = va_get(va, 1, VECTOR{ 0, 0, 0 });
@@ -170,7 +169,7 @@ void port_math(sol::state_view &lua, sol::table &t) {
 		auto TrianglePos1 = va_get(va, 3, VECTOR{ 0, 0, 0 });
 		auto TrianglePos2 = va_get(va, 4, VECTOR{ 0, 0, 0 });
 		auto TrianglePos3 = va_get(va, 5, VECTOR{ 0, 0, 0 });
-		return HitCheck_Capsule_Triangle(CapPos1, CapPos2, CapR, TrianglePos1, TrianglePos2, TrianglePos3);
+		return HitCheck_Capsule_Triangle(CapPos1, CapPos2, CapR, TrianglePos1, TrianglePos2, TrianglePos3) != FALSE;
 	};
 	//extern	int			HitCheck_Capsule_TriangleD(VECTOR_D CapPos1, VECTOR_D CapPos2, double CapR, VECTOR_D TrianglePos1, VECTOR_D TrianglePos2, VECTOR_D TrianglePos3);							// カプセルと三角形の当たり判定( TRUE:当たっている  FALSE:当たっていない )
 
