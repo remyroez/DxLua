@@ -69,7 +69,7 @@ void clear_key_inputs(sol::object &library) {
 }
 
 // DxLua ライブラリの展開
-sol::table solopen_dxlua(sol::this_state s) {
+sol::table open_library(sol::this_state s) {
 	// ステート
 	sol::state_view lua(s);
 
@@ -81,20 +81,22 @@ sol::table solopen_dxlua(sol::this_state s) {
 		// ハードコーディング
 		// TODO: バイナリ化
 		auto result = lua.safe_script(R"lua( return function (watch, interval, ...)
+	local dx = require 'dx'
+
     -- 終了関数
     local QuitCode = false
-    function DxLua.Quit(code)
+    function dx.Quit(code)
         QuitCode = code or 'exit'
     end
 
     -- ループ
-    local BeforeTime = DxLua.GetNowHiPerformanceCount()
+    local BeforeTime = dx.GetNowHiPerformanceCount()
     local Watchable = watch ~= 'none';
     local WatchTimer = Watchable and (interval / 1000) or -1
 
-    while (DxLua.ProcessMessage() == 0) do
+    while (dx.ProcessMessage() == 0) do
         -- 経過時間の計測
-        local NowTime = DxLua.GetNowHiPerformanceCount()
+        local NowTime = dx.GetNowHiPerformanceCount()
         local DeltaTime = (NowTime - BeforeTime) / 1000000
         BeforeTime = NowTime;
 
@@ -103,15 +105,15 @@ sol::table solopen_dxlua(sol::this_state s) {
             WatchTimer = WatchTimer - DeltaTime
             if WatchTimer <= 0 then
                 WatchTimer = interval / 1000
-                if DxLua.__context__:watch() then
+                if dx.__context__:watch() then
                     return watch
                 end
             end
         end
 
         -- 更新
-		if DxLua.Update then
-			local result = DxLua.Update(DeltaTime) or QuitCode
+		if dx.Update then
+			local result = dx.Update(DeltaTime) or QuitCode
 			if result then
 				return result -- エラーが起きたら直ちに終了
 			end
@@ -144,6 +146,8 @@ end)lua"
 	detail::port_keyinput(lua, library);
 	detail::port_input(lua, library);
 	detail::port_draw(lua, library);
+	detail::port_model(lua, library);
+	detail::port_math(lua, library);
 
 	// 以下、ポーティング
 
@@ -164,6 +168,8 @@ end)lua"
 
 	DXLUA_PORT(library, GetRand);
 	DXLUA_PORT(library, SRand);
+
+	DXLUA_PORT(library, SetCameraPositionAndTarget_UpVecY);
 
 	library["SetAlwaysRunFlag"] = [](sol::object Flag) {
 		return SetAlwaysRunFlag(Flag.as<bool>() ? TRUE : FALSE);
@@ -193,6 +199,7 @@ end)lua"
 		return Result;
 	};
 	DXLUA_PORT(library, GetColor);
+	DXLUA_PORT(library, GetColorU8);
 
 	library["GetCharBytes"] = [](int CharCodeFormat, const char *String) {
 		return GetCharBytes(CharCodeFormat, String);

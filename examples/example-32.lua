@@ -36,16 +36,16 @@ local StateMachine = {
 }
 
 -- 画面モードのセット
-DxLua.SetGraphMode(640, 480, 16)
+dx.SetGraphMode(640, 480, 16)
 
 -- ＤＸライブラリ初期化処理
-function DxLua.Init()
+function dx.Init()
 	-- 描画先を裏画面にする
-	DxLua.SetDrawScreen(DxLua.DX_SCREEN_BACK)
+	dx.SetDrawScreen(dx.DX_SCREEN_BACK)
 end
 
 -- ループ
-function DxLua.Update(...)
+function dx.Update(...)
     StateMachine:Update(...)
 end
 
@@ -59,17 +59,17 @@ end
 -- 選択画面
 function StateMachine:Select()
     -- 画面のクリア
-    DxLua.ClearDrawScreen()
+    dx.ClearDrawScreen()
 
     -- メニュー
-    DxLua.DrawString(0, 0, 'キーコンフィグ選択', DxLua.GetColor(0xFF, 0xFF, 0))
-    DxLua.DrawString(0, 0, '\n１で設定開始\n２でキーテスト')
-    DxLua.ScreenFlip()
+    dx.DrawString(0, 0, 'キーコンフィグ選択', dx.GetColor(0xFF, 0xFF, 0))
+    dx.DrawString(0, 0, '\n１で設定開始\n２でキーテスト')
+    dx.ScreenFlip()
 
     -- キーボードで選択
-    if DxLua.CheckHitKey(DxLua.KEY_INPUT_1) ~= 0 or DxLua.CheckHitKey(DxLua.KEY_INPUT_NUMPAD1) ~= 0 then
+    if dx.CheckHitKey(dx.KEY_INPUT_1) ~= 0 or dx.CheckHitKey(dx.KEY_INPUT_NUMPAD1) ~= 0 then
         self.State = 'PreScreen'
-    elseif DxLua.CheckHitKey(DxLua.KEY_INPUT_2) ~= 0 or DxLua.CheckHitKey(DxLua.KEY_INPUT_NUMPAD2) ~= 0 then
+    elseif dx.CheckHitKey(dx.KEY_INPUT_2) ~= 0 or dx.CheckHitKey(dx.KEY_INPUT_NUMPAD2) ~= 0 then
         self.State = 'PreTest'
     end
 end
@@ -102,7 +102,7 @@ end
 -- キーコンフィグ画面
 function StateMachine:Screen()
     -- 画面のクリア
-    DxLua.ClearDrawScreen()
+    dx.ClearDrawScreen()
 
     -- キーコンフィグの入力処理を行う
     KeyConfig_InputProcess()
@@ -131,23 +131,23 @@ function StateMachine:Screen()
         local InputString = ''
 
         -- 変更対象の項目かどうかで描画色を変える
-        DrawColor = TargetIndex == i and DxLua.GetColor(255, 0, 0) or DxLua.GetColor(255, 255, 255)
+        DrawColor = TargetIndex == i and dx.GetColor(255, 0, 0) or dx.GetColor(255, 255, 255)
 
         -- 項目名の描画
-        DxLua.DrawString(INFO_X, DrawY, g_KeyConfigMenuTable[i], DrawColor)
+        dx.DrawString(INFO_X, DrawY, g_KeyConfigMenuTable[i], DrawColor)
 
         -- 入力に割り当てられている入力名を取得する
         InputString = KeyConfig_GetInputTypeString(i)
 
         -- 割り当てられている入力名を描画する
-        DxLua.DrawString(INFO_NAME_X, DrawY, InputString, DrawColor)
+        dx.DrawString(INFO_NAME_X, DrawY, InputString, DrawColor)
 
         -- 項目の描画Y座標を１項目分下に移動する
         DrawY = DrawY + INFO_SPACE
     end
 
     -- 裏画面の内容を表画面に反映
-    DxLua.ScreenFlip()
+    dx.ScreenFlip()
 
     -- 全ての入力の設定が終わったらループを抜ける
     if TargetIndex > KeyConfig.KEYCONFIG_INPUT_NUM then
@@ -155,7 +155,7 @@ function StateMachine:Screen()
         KeyConfig_Save(KEYCONFIG_FILE_NAME)
 
         self.State = 'Select'
-    elseif DxLua.CheckHitKey(DxLua.KEY_INPUT_ESCAPE) ~= 0 then
+    elseif dx.CheckHitKey(dx.KEY_INPUT_ESCAPE) ~= 0 then
         -- DxLua: 戻る
         self.State = 'Select'
     end
@@ -170,7 +170,7 @@ end
 -- キーコンフィグのテスト
 function StateMachine:Test()
     -- 画面のクリア
-    DxLua.ClearDrawScreen()
+    dx.ClearDrawScreen()
 
     -- キーコンフィグの入力処理を行う
     KeyConfig_InputProcess()
@@ -184,16 +184,16 @@ function StateMachine:Test()
         local InputString = ''
 
         -- 項目名の描画
-        DxLua.DrawString(INFO_X, DrawY, g_KeyConfigMenuTable[i], DxLua.GetColor(255, 255, 255))
+        dx.DrawString(INFO_X, DrawY, g_KeyConfigMenuTable[i], dx.GetColor(255, 255, 255))
 
         -- 入力に割り当てられている入力名を取得する
         InputString = KeyConfig_GetInputTypeString(i)
 
         -- 割り当てられている入力名を描画する
-        DxLua.DrawString(INFO_NAME_X, DrawY, InputString, DxLua.GetColor(255, 255, 255))
+        dx.DrawString(INFO_NAME_X, DrawY, InputString, dx.GetColor(255, 255, 255))
 
         -- 入力状態を描画する
-        DxLua.DrawString(INFO_INPUT_X, DrawY, bit.band(Input, bit.lshift(1, i)) ~= 0 and "○" or "＿", DxLua.GetColor(255, 255, 255))
+        dx.DrawString(INFO_INPUT_X, DrawY, bit.band(Input, bit.lshift(1, i)) ~= 0 and "○" or "＿", dx.GetColor(255, 255, 255))
 
         -- 項目の描画Y座標を１項目分下に移動する
         DrawY = DrawY + INFO_SPACE
@@ -201,12 +201,12 @@ function StateMachine:Test()
 
     -- カメラ用方向入力の状態を描画する
     CameraInput = KeyConfig_GetCameraInput()
-    DxLua.DrawFormatString(INFO_X, DrawY, DxLua.GetColor(255, 255, 255), "カメラ入力  X:%.3f  Y:%.3f", CameraInput.x, CameraInput.y)
+    dx.DrawFormatString(INFO_X, DrawY, dx.GetColor(255, 255, 255), "カメラ入力  X:%.3f  Y:%.3f", CameraInput.x, CameraInput.y)
 
     -- 裏画面の内容を表画面に反映
-    DxLua.ScreenFlip()
+    dx.ScreenFlip()
 
-    if DxLua.CheckHitKey(DxLua.KEY_INPUT_ESCAPE) ~= 0 then
+    if dx.CheckHitKey(dx.KEY_INPUT_ESCAPE) ~= 0 then
         -- DxLua: 戻る
         self.State = 'Select'
     end

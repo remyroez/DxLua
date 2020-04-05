@@ -35,19 +35,19 @@ local BlockColor =
 }
 
 -- 画面モードのセット
-DxLua.SetGraphMode(640, 480, 16)
+dx.SetGraphMode(640, 480, 16)
 
 -- ＤＸライブラリ初期化処理
-function DxLua.Init()
+function dx.Init()
 	-- ゲームを初期化
 	InitGame()
 
 	-- 描画先画面を裏画面にセット
-	DxLua.SetDrawScreen(DxLua.DX_SCREEN_BACK)
+	dx.SetDrawScreen(dx.DX_SCREEN_BACK)
 end
 
 -- ループ
-function DxLua.Update()
+function dx.Update()
 	-- キー入力処理
 	KeyInput()
 
@@ -58,14 +58,14 @@ function DxLua.Update()
 	ScreenDraw()
 
 	-- 裏画面の内容を表画面に反映させる
-	DxLua.ScreenFlip()
+	dx.ScreenFlip()
 end
 
 
 -- ゲームの初期化
 function InitGame()
 	-- 前回時間をセット
-	OldTime = DxLua.GetNowCount()
+	OldTime = dx.GetNowCount()
 
 	-- アクティブブロックの位置をセット
 	ActiveX = math.floor(WORLD_WIDTH / 2)
@@ -87,7 +87,7 @@ end
 function CreateNewActiveBlock()
 	-- ランダムに３つブロックをセット
 	for i = 1, 3 do
-		ActiveBlock[i] = DxLua.GetRand(BLOCKTYPE_NUM - 1) + 1
+		ActiveBlock[i] = dx.GetRand(BLOCKTYPE_NUM - 1) + 1
 	end
 end
 
@@ -98,14 +98,14 @@ function KeyInput()
 	local Key	-- 入力されたキー
 
 	-- キー入力を得る
-	Key = DxLua.GetJoypadInputState(DxLua.DX_INPUT_KEY_PAD1)
+	Key = dx.GetJoypadInputState(dx.DX_INPUT_KEY_PAD1)
 
 	-- キー入力に応じて処理をする
-	if band(Key, DxLua.PAD_INPUT_DOWN) ~= 0 then MoveActiveBlock(0, 1) end
-	if band(band(Key, bnot(OldKey)), DxLua.PAD_INPUT_LEFT) ~= 0 and ActiveX > 1 then MoveActiveBlock(-1, 0) end
-	if band(band(Key, bnot(OldKey)), DxLua.PAD_INPUT_RIGHT) ~= 0 and ActiveX < WORLD_WIDTH then MoveActiveBlock(1, 0) end
+	if band(Key, dx.PAD_INPUT_DOWN) ~= 0 then MoveActiveBlock(0, 1) end
+	if band(band(Key, bnot(OldKey)), dx.PAD_INPUT_LEFT) ~= 0 and ActiveX > 1 then MoveActiveBlock(-1, 0) end
+	if band(band(Key, bnot(OldKey)), dx.PAD_INPUT_RIGHT) ~= 0 and ActiveX < WORLD_WIDTH then MoveActiveBlock(1, 0) end
 
-	if band(band(Key, bnot(OldKey)), DxLua.PAD_INPUT_A) ~= 0 then
+	if band(band(Key, bnot(OldKey)), dx.PAD_INPUT_A) ~= 0 then
 		local TempBlock
 
 		-- アクティブブロックの配置を変更する
@@ -128,7 +128,7 @@ function TimeFunc()
 	local Time
 
 	-- 現在の時間を得る
-	Time = DxLua.GetNowCount()
+	Time = dx.GetNowCount()
 
 	-- 今フレームで経過した時間を得る
 	NowTime = Time - OldTime
@@ -250,7 +250,7 @@ function LockActiveBlock(x, y)
 	WaitCounter = 0
 
 	-- 時間待ち
-	DxLua.WaitTimer(200)
+	dx.WaitTimer(200)
 
 	-- 終了
 	return 0
@@ -266,15 +266,15 @@ function GameOver()
 
 	-- 画面中心にゲームオーバーを表示
 	ScreenDraw()
-	DxLua.DrawString(300, 220, "GameOver", DxLua.GetColor(255, 255, 255))
-	DxLua.ScreenFlip()
+	dx.DrawString(300, 220, "GameOver", dx.GetColor(255, 255, 255))
+	dx.ScreenFlip()
 
 	-- キー入力待ち
-	DxLua.WaitKey()
+	dx.WaitKey()
 
 	-- ソフト終了
 	-- DxLua: 直接終了できないので専用の関数を使用
-	DxLua.Quit()
+	dx.Quit()
 end
 
 -- 消えるブロックがあるか調べてあったら消す処理をする
@@ -478,20 +478,20 @@ end
 -- 画面描画処理関数
 function ScreenDraw()
 	-- 画面を初期化
-	DxLua.ClearDrawScreen()
+	dx.ClearDrawScreen()
 
 	-- 枠を描画
-	DxLua.DrawBox(STAGE_X - 24, STAGE_Y, STAGE_X,
+	dx.DrawBox(STAGE_X - 24, STAGE_Y, STAGE_X,
 		STAGE_Y + WORLD_HEIGHT * BLOCK_SIZE,
-		DxLua.GetColor(255, 0, 0), true)
+		dx.GetColor(255, 0, 0), true)
 
-	DxLua.DrawBox(STAGE_X + WORLD_WIDTH * BLOCK_SIZE, STAGE_Y,
+	dx.DrawBox(STAGE_X + WORLD_WIDTH * BLOCK_SIZE, STAGE_Y,
 		STAGE_X + 24 + WORLD_WIDTH * BLOCK_SIZE, STAGE_Y + WORLD_HEIGHT * BLOCK_SIZE,
-		DxLua.GetColor(255, 0, 0), true)
+		dx.GetColor(255, 0, 0), true)
 
-	DxLua.DrawBox(STAGE_X - 24, STAGE_Y + WORLD_HEIGHT * BLOCK_SIZE,
+	dx.DrawBox(STAGE_X - 24, STAGE_Y + WORLD_HEIGHT * BLOCK_SIZE,
 		STAGE_X + 24 + WORLD_WIDTH * BLOCK_SIZE, STAGE_Y + WORLD_HEIGHT * BLOCK_SIZE + 24,
-		DxLua.GetColor(255, 0, 0), true)
+		dx.GetColor(255, 0, 0), true)
 
 	-- ブロックを描画
 	for i = 1, WORLD_HEIGHT do
@@ -499,9 +499,9 @@ function ScreenDraw()
 			if Block[j][i] ~= 0 then
 				local index = Block[j][i]
 				local jx, iy = j - 1, i
-				DxLua.DrawBox(STAGE_X + jx * BLOCK_SIZE, STAGE_Y + BLOCK_SIZE * iy,
+				dx.DrawBox(STAGE_X + jx * BLOCK_SIZE, STAGE_Y + BLOCK_SIZE * iy,
 					STAGE_X + jx * BLOCK_SIZE + BLOCK_SIZE, STAGE_Y + iy * BLOCK_SIZE + BLOCK_SIZE,
-					DxLua.GetColor(BlockColor[index][1],BlockColor[index][2],BlockColor[index][3]), true)
+					dx.GetColor(BlockColor[index][1],BlockColor[index][2],BlockColor[index][3]), true)
 			end
 		end
 	end
@@ -513,9 +513,9 @@ function ScreenDraw()
 		end
 		local index = ActiveBlock[i]
 		local ax, ay = ActiveX - 1, ActiveY
-		DxLua.DrawBox(STAGE_X + ax * BLOCK_SIZE, STAGE_Y + (ay - i) * BLOCK_SIZE,
+		dx.DrawBox(STAGE_X + ax * BLOCK_SIZE, STAGE_Y + (ay - i) * BLOCK_SIZE,
 				STAGE_X + ax * BLOCK_SIZE + BLOCK_SIZE, STAGE_Y + (ay - i) * BLOCK_SIZE + BLOCK_SIZE,
-				DxLua.GetColor(BlockColor[index][1],BlockColor[index][2],BlockColor[index][3]), true)
+				dx.GetColor(BlockColor[index][1],BlockColor[index][2],BlockColor[index][3]), true)
 	end
 
 	-- 終了

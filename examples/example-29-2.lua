@@ -48,15 +48,15 @@ local Input, EdgeInput = 0, 0 -- 入力状態
 local FrameStartTime = 0 -- ６０ＦＰＳ固定用、時間保存用変数
 
 -- 画面モードのセット
-DxLua.SetGraphMode(640, 480, 16)
+dx.SetGraphMode(640, 480, 16)
 
 -- ＤＸライブラリ初期化処理
-function DxLua.Init()
+function dx.Init()
     -- 描画先を裏画面にセット
-    DxLua.SetDrawScreen(DxLua.DX_SCREEN_BACK)
+    dx.SetDrawScreen(dx.DX_SCREEN_BACK)
 
     -- 垂直同期信号を待たない
-    DxLua.SetWaitVSyncFlag(false)
+    dx.SetWaitVSyncFlag(false)
 
     -- プレイヤーの座標を初期化
     PlX = 320.0
@@ -73,30 +73,30 @@ function DxLua.Init()
     EdgeInput = 0
 
     -- ６０ＦＰＳ固定用、時間保存用変数を現在のカウント値にセット
-    FrameStartTime = DxLua.GetNowCount()
+    FrameStartTime = dx.GetNowCount()
 end
 
 -- ループ
-function DxLua.Update()
-    if DxLua.CheckHitKey(DxLua.KEY_INPUT_ESCAPE) ~= 0 then
+function dx.Update()
+    if dx.CheckHitKey(dx.KEY_INPUT_ESCAPE) ~= 0 then
         return 'exit'
     end
 
     -- 画面のクリア
-    DxLua.ClearDrawScreen()
+    dx.ClearDrawScreen()
 
     -- １/６０秒立つまで待つ
-    while DxLua.GetNowCount() - FrameStartTime < 1000 / 60 do DxLua.WaitTimer(1) end
+    while dx.GetNowCount() - FrameStartTime < 1000 / 60 do dx.WaitTimer(1) end
 
     -- 現在のカウント値を保存
-    FrameStartTime = DxLua.GetNowCount()
+    FrameStartTime = dx.GetNowCount()
 
     -- 入力状態を更新
     do
         local i
 
         -- パッド１とキーボードから入力を得る
-        i = DxLua.GetJoypadInputState(DxLua.DX_INPUT_KEY_PAD1)
+        i = dx.GetJoypadInputState(dx.DX_INPUT_KEY_PAD1)
 
         -- エッジを取った入力をセット
         EdgeInput = bit.band(i, bit.bnot(Input))
@@ -114,11 +114,11 @@ function DxLua.Update()
         MoveY = 0.0
 
         -- 左右の移動を見る
-        if bit.band(Input, DxLua.PAD_INPUT_LEFT) ~= 0  then MoveX = MoveX - SPEED end
-        if bit.band(Input, DxLua.PAD_INPUT_RIGHT) ~= 0 then MoveX = MoveX + SPEED end
+        if bit.band(Input, dx.PAD_INPUT_LEFT) ~= 0  then MoveX = MoveX - SPEED end
+        if bit.band(Input, dx.PAD_INPUT_RIGHT) ~= 0 then MoveX = MoveX + SPEED end
 
         -- 地に足が着いている場合のみジャンプボタン(ボタン１ or Ｚキー)を見る
-        if PlJumpFlag == false and bit.band(EdgeInput, DxLua.PAD_INPUT_A) ~= 0 then
+        if PlJumpFlag == false and bit.band(EdgeInput, dx.PAD_INPUT_A) ~= 0 then
             PlDownSp = -JUMP_POWER
             PlJumpFlag = true
         end
@@ -141,50 +141,50 @@ function DxLua.Update()
                 local x, y = j - 1, i - 1
                 -- １～７はブロックチップを表しているので１～７のところだけ描画
                 if block == 1 or block == 6 or block == 7 then
-                    DxLua.DrawBox(
+                    dx.DrawBox(
                         x * CHIP_SIZE, y * CHIP_SIZE,
                         x * CHIP_SIZE + CHIP_SIZE, y * CHIP_SIZE + CHIP_SIZE,
-                        DxLua.GetColor(255, 255, 255), true)
+                        dx.GetColor(255, 255, 255), true)
 
                 elseif block == 2 then
-                    DxLua.DrawTriangle(
+                    dx.DrawTriangle(
                         x * CHIP_SIZE, y * CHIP_SIZE + CHIP_SIZE,
                         x * CHIP_SIZE + CHIP_SIZE, y * CHIP_SIZE,
                         x * CHIP_SIZE + CHIP_SIZE, y * CHIP_SIZE + CHIP_SIZE,
-                        DxLua.GetColor(255, 255, 255), true)
+                        dx.GetColor(255, 255, 255), true)
 
                 elseif block == 3 then
-                    DxLua.DrawTriangle(
+                    dx.DrawTriangle(
                         x * CHIP_SIZE, y * CHIP_SIZE,
                         x * CHIP_SIZE + CHIP_SIZE, y * CHIP_SIZE + CHIP_SIZE,
                         x * CHIP_SIZE, y * CHIP_SIZE + CHIP_SIZE,
-                        DxLua.GetColor(255, 255, 255), true)
+                        dx.GetColor(255, 255, 255), true)
 
                 elseif block == 4 then
-                    DxLua.DrawTriangle(
+                    dx.DrawTriangle(
                         x * CHIP_SIZE, y * CHIP_SIZE,
                         x * CHIP_SIZE + CHIP_SIZE, y * CHIP_SIZE,
                         x * CHIP_SIZE + CHIP_SIZE, y * CHIP_SIZE + CHIP_SIZE,
-                        DxLua.GetColor(255, 255, 255), true)
+                        dx.GetColor(255, 255, 255), true)
 
                 elseif block == 5 then
-                    DxLua.DrawTriangle(
+                    dx.DrawTriangle(
                         x * CHIP_SIZE, y * CHIP_SIZE + CHIP_SIZE,
                         x * CHIP_SIZE, y * CHIP_SIZE,
                         x * CHIP_SIZE + CHIP_SIZE, y * CHIP_SIZE,
-                        DxLua.GetColor(255, 255, 255), true)
+                        dx.GetColor(255, 255, 255), true)
                 end
             end
         end
     end
 
     -- キャラクタの描画
-    DxLua.DrawBox(math.floor(PlX - CHAR_SIZE * 0.5), math.floor(PlY - CHAR_SIZE * 0.5),
+    dx.DrawBox(math.floor(PlX - CHAR_SIZE * 0.5), math.floor(PlY - CHAR_SIZE * 0.5),
         math.floor(PlX + CHAR_SIZE * 0.5) + 1, math.floor(PlY + CHAR_SIZE * 0.5) + 1,
-        DxLua.GetColor(255, 0, 0), true)
+        dx.GetColor(255, 0, 0), true)
 
     -- 画面の更新
-    DxLua.ScreenFlip()
+    dx.ScreenFlip()
 end
 
 

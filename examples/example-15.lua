@@ -51,12 +51,12 @@ end
 local Key = 0
 local OldKey = 0 -- 前のキー入力状態
 
-DxLua.SetGraphMode(640, 480, 16)
+dx.SetGraphMode(640, 480, 16)
 
 -- ＤＸライブラリ初期化処理
-function DxLua.Init()
+function dx.Init()
 	-- 描画先画面を裏画面にセット
-	DxLua.SetDrawScreen(DxLua.DX_SCREEN_BACK)
+	dx.SetDrawScreen(dx.DX_SCREEN_BACK)
 
 	-- プレイヤーの初期位置をセット
 	PlayerX = 320
@@ -68,13 +68,13 @@ function DxLua.Init()
 end
 
 -- ループ
-function DxLua.Update()
+function dx.Update()
 	-- キー入力取得
 	OldKey = Key
-	Key = DxLua.GetJoypadInputState(DxLua.DX_INPUT_KEY_PAD1)
+	Key = dx.GetJoypadInputState(dx.DX_INPUT_KEY_PAD1)
 
-	if band(Key, DxLua.PAD_INPUT_RIGHT) ~= 0 then PlayerX = PlayerX + 3 end -- 右を押していたら右に進む
-	if band(Key, DxLua.PAD_INPUT_LEFT) ~= 0 then  PlayerX = PlayerX - 3 end -- 左を押していたら左に進む
+	if band(Key, dx.PAD_INPUT_RIGHT) ~= 0 then PlayerX = PlayerX + 3 end -- 右を押していたら右に進む
+	if band(Key, dx.PAD_INPUT_LEFT) ~= 0 then  PlayerX = PlayerX - 3 end -- 左を押していたら左に進む
 
 	-- ショットの移動処理
 	MoveShot()
@@ -83,20 +83,20 @@ function DxLua.Update()
 	MoveSpark()
 
 	-- ショットボタンを押していたらショットを出す
-	if band(band(Key, bnot(OldKey)), DxLua.PAD_INPUT_A) ~= 0 then CreateShot() end
+	if band(band(Key, bnot(OldKey)), dx.PAD_INPUT_A) ~= 0 then CreateShot() end
 
 	-- 画面を初期化する
-	DxLua.ClearDrawScreen()
+	dx.ClearDrawScreen()
 
 	-- プレイヤーを描画する
-	DxLua.DrawBox(PlayerX, PlayerY,PlayerX + 48, PlayerY + 48, DxLua.GetColor(255, 0, 0), true)
+	dx.DrawBox(PlayerX, PlayerY,PlayerX + 48, PlayerY + 48, dx.GetColor(255, 0, 0), true)
 
 	-- ショットを描画する
 	for j = 1, MAX_SHOT do
 		-- ショットデータが有効な時のみ描画
 		if Shot[j].Valid then
-			DxLua.DrawBox(Shot[j].X, Shot[j].Y, Shot[j].X + 16, Shot[j].Y + 16,
-				DxLua.GetColor(255, 255, 255), true)
+			dx.DrawBox(Shot[j].X, Shot[j].Y, Shot[j].X + 16, Shot[j].Y + 16,
+				dx.GetColor(255, 255, 255), true)
 		end
 	end
 
@@ -104,13 +104,13 @@ function DxLua.Update()
 	for j = 1, MAX_SPARK do
 		-- 火花データが有効な時のみ描画
 		if Spark[j].Valid then
-			DxLua.DrawPixel(Spark[j].X / 100, Spark[j].Y / 100,
-				DxLua.GetColor(Spark[j].Bright, Spark[j].Bright, Spark[j].Bright))
+			dx.DrawPixel(Spark[j].X / 100, Spark[j].Y / 100,
+				dx.GetColor(Spark[j].Bright, Spark[j].Bright, Spark[j].Bright))
 		end
 	end
 
 	-- 裏画面の内容を表画面に反映させる
-	DxLua.ScreenFlip()
+	dx.ScreenFlip()
 end
 
 -- 火花を出す処理
@@ -131,11 +131,11 @@ function CreateSpark(x, y)
 		Spark[Index].Y = y * 100
 
 		-- 移動力を設定
-		Spark[Index].Sx = DxLua.GetRand(1000) - 500
-		Spark[Index].Sy = -DxLua.GetRand(500)
+		Spark[Index].Sx = dx.GetRand(1000) - 500
+		Spark[Index].Sy = -dx.GetRand(500)
 
 		-- 火花の重さをセット
-		Spark[Index].G = DxLua.GetRand(10)
+		Spark[Index].G = dx.GetRand(10)
 
 		-- 火花の明るさセット
 		Spark[Index].Bright = 255
@@ -203,7 +203,7 @@ function MoveShot()
 			-- 画面外に出ていたら火花を出したあとショットデータを無効にする
 			if Shot[i].Y < 150 then
 				-- 火花を出す数をセット
-				local R = DxLua.GetRand(60)
+				local R = dx.GetRand(60)
 				for j = 1, R do
 					-- 火花を生成
 					CreateSpark(Shot[i].X + 8, Shot[i].Y + 8)

@@ -65,18 +65,18 @@ local StateMachine = {
 }
 
 -- 画面モードのセット
-DxLua.SetGraphMode(640, 480, 16)
+dx.SetGraphMode(640, 480, 16)
 
 -- ＤＸライブラリ初期化処理
-function DxLua.Init()
+function dx.Init()
 	-- VSYNC待ちをしない
-    DxLua.SetWaitVSyncFlag(false)
+    dx.SetWaitVSyncFlag(false)
 
     StateMachine:Change('Select')
 end
 
 -- ループ
-function DxLua.Update(...)
+function dx.Update(...)
     return StateMachine:Update(...)
 end
 
@@ -100,9 +100,9 @@ end
 -- 最初に動作保存か再生処理か選択してもらう（前処理）
 function StateMachine:PreSelect()
     -- メッセージの描画
-    DxLua.ClearDrawScreen()
-    DxLua.DrawString(0, 0, "動作を保存する場合は十字キーの左を、再生する場合は右を押してください", DxLua.GetColor(255, 255, 255))
-    DxLua.ScreenFlip()
+    dx.ClearDrawScreen()
+    dx.DrawString(0, 0, "動作を保存する場合は十字キーの左を、再生する場合は右を押してください", dx.GetColor(255, 255, 255))
+    dx.ScreenFlip()
 
     -- 入力があるまで待つ
     Mode = -1
@@ -111,16 +111,16 @@ end
 -- 最初に動作保存か再生処理か選択してもらう
 function StateMachine:Select(...)
     -- パッドの状態を得る
-    Key = DxLua.GetJoypadInputState(DxLua.DX_INPUT_KEY_PAD1)
+    Key = dx.GetJoypadInputState(dx.DX_INPUT_KEY_PAD1)
 
     -- 右が押された場合は再生モードにセット
-    if band(Key, DxLua.PAD_INPUT_RIGHT) ~= 0 then
+    if band(Key, dx.PAD_INPUT_RIGHT) ~= 0 then
         Mode = MODE_REPLAY
         self:Change('Replay')
     end
 
     -- 左が押された場合は動作保存モードにセット
-    if band(Key, DxLua.PAD_INPUT_LEFT) ~= 0 then
+    if band(Key, dx.PAD_INPUT_LEFT) ~= 0 then
         Mode = MODE_REC
         self:Change('Rec')
     end
@@ -142,14 +142,14 @@ end
 -- 共通の前処理の後処理
 function StateMachine:PostPreRecReplay()
 	-- 乱数の初期化値をセット
-    DxLua.SRand(InitRand)
+    dx.SRand(InitRand)
 
 	-- 画面の初期化＆描画先を裏画面にセット
-	DxLua.ClearDrawScreen()
-	DxLua.SetDrawScreen(DxLua.DX_SCREEN_BACK)
+	dx.ClearDrawScreen()
+	dx.SetDrawScreen(dx.DX_SCREEN_BACK)
 
 	-- 現在のタイムカウントを保存
-	Time = DxLua.GetNowHiPerformanceCount()
+	Time = dx.GetNowHiPerformanceCount()
 
 	-- 動作保存処理開始
 	Loop = 1
@@ -170,7 +170,7 @@ function StateMachine:PreRec()
     RecFrame = 1
 
 	-- 乱数の初期化値を現在のタイムカウントから得る
-	InitRand = DxLua.GetNowCount()
+	InitRand = dx.GetNowCount()
 
     self:PostPreRecReplay()
 end
@@ -178,16 +178,16 @@ end
 -- 動作保存モードの処理
 function StateMachine:Rec()
     -- 画面の初期化
-    DxLua.ClearDrawScreen()
+    dx.ClearDrawScreen()
 
     -- 普通にキーの入力状態を得る
-    Key = DxLua.GetJoypadInputState(DxLua.DX_INPUT_KEY_PAD1)
+    Key = dx.GetJoypadInputState(dx.DX_INPUT_KEY_PAD1)
 
     self:UpdatePlayer()
     self:UpdateShot()
 
     -- メッセージの描画
-    DxLua.DrawString(0, 0, "動作を保存中です", DxLua.GetColor(255, 255, 255))
+    dx.DrawString(0, 0, "動作を保存中です", dx.GetColor(255, 255, 255))
 
     self:Present()
 
@@ -279,10 +279,10 @@ function StateMachine:RecAfter()
 
         if not fp then
             -- 画面に終了メッセージを出す
-            DxLua.ClearDrawScreen()
-            DxLua.DrawString(0, 0, "動作の保存に失敗しました", DxLua.GetColor(255, 0, 0))
-            DxLua.DrawString(0, 0, "\n何かキーを入力すると最初に戻ります")
-            DxLua.ScreenFlip()
+            dx.ClearDrawScreen()
+            dx.DrawString(0, 0, "動作の保存に失敗しました", dx.GetColor(255, 0, 0))
+            dx.DrawString(0, 0, "\n何かキーを入力すると最初に戻ります")
+            dx.ScreenFlip()
 
             self:Change('Done')
             return
@@ -304,10 +304,10 @@ function StateMachine:RecAfter()
     end
 
     -- 画面に終了メッセージを出す
-    DxLua.ClearDrawScreen()
-    DxLua.DrawString(0, 0, "動作の保存が終了しました", DxLua.GetColor(255, 255, 255))
-    DxLua.DrawString(0, 0, "\n何かキーを入力すると最初に戻ります")
-    DxLua.ScreenFlip()
+    dx.ClearDrawScreen()
+    dx.DrawString(0, 0, "動作の保存が終了しました", dx.GetColor(255, 255, 255))
+    dx.DrawString(0, 0, "\n何かキーを入力すると最初に戻ります")
+    dx.ScreenFlip()
 
     self:Change('Done')
 end
@@ -322,12 +322,12 @@ function StateMachine:PreReplay()
     -- もし開けなかったら終了
     if not fp then
         -- メッセージを描画
-        DxLua.ClearDrawScreen()
-        DxLua.DrawString(0, 0, "動作保存ファイルがありません", DxLua.GetColor(255, 255, 255))
-        DxLua.DrawString(0, 0, "\n何かキーを入力すると最初に戻ります")
-        DxLua.ScreenFlip()
+        dx.ClearDrawScreen()
+        dx.DrawString(0, 0, "動作保存ファイルがありません", dx.GetColor(255, 255, 255))
+        dx.DrawString(0, 0, "\n何かキーを入力すると最初に戻ります")
+        dx.ScreenFlip()
 
-        DxLua.WaitKey()
+        dx.WaitKey()
 
         -- ＤＸライブラリを終了
         -- DxLua: 最初に戻す
@@ -357,7 +357,7 @@ end
 -- 動作再生時の処理
 function StateMachine:Replay()
     -- 画面の初期化
-    DxLua.ClearDrawScreen()
+    dx.ClearDrawScreen()
 
     -- 動作再生時の処理
     do
@@ -369,7 +369,7 @@ function StateMachine:Replay()
     self:UpdateShot()
 
     -- メッセージの描画
-    DxLua.DrawString(0, 0, "動作を再生中です", DxLua.GetColor(255, 255, 255))
+    dx.DrawString(0, 0, "動作を再生中です", dx.GetColor(255, 255, 255))
 
     self:Present()
 
@@ -394,10 +394,10 @@ end
 -- 動作再生時の処理
 function StateMachine:ReplayAfter()
     -- 画面に終了メッセージを出す
-    DxLua.ClearDrawScreen()
-    DxLua.DrawString(0, 0, "動作の再生が終了しました", DxLua.GetColor(255, 255, 255))
-    DxLua.DrawString(0, 0, "\n何かキーを入力すると最初に戻ります")
-    DxLua.ScreenFlip()
+    dx.ClearDrawScreen()
+    dx.DrawString(0, 0, "動作の再生が終了しました", dx.GetColor(255, 255, 255))
+    dx.DrawString(0, 0, "\n何かキーを入力すると最初に戻ります")
+    dx.ScreenFlip()
 
     self:Change('Done')
 end
@@ -408,7 +408,7 @@ function StateMachine:Done()
 	RecData = {}
 
 	-- キー入力待ち
-    DxLua.WaitKey()
+    dx.WaitKey()
 
     self:Change('Select')
 end
@@ -416,10 +416,10 @@ end
 -- プレイヤー更新
 function StateMachine:UpdatePlayer()
     -- 自機を移動させる
-    if band(Key, DxLua.PAD_INPUT_LEFT) ~= 0 then x = x - SPEED end
-    if band(Key, DxLua.PAD_INPUT_RIGHT) ~= 0 then x = x + SPEED end
-    if band(Key, DxLua.PAD_INPUT_UP) ~= 0 then y = y - SPEED end
-    if band(Key, DxLua.PAD_INPUT_DOWN) ~= 0 then y = y + SPEED end
+    if band(Key, dx.PAD_INPUT_LEFT) ~= 0 then x = x - SPEED end
+    if band(Key, dx.PAD_INPUT_RIGHT) ~= 0 then x = x + SPEED end
+    if band(Key, dx.PAD_INPUT_UP) ~= 0 then y = y - SPEED end
+    if band(Key, dx.PAD_INPUT_DOWN) ~= 0 then y = y + SPEED end
 
     -- 画面外に出た場合の補正
     if x > 625 then x = 620 end
@@ -428,7 +428,7 @@ function StateMachine:UpdatePlayer()
     if y < 15 then y = 0 end
 
     -- 自機の描画
-    DxLua.DrawBox(x - 15, y - 15, x + 15, y + 15, DxLua.GetColor(255, 255, 0), true)
+    dx.DrawBox(x - 15, y - 15, x + 15, y + 15, dx.GetColor(255, 255, 0), true)
 end
 
 -- 弾更新
@@ -442,7 +442,7 @@ function StateMachine:UpdateShot()
             Shot[i].x = Shot[i].x + (Shot[i].sx / 1000)
 
             -- ショットを描画
-            DxLua.DrawCircle(Shot[i].x, Shot[i].y, 5, DxLua.GetColor(255, 0, 0), true)
+            dx.DrawCircle(Shot[i].x, Shot[i].y, 5, dx.GetColor(255, 0, 0), true)
 
             -- 画面外に出たらショットを無効にする
             if Shot[i].y > 500 or Shot[i].y < -30 or
@@ -471,7 +471,7 @@ function StateMachine:UpdateShot()
     end
 
     -- 弾の追加処理、ある一定の確率で出現
-    if DxLua.GetRand(5) == 0 then
+    if dx.GetRand(5) == 0 then
         local i = MAX_SHOT
 
         -- 空いているデータを探す
@@ -489,11 +489,11 @@ function StateMachine:UpdateShot()
             Shot[i].ValidFlag = 1
 
             -- 位置をセット
-            Shot[i].x = DxLua.GetRand(639)
+            Shot[i].x = dx.GetRand(639)
             Shot[i].y = 0
 
             -- 自機に向かっていく弾かただ下に落ちるだけの弾か分岐
-            if DxLua.GetRand(1) == 0 then
+            if dx.GetRand(1) == 0 then
                 -- ただ下に移動する弾の場合の処理
 
                 -- 下向きに速度を与える
@@ -527,9 +527,9 @@ end
 -- バッファの入れ替えと待機
 function StateMachine:Present()
     -- 裏画面の状態を表画面に反映させる
-    DxLua.ScreenFlip()
+    dx.ScreenFlip()
 
     -- ６０分の１秒経つまで待つ
-    while (DxLua.ProcessMessage() == 0 and DxLua.GetNowHiPerformanceCount() - Time < 1000000 / 60) do end
-    Time = DxLua.GetNowHiPerformanceCount()
+    while (dx.ProcessMessage() == 0 and dx.GetNowHiPerformanceCount() - Time < 1000000 / 60) do end
+    Time = dx.GetNowHiPerformanceCount()
 end

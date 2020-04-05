@@ -14,6 +14,7 @@ target_link_libraries(DxLua PRIVATE
 
 if (MSVC)
   set_target_properties(DxLua PROPERTIES LINK_FLAGS "/ENTRY:mainCRTStartup")
+  add_definitions(/bigobj)
 endif()
 
 add_subdirectory(src)

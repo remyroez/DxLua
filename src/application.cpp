@@ -195,7 +195,16 @@ application::done_code application::run() {
 				done = call_run(message);
 
 				// 終了ステップ
-				if (done != done_code::exit) {
+				if (done == done_code::reload) {
+					// reload なら実行
+					auto end_done = call_end(message);
+
+					// none 以外なら終了コードの上書き
+					if (end_done != done_code::none) {
+						done = end_done;
+					}
+
+				} else if (done != done_code::exit) {
 					// exit 以外で終了していたら実行しない
 
 				} else {
@@ -230,16 +239,9 @@ application::done_code application::run() {
 			break;
 		}
 
-		// エラーメッセージ
+		// エラー画面へ
 		if (auto message_string = message.str(); !message_string.empty()) {
-			DxLib::clsDx();
-			DxLib::printfDx(u8"%s\n", message_string.c_str());
-			DxLib::printfDx(u8"\nＦ５キーを押すとリロード、それ以外のキーを押すと終了します\n");
-			DxLib::ScreenFlip();
-			auto Key = DxLib::WaitKey();
-			if (Key == KEY_INPUT_F5) {
-				done = done_code::reload;
-			}
+			done = error(message_string, done);
 		}
 
 		teardown_engine();
@@ -248,6 +250,56 @@ application::done_code application::run() {
 	// リスタート時の出力
 	if (done == done_code::reload) {
 		std::cout << u8"スクリプトをリロードしています…" << std::endl;
+	}
+
+	return done;
+}
+
+// エラー画面
+application::done_code application::error(std::string_view message, done_code done) {
+	// エラー出力
+	DxLib::clsDx();
+	DxLib::printfDx(u8"%s\n", message.data());
+	DxLib::printfDx(u8"\nＦ５キーを押すとリロード、ＥＳＣキーを押すと終了します\n");
+	DxLib::ScreenFlip();
+
+	// 監視用のタイマー
+	// NOTE: オプションでウォッチモードが指定されていなければ監視しない
+	const auto interval = (_option.watch != watch_mode::none) ? _option.watch_interval * 1000LL : -1LL;
+	auto timer = interval;
+	auto before = DxLib::GetNowHiPerformanceCount();
+
+	// エラー画面ループ
+	while (DxLib::ProcessMessage() == 0) {
+		// スクリプト監視
+		if (timer > 0) {
+			// 時間経過
+			auto now = DxLib::GetNowHiPerformanceCount();
+			auto dt = now - before;
+			before = now;
+			timer -= dt;
+
+			// 監視
+			if (timer <= 0) {
+				// スクリプトが変更されていればリロード
+				if (DxLua::watch(*_dxLua)) {
+					done = done_code::reload;
+					break;
+				}
+				timer = interval;
+			}
+		}
+
+		// F5 でリロード
+		if (DxLib::CheckHitKey(KEY_INPUT_F5)) {
+			done = done_code::reload;
+			break;
+		}
+
+		// ESC で終了
+		if (DxLib::CheckHitKey(KEY_INPUT_ESCAPE)) {
+			break;
+		}
 	}
 
 	return done;
@@ -295,7 +347,7 @@ bool application::setup_lua() {
 	);
 
 	// DxLua ライブラリの展開
-	_dxLua = _state->require("DxLua", sol::c_call<decltype(&DxLua::solopen_dxlua), &DxLua::solopen_dxlua>);
+	_dxLua = _state->require("dx", sol::c_call<decltype(&DxLua::open_library), &DxLua::open_library>);
 
 	// 監視ファイルの追加
 	if (_option.watch != watch_mode::none) {

@@ -31,19 +31,19 @@ local chars
 
 OneMojiBuf = '' -- １文字分一時記憶配列
 
-DxLua.SetGraphMode(640, 480, 16)
+dx.SetGraphMode(640, 480, 16)
 
 -- ＤＸライブラリ初期化処理
-function DxLua.Init()
+function dx.Init()
 	-- 描画位置の初期位置セット
 	CursorX = 0
 	CursorY = 1
 
 	-- フォントのサイズセット
-	DxLua.SetFontSize(MOJI_SIZE)
+	dx.SetFontSize(MOJI_SIZE)
 
 	-- 描画先を裏画面にセット
-	DxLua.SetDrawScreen(DxLua.DX_SCREEN_BACK)
+	dx.SetDrawScreen(dx.DX_SCREEN_BACK)
 
 	-- フレームカウンタ初期化
 	Count = 0
@@ -53,8 +53,8 @@ function DxLua.Init()
 end
 
 -- ループ
-function DxLua.Update()
-	if DxLua.CheckHitKey(DxLua.KEY_INPUT_ESCAPE) ~= 0 then
+function dx.Update()
+	if dx.CheckHitKey(dx.KEY_INPUT_ESCAPE) ~= 0 then
 		return 'exit'
 	end
 
@@ -65,7 +65,7 @@ function DxLua.Update()
 
 		-- ボタン押し待ちフラグがたっていた場合はボタンが押されるまでここで終了
 		if (KeyWaitFlag == 1) then
-			if (DxLua.ProcessMessage() == 0 and DxLua.CheckHitKeyAll() ~= 0) then
+			if (dx.ProcessMessage() == 0 and dx.CheckHitKeyAll() ~= 0) then
 				-- ボタンが押されていたら解除
 				KeyWaitFlag = 0
 			end
@@ -83,7 +83,7 @@ function DxLua.Update()
 			elseif Moji == 'B' then	-- ボタン押し待ち文字
 
 				-- ボタンが離されるまで待つ
-				while (DxLua.ProcessMessage() == 0 and DxLua.CheckHitKeyAll() ~= 0) do end
+				while (dx.ProcessMessage() == 0 and dx.CheckHitKeyAll() ~= 0) do end
 
 				-- ボタン押し待ちフラグをたてる
 				KeyWaitFlag = 1
@@ -140,24 +140,24 @@ function DxLua.Update()
 	end
 
 	-- 画面のクリア
-	DxLua.ClearDrawScreen()
+	dx.ClearDrawScreen()
 
 	-- 背景エフェクトの描画
 	do
 		local Color
 
 		Color = math.floor(math.sin(Count / 100.0) * 80.0 + 125.0)
-		DxLua.DrawBox(0, 0, 640, 480, DxLua.GetColor(Color, 0, 0), true)
+		dx.DrawBox(0, 0, 640, 480, dx.GetColor(Color, 0, 0), true)
 		Count = Count + 1
 	end
 
 	-- テキストバッファの描画
 	for i, line in ipairs(StringBuf) do
-		DxLua.DrawString(8, (i - 1) * MOJI_SIZE, line, DxLua.GetColor(255, 255, 255))
+		dx.DrawString(8, (i - 1) * MOJI_SIZE, line, dx.GetColor(255, 255, 255))
 	end
 
 	-- 裏画面の内容を表画面に反映させる
-	DxLua.ScreenFlip()
+	dx.ScreenFlip()
 end
 
 

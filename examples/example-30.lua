@@ -117,7 +117,7 @@ end
 local bx, by, px, py, f = 0, 0, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, 0;
 
 -- ＤＸライブラリ初期化処理
-function DxLua.Init()
+function dx.Init()
 	-- 箱の回転角度を初期化
 	rot = 0.0
 
@@ -131,13 +131,13 @@ function DxLua.Init()
 end
 
 -- ループ
-function DxLua.Update()
-    if DxLua.CheckHitKey(DxLua.KEY_INPUT_ESCAPE) ~= 0 then
+function dx.Update()
+    if dx.CheckHitKey(dx.KEY_INPUT_ESCAPE) ~= 0 then
         return 'exit'
     end
 
 	-- 画面初期化
-	DxLua.ClearDrawScreen()
+	dx.ClearDrawScreen()
 
 	-- 移動前の座標を保存しておく
 	bx = x
@@ -188,14 +188,14 @@ function DxLua.Update()
 	end
 
 	-- 箱の四辺を描画
-	DxLua.DrawLine(px[1], py[1], px[2], py[2], DxLua.GetColor(255, 255, 255));
-	DxLua.DrawLine(px[2], py[2], px[3], py[3], DxLua.GetColor(255, 255, 255));
-	DxLua.DrawLine(px[3], py[3], px[4], py[4], DxLua.GetColor(255, 255, 255));
-	DxLua.DrawLine(px[4], py[4], px[1], py[1], DxLua.GetColor(255, 255, 255));
+	dx.DrawLine(px[1], py[1], px[2], py[2], dx.GetColor(255, 255, 255));
+	dx.DrawLine(px[2], py[2], px[3], py[3], dx.GetColor(255, 255, 255));
+	dx.DrawLine(px[3], py[3], px[4], py[4], dx.GetColor(255, 255, 255));
+	dx.DrawLine(px[4], py[4], px[1], py[1], dx.GetColor(255, 255, 255));
 
 	-- 点を描画
-	DxLua.DrawPixel(x, y, DxLua.GetColor(255, 255, 255));
+	dx.DrawPixel(x, y, dx.GetColor(255, 255, 255));
 
 	-- 画面を更新
-	DxLua.ScreenFlip();
+	dx.ScreenFlip();
 end

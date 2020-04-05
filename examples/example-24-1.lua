@@ -60,12 +60,12 @@ local Key = 0
 local Time = 0
 
 -- 画面モードのセット
-DxLua.SetGraphMode(640, 480, 16)
+dx.SetGraphMode(640, 480, 16)
 
 -- ＤＸライブラリ初期化処理
-function DxLua.Init()
+function dx.Init()
 	-- 描画先を裏画面にセット
-	DxLua.SetDrawScreen(DxLua.DX_SCREEN_BACK)
+	dx.SetDrawScreen(dx.DX_SCREEN_BACK)
 
 	-- 初期化処理
 	do
@@ -95,21 +95,21 @@ function DxLua.Init()
 	end
 
 	-- ゲームループ
-	Time = DxLua.GetNowHiPerformanceCount() + 1000000 / 60
+	Time = dx.GetNowHiPerformanceCount() + 1000000 / 60
 end
 
 -- ループ
-function DxLua.Update()
+function dx.Update()
     -- プレイヤーの移動処理
     do
         -- 入力取得
-        Key = DxLua.GetJoypadInputState(DxLua.DX_INPUT_KEY_PAD1)
+        Key = dx.GetJoypadInputState(dx.DX_INPUT_KEY_PAD1)
 
-        if band(Key, DxLua.PAD_INPUT_RIGHT) ~= 0 then Px = Px + 5 end	-- 右を押していたら右に進む
-        if band(Key, DxLua.PAD_INPUT_LEFT) ~= 0 then Px = Px - 5 end	-- 左を押していたら左に進む
+        if band(Key, dx.PAD_INPUT_RIGHT) ~= 0 then Px = Px + 5 end	-- 右を押していたら右に進む
+        if band(Key, dx.PAD_INPUT_LEFT) ~= 0 then Px = Px - 5 end	-- 左を押していたら左に進む
 
-        if band(Key, DxLua.PAD_INPUT_UP)   ~= 0 then Py = Py - 5 end	-- 上を押していたら上に進む
-        if band(Key, DxLua.PAD_INPUT_DOWN) ~= 0 then Py = Py + 5 end	-- 下を押していたら下に進む
+        if band(Key, dx.PAD_INPUT_UP)   ~= 0 then Py = Py - 5 end	-- 上を押していたら上に進む
+        if band(Key, dx.PAD_INPUT_DOWN) ~= 0 then Py = Py + 5 end	-- 下を押していたら下に進む
 
         -- 画面外に出ていたら補正
         if Px > 640 - 16 then Px = 640 - 16 end
@@ -249,10 +249,10 @@ function DxLua.Update()
     -- 描画処理
     do
         -- 画面の初期化
-        DxLua.ClearDrawScreen()
+        dx.ClearDrawScreen()
 
         -- 描画ブレンドモードを加算半透明にセット
-        DxLua.SetDrawBlendMode(DxLua.DX_BLENDMODE_ADD, 255)
+        dx.SetDrawBlendMode(dx.DX_BLENDMODE_ADD, 255)
 
         -- ラインの描画
         for i = 1, LINE_MAXNUM do
@@ -260,9 +260,9 @@ function DxLua.Update()
                 -- ラインデータが有効でない場合は次に移る
             else
                 -- ラインの描画
-                DxLua.DrawLine(Line[i].x1, Line[i].y1,
+                dx.DrawLine(Line[i].x1, Line[i].y1,
                     Line[i].x2, Line[i].y2,
-                    DxLua.GetColor(0, 255 - Line[i].Counter * 4, 0))
+                    dx.GetColor(0, 255 - Line[i].Counter * 4, 0))
 
                 -- カウンタを加算する
                 Line[i].Counter = Line[i].Counter + 1
@@ -275,19 +275,19 @@ function DxLua.Update()
         end
 
         -- 描画ブレンドモードを通常描画モードにセット
-        DxLua.SetDrawBlendMode(DxLua.DX_BLENDMODE_NOBLEND, 255)
+        dx.SetDrawBlendMode(dx.DX_BLENDMODE_NOBLEND, 255)
 
         -- プレーヤーの描画
-        DxLua.DrawBox(Px, Py, Px + 32, Py + 32, DxLua.GetColor(255, 255, 255), true)
+        dx.DrawBox(Px, Py, Px + 32, Py + 32, dx.GetColor(255, 255, 255), true)
 
         -- 砲台の描画
-        DxLua.DrawBox(Hx - 8, Hy - 8, Hx + 8, Hy + 8, DxLua.GetColor(255, 255, 0), true)
+        dx.DrawBox(Hx - 8, Hy - 8, Hx + 8, Hy + 8, dx.GetColor(255, 255, 0), true)
 
         -- 裏画面の内容を表画面に反映
-        DxLua.ScreenFlip()
+        dx.ScreenFlip()
 
         -- 時間待ち
-        while (DxLua.GetNowHiPerformanceCount() < Time) do end
+        while (dx.GetNowHiPerformanceCount() < Time) do end
         Time = Time + 1000000 / 60
     end
 end

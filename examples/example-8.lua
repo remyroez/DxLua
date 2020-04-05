@@ -16,10 +16,10 @@ local Count -- 描画処理用カウンタ
 local OldKey = 0 -- 前フレームのキー入力情報
 
 -- 画面モードのセット
-DxLua.SetGraphMode(640, 480, 16)
+dx.SetGraphMode(640, 480, 16)
 
 -- ＤＸライブラリ初期化処理
-function DxLua.Init()
+function dx.Init()
     -- 使用関数ナンバーを初期化
     -- DxLua: Lua の添字は 1 から
 	MPoint = 1
@@ -29,22 +29,22 @@ function DxLua.Init()
     MethodNum = #Method
 
 	-- 描画先画面を裏画面にする
-	DxLua.SetDrawScreen(DxLua.DX_SCREEN_BACK)
+	dx.SetDrawScreen(dx.DX_SCREEN_BACK)
 
 	-- カウント初期化
 	Count = 0
 end
 
 -- ループ
-function DxLua.Update()
+function dx.Update()
     -- キー入力処理
     do
         local Key
 
         -- もしＺキーを押していたら処理項目変更
-        Key = DxLua.GetJoypadInputState(DxLua.DX_INPUT_KEY_PAD1)
+        Key = dx.GetJoypadInputState(dx.DX_INPUT_KEY_PAD1)
 
-        if band(band(Key, bnot(OldKey)), DxLua.PAD_INPUT_A) ~= 0 then
+        if band(band(Key, bnot(OldKey)), dx.PAD_INPUT_A) ~= 0 then
             MPoint = MPoint + 1
             if MPoint > MethodNum then MPoint = 1 end
         end
@@ -53,13 +53,13 @@ function DxLua.Update()
     end
 
     -- 画面をクリア
-    DxLua.ClearDrawScreen()
+    dx.ClearDrawScreen()
 
     -- 描画関数を使用
     Method[MPoint](Count)
 
     -- 裏画面の内容を表画面に反映
-    DxLua.ScreenFlip()
+    dx.ScreenFlip()
 
     -- カウントを増やす
     Count = Count + 1
@@ -73,7 +73,7 @@ function Draw1(Pal)
 	y = (math.sin(PI / 360 * Pal) * 240) + 240
 	x = Pal % (640 + 64) - 32
 
-	DxLua.DrawBox(x, y, x + 16, y + 16, DxLua.GetColor(255, 255, 0), true)
+	dx.DrawBox(x, y, x + 16, y + 16, dx.GetColor(255, 255, 0), true)
 end
 
 -- 描画処理２
@@ -84,7 +84,7 @@ function Draw2(Pal)
 	y = 240
 	x = Pal % (640 + 64) - 32
 
-	DxLua.DrawBox(x, y, x + 16, y + 16, DxLua.GetColor(255, 255, 0), true)
+	dx.DrawBox(x, y, x + 16, y + 16, dx.GetColor(255, 255, 0), true)
 end
 
 -- 描画処理３
@@ -95,7 +95,7 @@ function Draw3(Pal)
 	y = Pal % (480 + 64) - 32
 	x = Pal % (640 + 64) - 32
 
-	DxLua.DrawBox(x, y, x + 16, y + 16, DxLua.GetColor(255, 255, 0), true)
+	dx.DrawBox(x, y, x + 16, y + 16, dx.GetColor(255, 255, 0), true)
 end
 
 -- DxLua: ここで追加

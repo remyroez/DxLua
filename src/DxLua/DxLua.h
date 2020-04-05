@@ -55,7 +55,7 @@ void deregister_key_input(sol::object &library, int handle);
 void clear_key_inputs(sol::object &library);
 
 // DxLua ライブラリの展開
-sol::table solopen_dxlua(sol::this_state s);
+sol::table open_library(sol::this_state s);
 
 } // namespace DxLua
 

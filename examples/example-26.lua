@@ -16,21 +16,21 @@ local x, y = 0, 0
 local Counter = 0
 
 -- 画面モードのセット
-DxLua.SetGraphMode(640, 480, 16)
+dx.SetGraphMode(640, 480, 16)
 
 -- ＤＸライブラリ初期化処理
-function DxLua.Init()
+function dx.Init()
 	-- グラフィックの描画先を裏画面にセット
-	DxLua.SetDrawScreen(DxLua.DX_SCREEN_BACK)
+	dx.SetDrawScreen(dx.DX_SCREEN_BACK)
 
 	-- カウンターを初期化
 	Counter = 0
 end
 
 -- ループ
-function DxLua.Update()
+function dx.Update()
     -- 画面をクリア
-    DxLua.ClearDrawScreen()
+    dx.ClearDrawScreen()
 
     -- 現在の点の位置を算出
     -- ベジェ曲線の計算をしているところです
@@ -57,19 +57,19 @@ function DxLua.Update()
     end
 
     -- 制御点を線で繋ぐ
-    DxLua.DrawLine(P0[1], P0[2], P1[1], P1[2], DxLua.GetColor(0, 128, 0))
-    DxLua.DrawLine(P1[1], P1[2], P2[1], P2[2], DxLua.GetColor(0, 128, 0))
-    DxLua.DrawLine(P2[1], P2[2], P3[1], P3[2], DxLua.GetColor(0, 128, 0))
+    dx.DrawLine(P0[1], P0[2], P1[1], P1[2], dx.GetColor(0, 128, 0))
+    dx.DrawLine(P1[1], P1[2], P2[1], P2[2], dx.GetColor(0, 128, 0))
+    dx.DrawLine(P2[1], P2[2], P3[1], P3[2], dx.GetColor(0, 128, 0))
 
     -- 制御点を描画
-    DxLua.DrawCircle(P0[1], P0[2], 2, DxLua.GetColor(255, 255, 0), true)
-    DxLua.DrawCircle(P3[1], P3[2], 2, DxLua.GetColor(255, 255, 0), true)
+    dx.DrawCircle(P0[1], P0[2], 2, dx.GetColor(255, 255, 0), true)
+    dx.DrawCircle(P3[1], P3[2], 2, dx.GetColor(255, 255, 0), true)
 
-    DxLua.DrawCircle(P1[1], P1[2], 2, DxLua.GetColor(255, 0, 0), true)
-    DxLua.DrawCircle(P2[1], P2[2], 2, DxLua.GetColor(255, 0, 0), true)
+    dx.DrawCircle(P1[1], P1[2], 2, dx.GetColor(255, 0, 0), true)
+    dx.DrawCircle(P2[1], P2[2], 2, dx.GetColor(255, 0, 0), true)
 
     -- 現在の点の位置に四角を描画
-    DxLua.DrawBox(x - 2, y - 2, x + 2, y + 2, DxLua.GetColor(255, 255, 255), true)
+    dx.DrawBox(x - 2, y - 2, x + 2, y + 2, dx.GetColor(255, 255, 255), true)
 
     -- カウンターをインクリメント
     Counter = Counter + 1
@@ -78,5 +78,5 @@ function DxLua.Update()
     if Counter == DivNum then Counter = 0 end
 
     -- 画面を表示
-    DxLua.ScreenFlip()
+    dx.ScreenFlip()
 end

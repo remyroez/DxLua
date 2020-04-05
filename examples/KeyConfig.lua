@@ -82,16 +82,16 @@ local function KEYCONFIGSYSTEMDATA(t)
     return {
         KeyConfigInfo = t.KeyConfigInfo or NewArray(KEYCONFIG_INPUT_NUM, KEYCONFIGINFO), -- ゲーム中の入力とキーやパッドなどの入力との対応情報
         -- DirectInput のパッドの初期入力状態
-        NeutralDirectInputState = t.NeutralDirectInputState or NewArray(MAX_GAMEPAD_NUM, DxLua.DINPUT_JOYSTATE.new),
+        NeutralDirectInputState = t.NeutralDirectInputState or NewArray(MAX_GAMEPAD_NUM, dx.DINPUT_JOYSTATE.new),
         -- DirectInput のパッドの入力状態
-        DirectInputState = t.DirectInputState or NewArray(MAX_GAMEPAD_NUM, DxLua.DINPUT_JOYSTATE.new),
+        DirectInputState = t.DirectInputState or NewArray(MAX_GAMEPAD_NUM, dx.DINPUT_JOYSTATE.new),
         -- キーの初期入力状態
         NeutralKeyInput = t.NeutralKeyInput or NewValueArray(KEY_STATE_BUFFER_SIZE, 0),
         -- キーの入力状態
         KeyInput = t.KeyInput or NewValueArray(KEY_STATE_BUFFER_SIZE, 0),
         ButtonInput = t.ButtonInput or 0, -- ボタンの入力状態
         ButtonEdgeInput = t.ButtonEdgeInput or 0, -- ボタンの押された瞬間のみの入力状態
-        CameraStickInput = t.CameraStickInput or DxLua.VECTOR(), -- カメラ操作用の入力状態
+        CameraStickInput = t.CameraStickInput or dx.VECTOR(), -- カメラ操作用の入力状態
     }
 end
 
@@ -116,142 +116,142 @@ local g_DefaultInputTypeInfo =
 -- パッドの識別子テーブル
 local g_PadIDTable =
 {
-	DxLua.DX_INPUT_PAD1,
-	DxLua.DX_INPUT_PAD2,
-	DxLua.DX_INPUT_PAD3,
-	DxLua.DX_INPUT_PAD4,
-	DxLua.DX_INPUT_PAD5,
-	DxLua.DX_INPUT_PAD6,
-	DxLua.DX_INPUT_PAD7,
-	DxLua.DX_INPUT_PAD8,
-	DxLua.DX_INPUT_PAD9,
-	DxLua.DX_INPUT_PAD10,
-	DxLua.DX_INPUT_PAD11,
-	DxLua.DX_INPUT_PAD12,
-	DxLua.DX_INPUT_PAD13,
-	DxLua.DX_INPUT_PAD14,
-	DxLua.DX_INPUT_PAD15,
-	DxLua.DX_INPUT_PAD16,
+	dx.DX_INPUT_PAD1,
+	dx.DX_INPUT_PAD2,
+	dx.DX_INPUT_PAD3,
+	dx.DX_INPUT_PAD4,
+	dx.DX_INPUT_PAD5,
+	dx.DX_INPUT_PAD6,
+	dx.DX_INPUT_PAD7,
+	dx.DX_INPUT_PAD8,
+	dx.DX_INPUT_PAD9,
+	dx.DX_INPUT_PAD10,
+	dx.DX_INPUT_PAD11,
+	dx.DX_INPUT_PAD12,
+	dx.DX_INPUT_PAD13,
+	dx.DX_INPUT_PAD14,
+	dx.DX_INPUT_PAD15,
+	dx.DX_INPUT_PAD16,
 }
 
 -- キーコードの情報
 local g_KeyInfoTable =
 {
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_BACK, Name = "BACK", }, -- バックスペースキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_TAB, Name = "TAB", }, -- タブキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_RETURN, Name = "ENTER", }, -- エンターキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_BACK, Name = "BACK", }, -- バックスペースキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_TAB, Name = "TAB", }, -- タブキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_RETURN, Name = "ENTER", }, -- エンターキー
 
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_LSHIFT, Name = "L SHIFT", }, -- 左シフトキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_RSHIFT, Name = "R SHIFT", }, -- 右シフトキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_LCONTROL, Name = "L CONTROL", }, -- 左コントロールキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_RCONTROL, Name = "R CONTROL", }, -- 右コントロールキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_ESCAPE, Name = "ESCAPE", }, -- エスケープキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_SPACE, Name = "SPACE", }, -- スペースキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_PGUP, Name = "PAGE UP", }, -- ＰａｇｅＵＰキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_PGDN, Name = "PAGE DOWN", }, -- ＰａｇｅＤｏｗｎキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_END, Name = "END", }, -- エンドキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_HOME, Name = "HOME", }, -- ホームキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_LEFT, Name = "LEFT", }, -- 左キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_UP, Name = "UP", }, -- 上キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_RIGHT, Name = "RIGHT", }, -- 右キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_DOWN, Name = "DOWN", }, -- 下キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_INSERT, Name = "INSERT", }, -- インサートキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_DELETE, Name = "DELETE", }, -- デリートキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_LSHIFT, Name = "L SHIFT", }, -- 左シフトキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_RSHIFT, Name = "R SHIFT", }, -- 右シフトキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_LCONTROL, Name = "L CONTROL", }, -- 左コントロールキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_RCONTROL, Name = "R CONTROL", }, -- 右コントロールキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_ESCAPE, Name = "ESCAPE", }, -- エスケープキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_SPACE, Name = "SPACE", }, -- スペースキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_PGUP, Name = "PAGE UP", }, -- ＰａｇｅＵＰキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_PGDN, Name = "PAGE DOWN", }, -- ＰａｇｅＤｏｗｎキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_END, Name = "END", }, -- エンドキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_HOME, Name = "HOME", }, -- ホームキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_LEFT, Name = "LEFT", }, -- 左キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_UP, Name = "UP", }, -- 上キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_RIGHT, Name = "RIGHT", }, -- 右キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_DOWN, Name = "DOWN", }, -- 下キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_INSERT, Name = "INSERT", }, -- インサートキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_DELETE, Name = "DELETE", }, -- デリートキー
 
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_MINUS, Name = "-", }, -- －キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_YEN, Name = "\\", }, -- ￥キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_PREVTRACK, Name = "^", }, -- ＾キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_PERIOD, Name = ".", }, -- ．キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_SLASH, Name = "/", }, -- ／キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_LALT, Name = "L ALT", }, -- 左ＡＬＴキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_RALT, Name = "R ALT", }, -- 右ＡＬＴキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_SCROLL, Name = "SCROLL LOCK", }, -- ScrollLockキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_SEMICOLON, Name = ";", }, -- ；キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_COLON, Name = ":", }, -- ：キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_LBRACKET, Name = "[", }, -- ［キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_RBRACKET, Name = "]", }, -- ］キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_AT, Name = "@", }, -- ＠キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_BACKSLASH, Name = "BACK SLASH", }, -- ＼キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_COMMA, Name = ",", }, -- ，キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_KANJI, Name = "KANJI", }, -- 漢字キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_CONVERT, Name = "CONVERT", }, -- 変換キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_NOCONVERT, Name = "NO CONVERT", }, -- 無変換キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_KANA, Name = "KANA", }, -- カナキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_APPS, Name = "APPS", }, -- アプリケーションメニューキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_CAPSLOCK, Name = "CAPS LOCK", }, -- CaspLockキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_SYSRQ, Name = "PRINT SCREEN", }, -- PrintScreenキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_PAUSE, Name = "PAUSE BREAK", }, -- PauseBreakキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_LWIN, Name = "L WIN", }, -- 左Ｗｉｎキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_RWIN, Name = "R WIN", }, -- 右Ｗｉｎキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_MINUS, Name = "-", }, -- －キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_YEN, Name = "\\", }, -- ￥キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_PREVTRACK, Name = "^", }, -- ＾キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_PERIOD, Name = ".", }, -- ．キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_SLASH, Name = "/", }, -- ／キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_LALT, Name = "L ALT", }, -- 左ＡＬＴキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_RALT, Name = "R ALT", }, -- 右ＡＬＴキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_SCROLL, Name = "SCROLL LOCK", }, -- ScrollLockキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_SEMICOLON, Name = ";", }, -- ；キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_COLON, Name = ":", }, -- ：キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_LBRACKET, Name = "[", }, -- ［キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_RBRACKET, Name = "]", }, -- ］キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_AT, Name = "@", }, -- ＠キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_BACKSLASH, Name = "BACK SLASH", }, -- ＼キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_COMMA, Name = ",", }, -- ，キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_KANJI, Name = "KANJI", }, -- 漢字キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_CONVERT, Name = "CONVERT", }, -- 変換キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_NOCONVERT, Name = "NO CONVERT", }, -- 無変換キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_KANA, Name = "KANA", }, -- カナキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_APPS, Name = "APPS", }, -- アプリケーションメニューキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_CAPSLOCK, Name = "CAPS LOCK", }, -- CaspLockキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_SYSRQ, Name = "PRINT SCREEN", }, -- PrintScreenキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_PAUSE, Name = "PAUSE BREAK", }, -- PauseBreakキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_LWIN, Name = "L WIN", }, -- 左Ｗｉｎキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_RWIN, Name = "R WIN", }, -- 右Ｗｉｎキー
 
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_NUMLOCK, Name = "NUM LOCK", }, -- テンキー０
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_NUMPAD0, Name = "NUMPAD 0", }, -- テンキー０
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_NUMPAD1, Name = "NUMPAD 1", }, -- テンキー１
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_NUMPAD2, Name = "NUMPAD 2", }, -- テンキー２
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_NUMPAD3, Name = "NUMPAD 3", }, -- テンキー３
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_NUMPAD4, Name = "NUMPAD 4", }, -- テンキー４
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_NUMPAD5, Name = "NUMPAD 5", }, -- テンキー５
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_NUMPAD6, Name = "NUMPAD 6", }, -- テンキー６
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_NUMPAD7, Name = "NUMPAD 7", }, -- テンキー７
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_NUMPAD8, Name = "NUMPAD 8", }, -- テンキー８
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_NUMPAD9, Name = "NUMPAD 9", }, -- テンキー９
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_MULTIPLY, Name = "NUMPAD *", }, -- テンキー＊キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_ADD, Name = "NUMPAD +", }, -- テンキー＋キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_SUBTRACT, Name = "NUMPAD -", }, -- テンキー－キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_DECIMAL, Name = "NUMPAD .", }, -- テンキー．キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_DIVIDE, Name = "NUMPAD /", }, -- テンキー／キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_NUMPADENTER, Name = "NUMPAD ENTER", }, -- テンキーのエンターキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_NUMLOCK, Name = "NUM LOCK", }, -- テンキー０
+	KEYINFO{ KeyInput = dx.KEY_INPUT_NUMPAD0, Name = "NUMPAD 0", }, -- テンキー０
+	KEYINFO{ KeyInput = dx.KEY_INPUT_NUMPAD1, Name = "NUMPAD 1", }, -- テンキー１
+	KEYINFO{ KeyInput = dx.KEY_INPUT_NUMPAD2, Name = "NUMPAD 2", }, -- テンキー２
+	KEYINFO{ KeyInput = dx.KEY_INPUT_NUMPAD3, Name = "NUMPAD 3", }, -- テンキー３
+	KEYINFO{ KeyInput = dx.KEY_INPUT_NUMPAD4, Name = "NUMPAD 4", }, -- テンキー４
+	KEYINFO{ KeyInput = dx.KEY_INPUT_NUMPAD5, Name = "NUMPAD 5", }, -- テンキー５
+	KEYINFO{ KeyInput = dx.KEY_INPUT_NUMPAD6, Name = "NUMPAD 6", }, -- テンキー６
+	KEYINFO{ KeyInput = dx.KEY_INPUT_NUMPAD7, Name = "NUMPAD 7", }, -- テンキー７
+	KEYINFO{ KeyInput = dx.KEY_INPUT_NUMPAD8, Name = "NUMPAD 8", }, -- テンキー８
+	KEYINFO{ KeyInput = dx.KEY_INPUT_NUMPAD9, Name = "NUMPAD 9", }, -- テンキー９
+	KEYINFO{ KeyInput = dx.KEY_INPUT_MULTIPLY, Name = "NUMPAD *", }, -- テンキー＊キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_ADD, Name = "NUMPAD +", }, -- テンキー＋キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_SUBTRACT, Name = "NUMPAD -", }, -- テンキー－キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_DECIMAL, Name = "NUMPAD .", }, -- テンキー．キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_DIVIDE, Name = "NUMPAD /", }, -- テンキー／キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_NUMPADENTER, Name = "NUMPAD ENTER", }, -- テンキーのエンターキー
 
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_F1, Name = "F1", }, -- Ｆ１キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_F2, Name = "F2", }, -- Ｆ２キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_F3, Name = "F3", }, -- Ｆ３キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_F4, Name = "F4", }, -- Ｆ４キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_F5, Name = "F5", }, -- Ｆ５キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_F6, Name = "F6", }, -- Ｆ６キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_F7, Name = "F7", }, -- Ｆ７キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_F8, Name = "F8", }, -- Ｆ８キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_F9, Name = "F9", }, -- Ｆ９キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_F10, Name = "F10", }, -- Ｆ１０キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_F11, Name = "F11", }, -- Ｆ１１キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_F12, Name = "F12", }, -- Ｆ１２キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_F1, Name = "F1", }, -- Ｆ１キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_F2, Name = "F2", }, -- Ｆ２キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_F3, Name = "F3", }, -- Ｆ３キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_F4, Name = "F4", }, -- Ｆ４キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_F5, Name = "F5", }, -- Ｆ５キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_F6, Name = "F6", }, -- Ｆ６キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_F7, Name = "F7", }, -- Ｆ７キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_F8, Name = "F8", }, -- Ｆ８キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_F9, Name = "F9", }, -- Ｆ９キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_F10, Name = "F10", }, -- Ｆ１０キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_F11, Name = "F11", }, -- Ｆ１１キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_F12, Name = "F12", }, -- Ｆ１２キー
 
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_A, Name = "A", }, -- Ａキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_B, Name = "B", }, -- Ｂキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_C, Name = "C", }, -- Ｃキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_D, Name = "D", }, -- Ｄキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_E, Name = "E", }, -- Ｅキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_F, Name = "F", }, -- Ｆキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_G, Name = "G", }, -- Ｇキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_H, Name = "H", }, -- Ｈキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_I, Name = "I", }, -- Ｉキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_J, Name = "J", }, -- Ｊキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_K, Name = "K", }, -- Ｋキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_L, Name = "L", }, -- Ｌキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_M, Name = "M", }, -- Ｍキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_N, Name = "N", }, -- Ｎキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_O, Name = "O", }, -- Ｏキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_P, Name = "P", }, -- Ｐキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_Q, Name = "Q", }, -- Ｑキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_R, Name = "R", }, -- Ｒキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_S, Name = "S", }, -- Ｓキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_T, Name = "T", }, -- Ｔキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_U, Name = "U", }, -- Ｕキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_V, Name = "V", }, -- Ｖキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_W, Name = "W", }, -- Ｗキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_X, Name = "X", }, -- Ｘキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_Y, Name = "Y", }, -- Ｙキー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_Z, Name = "Z", }, -- Ｚキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_A, Name = "A", }, -- Ａキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_B, Name = "B", }, -- Ｂキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_C, Name = "C", }, -- Ｃキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_D, Name = "D", }, -- Ｄキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_E, Name = "E", }, -- Ｅキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_F, Name = "F", }, -- Ｆキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_G, Name = "G", }, -- Ｇキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_H, Name = "H", }, -- Ｈキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_I, Name = "I", }, -- Ｉキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_J, Name = "J", }, -- Ｊキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_K, Name = "K", }, -- Ｋキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_L, Name = "L", }, -- Ｌキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_M, Name = "M", }, -- Ｍキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_N, Name = "N", }, -- Ｎキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_O, Name = "O", }, -- Ｏキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_P, Name = "P", }, -- Ｐキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_Q, Name = "Q", }, -- Ｑキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_R, Name = "R", }, -- Ｒキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_S, Name = "S", }, -- Ｓキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_T, Name = "T", }, -- Ｔキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_U, Name = "U", }, -- Ｕキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_V, Name = "V", }, -- Ｖキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_W, Name = "W", }, -- Ｗキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_X, Name = "X", }, -- Ｘキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_Y, Name = "Y", }, -- Ｙキー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_Z, Name = "Z", }, -- Ｚキー
 
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_0, Name = "0", }, -- ０キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_1, Name = "1", }, -- １キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_2, Name = "2", }, -- ２キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_3, Name = "3", }, -- ３キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_4, Name = "4", }, -- ４キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_5, Name = "5", }, -- ５キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_6, Name = "6", }, -- ６キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_7, Name = "7", }, -- ７キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_8, Name = "8", }, -- ８キー
-	KEYINFO{ KeyInput = DxLua.KEY_INPUT_9, Name = "9", }, -- ９キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_0, Name = "0", }, -- ０キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_1, Name = "1", }, -- １キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_2, Name = "2", }, -- ２キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_3, Name = "3", }, -- ３キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_4, Name = "4", }, -- ４キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_5, Name = "5", }, -- ５キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_6, Name = "6", }, -- ６キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_7, Name = "7", }, -- ７キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_8, Name = "8", }, -- ８キー
+	KEYINFO{ KeyInput = dx.KEY_INPUT_9, Name = "9", }, -- ９キー
 }
 
 -- キーコンフィグの初期化を行う
@@ -259,7 +259,7 @@ function KeyConfig_Initialize()
 	local PadNum
 
 	-- パッドの数を取得する
-	PadNum = DxLua.GetJoypadNum()
+	PadNum = dx.GetJoypadNum()
 
 	-- パッドの数がプログラムが対応している数より多い場合は、対応している数に制限する
 	if PadNum > MAX_GAMEPAD_NUM then
@@ -268,11 +268,11 @@ function KeyConfig_Initialize()
 
 	-- パッドの初期状態を DirectInput から取得する
 	for i = 1, PadNum do
-		DxLua.GetJoypadDirectInputState(g_PadIDTable[i], g_KeyConfSys.NeutralDirectInputState[i])
+		dx.GetJoypadDirectInputState(g_PadIDTable[i], g_KeyConfSys.NeutralDirectInputState[i])
 	end
 
 	-- キー入力の初期状態を取得する
-	DxLua.GetHitKeyStateAll(g_KeyConfSys.NeutralKeyInput)
+	dx.GetHitKeyStateAll(g_KeyConfSys.NeutralKeyInput)
 
 	for i = 1, #g_KeyConfSys.NeutralKeyInput do
 		g_KeyConfSys.NeutralKeyInput[i] = 0
@@ -317,7 +317,7 @@ function KeyConfig_InputProcess()
 	local Total = 0
 
 	-- パッドの数を取得する
-	PadNum = DxLua.GetJoypadNum()
+	PadNum = dx.GetJoypadNum()
 
 	-- パッドの数がプログラムが対応している数より多い場合は、対応している数に制限する
 	if PadNum > MAX_GAMEPAD_NUM then
@@ -326,11 +326,11 @@ function KeyConfig_InputProcess()
 
 	-- パッドの入力情報を DirectInput から取得する
 	for i = 1, PadNum do
-		DxLua.GetJoypadDirectInputState(g_PadIDTable[i], g_KeyConfSys.DirectInputState[i])
+		dx.GetJoypadDirectInputState(g_PadIDTable[i], g_KeyConfSys.DirectInputState[i])
 	end
 
 	-- 現在のキーの入力状態を取得する
-	DxLua.GetHitKeyStateAll(g_KeyConfSys.KeyInput)
+	dx.GetHitKeyStateAll(g_KeyConfSys.KeyInput)
 
 	-- ゲームで使用する入力情報を構築する
 	for i = 1, KEYCONFIG_INPUT_NUM do
@@ -571,7 +571,7 @@ function KeyConfig_UpdateInputTypeInfo(UpdateInputType)
 	Result = false
 
 	-- 接続されているパッドの数を取得する
-	PadNum = DxLua.GetJoypadNum()
+	PadNum = dx.GetJoypadNum()
 
 	-- パッドの数がプログラムが対応している数より多い場合は、対応している数に制限する
 	if PadNum > MAX_GAMEPAD_NUM then
@@ -658,7 +658,7 @@ function KeyConfig_CheckInput()
 	local PadNum
 
 	-- 接続されているパッドの数を取得する
-	PadNum = DxLua.GetJoypadNum()
+	PadNum = dx.GetJoypadNum()
 
 	-- パッドの数がプログラムが対応している数より多い場合は、対応している数に制限する
 	if PadNum > MAX_GAMEPAD_NUM then
