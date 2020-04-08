@@ -7,6 +7,10 @@
 namespace DxLua::detail {
 
 void port_define(sol::state_view &lua, sol::table &t) {
+
+	DXLUA_PORT(t, TRUE);
+	DXLUA_PORT(t, FALSE);
+
 	// ＤＸライブラリのバージョン
 	DXLUA_PORT(t, DXLIB_VERSION);
 	t["DXLIB_VERSION_STR"] = DXLIB_VERSION_STR_T;

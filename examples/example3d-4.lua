@@ -188,11 +188,11 @@ function Mirror_SetupCamera(MirrorNo, CameraEyePos, CameraTargetPos)
 	MirrorWorldPosP = MirrorWorldPos[MirrorNo]
 
 	-- 鏡の面の法線を算出
-	MirrorNormal = dx.VNorm(dx.VCross(dx.VSub(MirrorWorldPosP[1], MirrorWorldPosP[0]), dx.VSub(MirrorWorldPosP[2], MirrorWorldPosP[0])))
+	MirrorNormal = dx.VNorm(dx.VCross(dx.VSub(MirrorWorldPosP[2], MirrorWorldPosP[1]), dx.VSub(MirrorWorldPosP[3], MirrorWorldPosP[1])))
 
 	-- 鏡の面からカメラの座標までの最短距離、鏡の面からカメラの注視点までの最短距離を算出
-	EyeLength = dx.Plane_Point_MinLength(MirrorWorldPosP[0], MirrorNormal, CameraEyePos)
-	TargetLength = dx.Plane_Point_MinLength(MirrorWorldPosP[0], MirrorNormal, CameraTargetPos)
+	EyeLength = dx.Plane_Point_MinLength(MirrorWorldPosP[1], MirrorNormal, CameraEyePos)
+	TargetLength = dx.Plane_Point_MinLength(MirrorWorldPosP[1], MirrorNormal, CameraTargetPos)
 
 	-- 鏡に映る映像を描画する際に使用するカメラの座標とカメラの注視点を算出
 	MirrorCameraEyePos = dx.VAdd(CameraEyePos, dx.VScale(MirrorNormal, -EyeLength * 2.0))
@@ -244,28 +244,28 @@ function Mirror_Render(MirrorNo)
 	dx.SetMaterialParam(Material)
 
 	-- 鏡の面の法線を算出
-	MirrorNormal = dx.VNorm(dx.VCross(dx.VSub(MirrorWorldPosP[1], MirrorWorldPosP[0]), dx.VSub(MirrorWorldPosP[2], MirrorWorldPosP[0])))
+	MirrorNormal = dx.VNorm(dx.VCross(dx.VSub(MirrorWorldPosP[2], MirrorWorldPosP[1]), dx.VSub(MirrorWorldPosP[3], MirrorWorldPosP[1])))
 
 	-- 鏡に映る映像を書き込んだ画像のテクスチャのサイズを取得
-	dx.GetGraphTextureSize(MirrorHandle[MirrorNo], TextureW, TextureH)
+	_, TextureW, TextureH = dx.GetGraphTextureSize(MirrorHandle[MirrorNo])
 
 	-- 鏡の描画に使用する頂点のセットアップ
-	VUnitPos[0] = dx.VScale(dx.VSub(MirrorWorldPosP[2], MirrorWorldPosP[0]), 1.0 / (MIRROR_POINTNUM - 1))
 	VUnitPos[1] = dx.VScale(dx.VSub(MirrorWorldPosP[3], MirrorWorldPosP[1]), 1.0 / (MIRROR_POINTNUM - 1))
-	VUnitUV[0] = dx.F4Scale(dx.F4Sub(MirrorScreenPosW[MirrorNo][2], MirrorScreenPosW[MirrorNo][0]), 1.0 / (MIRROR_POINTNUM - 1))
+	VUnitPos[2] = dx.VScale(dx.VSub(MirrorWorldPosP[4], MirrorWorldPosP[2]), 1.0 / (MIRROR_POINTNUM - 1))
 	VUnitUV[1] = dx.F4Scale(dx.F4Sub(MirrorScreenPosW[MirrorNo][3], MirrorScreenPosW[MirrorNo][1]), 1.0 / (MIRROR_POINTNUM - 1))
-	DiffuseColor = dx.GetColorU8(MirrorDiffuseColor[MirrorNo][0], MirrorDiffuseColor[MirrorNo][1], MirrorDiffuseColor[MirrorNo][2], MirrorDiffuseColor[MirrorNo][3])
+	VUnitUV[2] = dx.F4Scale(dx.F4Sub(MirrorScreenPosW[MirrorNo][4], MirrorScreenPosW[MirrorNo][2]), 1.0 / (MIRROR_POINTNUM - 1))
+	DiffuseColor = dx.GetColorU8(MirrorDiffuseColor[MirrorNo][1], MirrorDiffuseColor[MirrorNo][2], MirrorDiffuseColor[MirrorNo][3], MirrorDiffuseColor[MirrorNo][4])
 	SpecularColor = dx.GetColorU8(0, 0, 0, 0)
-	VPos[0] = MirrorWorldPosP[0]
 	VPos[1] = MirrorWorldPosP[1]
-	VUV[0] = MirrorScreenPosW[MirrorNo][0]
+	VPos[2] = MirrorWorldPosP[2]
 	VUV[1] = MirrorScreenPosW[MirrorNo][1]
-	k = 0
+	VUV[2] = MirrorScreenPosW[MirrorNo][2]
+	k = 1
 	for i = 1, MIRROR_POINTNUM do
-		HUnitPos = dx.VScale(dx.VSub(VPos[1], VPos[0]), 1.0 / (MIRROR_POINTNUM - 1))
-		HPos = VPos[0]
-		HUnitUV = dx.F4Scale(dx.F4Sub(VUV[1], VUV[0]), 1.0 / (MIRROR_POINTNUM - 1))
-		HUV = VUV[0]
+		HUnitPos = dx.VScale(dx.VSub(VPos[2], VPos[1]), 1.0 / (MIRROR_POINTNUM - 1))
+		HPos = VPos[1]
+		HUnitUV = dx.F4Scale(dx.F4Sub(VUV[2], VUV[1]), 1.0 / (MIRROR_POINTNUM - 1))
+		HUV = VUV[1]
 		for j = 1, MIRROR_POINTNUM do
 			Vert[k].pos = HPos
 			Vert[k].norm = MirrorNormal
@@ -279,14 +279,14 @@ function Mirror_Render(MirrorNo)
 			HPos = dx.VAdd(HPos, HUnitPos)
 			k = k + 1
 		end
-		VUV[0] = dx.F4Add(VUV[0], VUnitUV[0])
 		VUV[1] = dx.F4Add(VUV[1], VUnitUV[1])
-		VPos[0] = dx.VAdd(VPos[0], VUnitPos[0])
+		VUV[2] = dx.F4Add(VUV[2], VUnitUV[2])
 		VPos[1] = dx.VAdd(VPos[1], VUnitPos[1])
+		VPos[2] = dx.VAdd(VPos[2], VUnitPos[2])
 	end
 
 	-- 鏡の描画に使用する頂点インデックスをセットアップ
-	k = 0
+	k = 1
 	for i = 1, MIRROR_POINTNUM - 1 do
 		for j = 1, MIRROR_POINTNUM - 1 do
 			Index[k + 0] = (i + 0) * MIRROR_POINTNUM + j + 0
@@ -303,7 +303,7 @@ function Mirror_Render(MirrorNo)
 	dx.SetDrawMode(dx.DX_DRAWMODE_BILINEAR)
 
 	-- 描画ブレンドモードを変更
-	dx.SetDrawBlendMode(MirrorBlendParam[MirrorNo][0], MirrorBlendParam[MirrorNo][1])
+	dx.SetDrawBlendMode(MirrorBlendParam[MirrorNo][1], MirrorBlendParam[MirrorNo][2])
 
 	-- 描画にＺバッファを使用する
 	dx.SetUseZBuffer3D(true)
@@ -340,16 +340,16 @@ function Mirror_DebugRender(MirrorNo, DrawX, DrawY)
 	dx.DrawExtendGraph(DrawX, DrawY, DrawX + MIRROR_SCREEN_W / MIRROR_DEBUG_SCALE, DrawY + MIRROR_SCREEN_H / MIRROR_DEBUG_SCALE, MirrorHandle[MirrorNo], false)
 
 	-- 鏡の映像の取得に使用したスクリーンの中の鏡の部分に点を描画
-	VUnitUV[0] = dx.F4Scale(dx.F4Sub(MirrorScreenPosW[MirrorNo][2], MirrorScreenPosW[MirrorNo][0]), 1.0 / (MIRROR_POINTNUM - 1))
 	VUnitUV[1] = dx.F4Scale(dx.F4Sub(MirrorScreenPosW[MirrorNo][3], MirrorScreenPosW[MirrorNo][1]), 1.0 / (MIRROR_POINTNUM - 1))
-	VUV[0] = MirrorScreenPosW[MirrorNo][0]
+	VUnitUV[2] = dx.F4Scale(dx.F4Sub(MirrorScreenPosW[MirrorNo][4], MirrorScreenPosW[MirrorNo][2]), 1.0 / (MIRROR_POINTNUM - 1))
 	VUV[1] = MirrorScreenPosW[MirrorNo][1]
+	VUV[2] = MirrorScreenPosW[MirrorNo][2]
 	for i = 1, MIRROR_POINTNUM do
-		HUnitUV = dx.F4Scale(dx.F4Sub(VUV[1], VUV[0]), 1.0 / (MIRROR_POINTNUM - 1))
-		HUV = VUV[0]
+		HUnitUV = dx.F4Scale(dx.F4Sub(VUV[2], VUV[1]), 1.0 / (MIRROR_POINTNUM - 1))
+		HUV = VUV[1]
 		for j = 1, MIRROR_POINTNUM do
-			x = (HUV.x / HUV.w / MIRROR_DEBUG_SCALE)
-			y = (HUV.y / HUV.w / MIRROR_DEBUG_SCALE)
+			x = math.floor(HUV.x / HUV.w / MIRROR_DEBUG_SCALE)
+			y = math.floor(HUV.y / HUV.w / MIRROR_DEBUG_SCALE)
 
 			if x > 0 and x < MIRROR_SCREEN_W / MIRROR_DEBUG_SCALE and
 				y > 0 and y < MIRROR_SCREEN_H / MIRROR_DEBUG_SCALE then
@@ -358,8 +358,8 @@ function Mirror_DebugRender(MirrorNo, DrawX, DrawY)
 
 			HUV = dx.F4Add(HUV, HUnitUV)
 		end
-		VUV[0] = dx.F4Add(VUV[0], VUnitUV[0])
 		VUV[1] = dx.F4Add(VUV[1], VUnitUV[1])
+		VUV[2] = dx.F4Add(VUV[2], VUnitUV[2])
 	end
 end
 
