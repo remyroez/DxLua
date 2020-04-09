@@ -7,6 +7,61 @@
 namespace DxLua::detail {
 
 void port_type(sol::state_view &lua, sol::table &t) {
+
+	// MATRIX
+	{
+		// ユーザー型定義
+		auto usertype = t.new_usertype<DxLib::MATRIX>(
+			"MATRIX",
+			"m", sol::property([](DxLib::MATRIX &self) { return std::ref(self); }),
+			sol::meta_function::index, [](const DxLib::MATRIX &self, sol::stack_object key, sol::this_state L) {
+				int index = 1;
+				if (auto maybe_numeric_key = key.as<sol::optional<int>>()) {
+					index = *maybe_numeric_key;
+				}
+				if (index <= 0) {
+					index = 1;
+
+				} else if (index > sizeof(DxLib::MATRIX::m) / sizeof(DxLib::MATRIX::m[0])) {
+					index = sizeof(DxLib::MATRIX::m) / sizeof(DxLib::MATRIX::m[0]);
+				}
+				return std::ref(self.m[index - 1]);
+			},
+			sol::meta_function::length, [](const DxLib::MATRIX &self) {
+				return sizeof(DxLib::MATRIX::m) / sizeof(DxLib::MATRIX::m[0]);
+			}
+			);
+
+		// ユーザー型をテーブルとして取得
+		sol::table table = t["MATRIX"];
+
+		// メタテーブルの作成
+		sol::table metatable = table[sol::metatable_key] = lua.create_table();
+
+		// 専用の new 関数を用意
+		table["new"] = [](sol::object arg) {
+			DxLib::MATRIX matrix;
+			memset(&matrix, 0, sizeof(matrix));
+			if (!arg.is<sol::table>()) {
+				// テーブルではない
+
+			} else if (sol::table argt = arg.as<sol::table>()) {
+				for (size_t i = 0; i < sizeof(DxLib::MATRIX::m) / sizeof(DxLib::MATRIX::m[0]); ++i) {
+					if (sol::object obj = argt[i + 1]; obj.is<sol::table>()) {
+						sol::table t = obj;
+						for (size_t j = 0; j < sizeof(DxLib::MATRIX::m[0]) / sizeof(DxLib::MATRIX::m[0][0]); ++j) {
+							matrix.m[i][j] = t.get_or(j + 1, 0.f);
+						}
+					}
+				}
+			}
+			return matrix;
+		};
+
+		// ユーザー型テーブルの呼び出しで new を呼ぶように対応
+		metatable["__call"] = [](sol::stack_object self, sol::variadic_args va) { return sol::table(self)["new"](va); };
+	}
+
 	// VECTOR
 	{
 		// ユーザー型定義
@@ -63,54 +118,60 @@ void port_type(sol::state_view &lua, sol::table &t) {
 		DXLUA_PORT_EX(t, FLOAT3, VECTOR);
 	}
 
-	// MATRIX
+	// COLOR_F
 	{
-		// ユーザー型定義
-		auto usertype = t.new_usertype<DxLib::MATRIX>(
-			"MATRIX",
-			"m", sol::property([](DxLib::MATRIX &self) { return std::ref(self); }),
-			sol::meta_function::index, [](const DxLib::MATRIX &self, sol::stack_object key, sol::this_state L) {
-				int index = 1;
-				if (auto maybe_numeric_key = key.as<sol::optional<int>>()) {
-					index = *maybe_numeric_key;
-				}
-				if (index <= 0) {
-					index = 1;
+		// 定義する型
+		using type = DxLib::COLOR_F;
 
-				} else if (index > sizeof(DxLib::MATRIX::m) / sizeof(DxLib::MATRIX::m[0])) {
-					index = sizeof(DxLib::MATRIX::m) / sizeof(DxLib::MATRIX::m[0]);
-				}
-				return std::ref(self.m[index - 1]);
-			},
-			sol::meta_function::length, [](const DxLib::MATRIX &self) {
-				return sizeof(DxLib::MATRIX::m) / sizeof(DxLib::MATRIX::m[0]);
+		// ユーザー型定義
+		auto usertype = t.new_usertype<type>(
+			"COLOR_F",
+			"r", &type::r,
+			"g", &type::g,
+			"b", &type::b,
+			"a", &type::a,
+			sol::meta_function::to_string, [](const type &v) {
+				std::ostringstream ost;
+				ost << "{ r = " << v.r << ", g = " << v.g << ", b = " << v.b << ", a = " << v.a << " }";
+				return ost.str();
 			}
 		);
 
 		// ユーザー型をテーブルとして取得
-		sol::table table = t["MATRIX"];
+		sol::table table = t["COLOR_F"];
 
 		// メタテーブルの作成
 		sol::table metatable = table[sol::metatable_key] = lua.create_table();
 
 		// 専用の new 関数を用意
-		table["new"] = [](sol::object arg) {
-			DxLib::MATRIX matrix;
-			memset(&matrix, 0, sizeof(matrix));
-			if (!arg.is<sol::table>()) {
-				// テーブルではない
+		table["new"] = [](sol::variadic_args va) {
+			if (va.leftover_count() > 0 && va[0].is<sol::table>()) {
+				sol::table t = va[0].as<sol::table>();
+				if (t[1].get_type() == sol::type::number) {
+					return type {
+						t[1].get_or<float>(0),
+						t[2].get_or<float>(0),
+						t[3].get_or<float>(0),
+						t[4].get_or<float>(0)
+					};
 
-			} else if (sol::table argt = arg.as<sol::table>()) {
-				for (size_t i = 0; i < sizeof(DxLib::MATRIX::m) / sizeof(DxLib::MATRIX::m[0]); ++i) {
-					if (sol::object obj = argt[i + 1]; obj.is<sol::table>()) {
-						sol::table t = obj;
-						for (size_t j = 0; j < sizeof(DxLib::MATRIX::m[0]) / sizeof(DxLib::MATRIX::m[0][0]); ++j) {
-							matrix.m[i][j] = t.get_or(j + 1, 0.f);
-						}
-					}
+				} else {
+					return type {
+						t["r"].get_or<float>(0),
+						t["g"].get_or<float>(0),
+						t["b"].get_or<float>(0),
+						t["a"].get_or<float>(0)
+					};
 				}
+
+			} else {
+				return type {
+					va_get(va, 0, 0.f),
+					va_get(va, 1, 0.f),
+					va_get(va, 2, 0.f),
+					va_get(va, 3, 0.f)
+				};
 			}
-			return matrix;
 		};
 
 		// ユーザー型テーブルの呼び出しで new を呼ぶように対応
@@ -159,6 +220,66 @@ void port_type(sol::state_view &lua, sol::table &t) {
 				}
 			}
 			return instance;
+		};
+
+		// ユーザー型テーブルの呼び出しで new を呼ぶように対応
+		metatable["__call"] = [](sol::stack_object self, sol::variadic_args va) { return sol::table(self)["new"](va); };
+	}
+
+	// FLOAT4
+	{
+		// 定義する型
+		using type = DxLib::FLOAT4;
+
+		// ユーザー型定義
+		auto usertype = t.new_usertype<type>(
+			"FLOAT4",
+			"x", &type::x,
+			"y", &type::y,
+			"z", &type::z,
+			"w", &type::w,
+			sol::meta_function::to_string, [](const type &v) {
+				std::ostringstream ost;
+				ost << "{ x = " << v.x << ", y = " << v.y << ", z = " << v.z << ", w = " << v.w << " }";
+				return ost.str();
+			}
+		);
+
+		// ユーザー型をテーブルとして取得
+		sol::table table = t["FLOAT4"];
+
+		// メタテーブルの作成
+		sol::table metatable = table[sol::metatable_key] = lua.create_table();
+
+		// 専用の new 関数を用意
+		table["new"] = [](sol::variadic_args va) {
+			if (va.leftover_count() > 0 && va[0].is<sol::table>()) {
+				sol::table t = va[0].as<sol::table>();
+				if (t[1].get_type() == sol::type::number) {
+					return type{
+						t[1].get_or<float>(0),
+						t[2].get_or<float>(0),
+						t[3].get_or<float>(0),
+						t[4].get_or<float>(0)
+					};
+
+				} else {
+					return type{
+						t["x"].get_or<float>(0),
+						t["y"].get_or<float>(0),
+						t["z"].get_or<float>(0),
+						t["w"].get_or<float>(0)
+					};
+				}
+
+			} else {
+				return type{
+					va_get(va, 0, 0.f),
+					va_get(va, 1, 0.f),
+					va_get(va, 2, 0.f),
+					va_get(va, 3, 0.f)
+				};
+			}
 		};
 
 		// ユーザー型テーブルの呼び出しで new を呼ぶように対応

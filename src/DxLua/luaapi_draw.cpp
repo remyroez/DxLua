@@ -630,20 +630,19 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 	//extern	int			GetTransformPositionD(VECTOR_D *LocalPos, double *x, double *y);					// ローカル座標からスクリーン座標を取得する
 	//extern	float		GetBillboardPixelSize(VECTOR   WorldPos, float  WorldSize);							// ワールド空間上のビルボードのサイズからスクリーンに投影した場合のピクセル単位のサイズを取得する
 	//extern	double		GetBillboardPixelSizeD(VECTOR_D WorldPos, double WorldSize);							// ワールド空間上のビルボードのサイズからスクリーンに投影した場合のピクセル単位のサイズを取得する
-	//extern	VECTOR		ConvWorldPosToViewPos(VECTOR   WorldPos);											// ワールド座標をビュー座標に変換する
+	DXLUA_PORT_DX(library, ConvWorldPosToViewPos);
 	//extern	VECTOR_D	ConvWorldPosToViewPosD(VECTOR_D WorldPos);											// ワールド座標をビュー座標に変換する
-	//extern	VECTOR		ConvWorldPosToScreenPos(VECTOR   WorldPos);											// ワールド座標をスクリーン座標に変換する
+	DXLUA_PORT_DX(library, ConvWorldPosToScreenPos);
 	//extern	VECTOR_D	ConvWorldPosToScreenPosD(VECTOR_D WorldPos);											// ワールド座標をスクリーン座標に変換する
-	//extern	FLOAT4		ConvWorldPosToScreenPosPlusW(VECTOR   WorldPos);											// ワールド座標をスクリーン座標に変換する、最後のＸＹＺ座標をＷで割る前の値を得る
+	DXLUA_PORT_DX(library, ConvWorldPosToScreenPosPlusW);
 	//extern	DOUBLE4		ConvWorldPosToScreenPosPlusWD(VECTOR_D WorldPos);											// ワールド座標をスクリーン座標に変換する、最後のＸＹＺ座標をＷで割る前の値を得る
-	//extern	VECTOR		ConvScreenPosToWorldPos(VECTOR   ScreenPos);											// スクリーン座標をワールド座標に変換する
+	DXLUA_PORT_DX(library, ConvScreenPosToWorldPos);
 	//extern	VECTOR_D	ConvScreenPosToWorldPosD(VECTOR_D ScreenPos);											// スクリーン座標をワールド座標に変換する
-	//extern	VECTOR		ConvScreenPosToWorldPos_ZLinear(VECTOR   ScreenPos);											// スクリーン座標をワールド座標に変換する( Z座標が線形 )
+	DXLUA_PORT_DX(library, ConvScreenPosToWorldPos_ZLinear);
 	//extern	VECTOR_D	ConvScreenPosToWorldPos_ZLinearD(VECTOR_D ScreenPos);											// スクリーン座標をワールド座標に変換する( Z座標が線形 )
 
-	//extern	int			SetUseCullingFlag(int Flag);													// SetUseBackCulling の旧名称
-	//extern	int			SetUseBackCulling(int Flag /* DX_CULLING_LEFT 等 */);							// ポリゴンカリングモードを設定する
-	//extern	int			GetUseBackCulling(void);														// ポリゴンカリングモードを取得する
+	DXLUA_PORT_DX(library, SetUseBackCulling);
+	DXLUA_PORT_DX(library, GetUseBackCulling);
 
 	library["SetTextureAddressMode"] = [](int Mode, sol::variadic_args va) {
 		int Stage = va_get(va, 0, -1);
@@ -1026,19 +1025,19 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 	//extern	int			ChangeLightTypeDir(VECTOR Direction);															// デフォルトライトのタイプをディレクショナルライトにする
 	//extern	int			ChangeLightTypeSpot(VECTOR Position, VECTOR Direction, float OutAngle, float InAngle, float Range, float Atten0, float Atten1, float Atten2);	// デフォルトライトのタイプをスポットライトにする
 	//extern	int			ChangeLightTypePoint(VECTOR Position, float Range, float Atten0, float Atten1, float Atten2);		// デフォルトライトのタイプをポイントライトにする
-	//extern	int			GetLightType(void);																		// デフォルトライトのタイプを取得する( 戻り値は DX_LIGHTTYPE_DIRECTIONAL 等 )
+	DXLUA_PORT(library, GetLightType);
 	//extern	int			SetLightEnable(int EnableFlag);																// デフォルトライトを使用するかどうかを設定する
 	//extern	int			GetLightEnable(void);																		// デフォルトライトを使用するかどうかを取得する( 戻り値　TRUE:有効  FALSE:無効 )
-	//extern	int			SetLightDifColor(COLOR_F Color);																// デフォルトライトのディフューズカラーを設定する
-	//extern	COLOR_F		GetLightDifColor(void);																		// デフォルトライトのディフューズカラーを取得する
-	//extern	int			SetLightSpcColor(COLOR_F Color);																// デフォルトライトのスペキュラカラーを設定する
-	//extern	COLOR_F		GetLightSpcColor(void);																		// デフォルトライトのスペキュラカラーを取得する
-	//extern	int			SetLightAmbColor(COLOR_F Color);																// デフォルトライトのアンビエントカラーを設定する
-	//extern	COLOR_F		GetLightAmbColor(void);																		// デフォルトライトのアンビエントカラーを取得する
-	//extern	int			SetLightDirection(VECTOR Direction);															// デフォルトライトの方向を設定する
-	//extern	VECTOR		GetLightDirection(void);																		// デフォルトライトの方向を取得する
-	//extern	int			SetLightPosition(VECTOR Position);																// デフォルトライトの位置を設定する
-	//extern	VECTOR		GetLightPosition(void);																		// デフォルトライトの位置を取得する
+	DXLUA_PORT(library, SetLightDifColor);
+	DXLUA_PORT(library, GetLightDifColor);
+	DXLUA_PORT(library, SetLightSpcColor);
+	DXLUA_PORT(library, GetLightSpcColor);
+	DXLUA_PORT(library, SetLightAmbColor);
+	DXLUA_PORT(library, GetLightAmbColor);
+	DXLUA_PORT(library, SetLightDirection);
+	DXLUA_PORT(library, GetLightDirection);
+	DXLUA_PORT(library, SetLightPosition);
+	DXLUA_PORT(library, GetLightPosition);
 	//extern	int			SetLightRangeAtten(float Range, float Atten0, float Atten1, float Atten2);						// デフォルトライトの距離減衰パラメータを設定する( 有効距離、距離減衰係数０、１、２ )
 	//extern	int			GetLightRangeAtten(float *Range, float *Atten0, float *Atten1, float *Atten2);					// デフォルトライトの距離減衰パラメータを取得する( 有効距離、距離減衰係数０、１、２ )
 	//extern	int			SetLightAngle(float OutAngle, float InAngle);												// デフォルトライトのスポットライトのパラメータを設定する( 外部コーン角度、内部コーン角度 )

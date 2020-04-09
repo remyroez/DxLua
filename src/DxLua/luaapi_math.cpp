@@ -136,9 +136,9 @@ void port_math(sol::state_view &lua, sol::table &t) {
 	//extern	double		Triangle_Triangle_MinLengthD(VECTOR_D Triangle1Pos1, VECTOR_D Triangle1Pos2, VECTOR_D Triangle1Pos3, VECTOR_D Triangle2Pos1, VECTOR_D Triangle2Pos2, VECTOR_D Triangle2Pos3);	// 二つの三角形の最近点間の距離を得る
 	//extern	float 		Triangle_Triangle_MinLength_Square(VECTOR   Triangle1Pos1, VECTOR   Triangle1Pos2, VECTOR   Triangle1Pos3, VECTOR   Triangle2Pos1, VECTOR   Triangle2Pos2, VECTOR   Triangle2Pos3);	// 二つの三角形の最近点間の距離の二乗を得る
 	//extern	double		Triangle_Triangle_MinLength_SquareD(VECTOR_D Triangle1Pos1, VECTOR_D Triangle1Pos2, VECTOR_D Triangle1Pos3, VECTOR_D Triangle2Pos1, VECTOR_D Triangle2Pos2, VECTOR_D Triangle2Pos3);	// 二つの三角形の最近点間の距離の二乗を得る
-	//extern	VECTOR  	Plane_Point_MinLength_Position(VECTOR   PlanePos, VECTOR   PlaneNormal, VECTOR   PointPos);																						// 点に一番近い平面上の座標を得る
+	DXLUA_PORT(t, Plane_Point_MinLength_Position);
 	//extern	VECTOR_D	Plane_Point_MinLength_PositionD(VECTOR_D PlanePos, VECTOR_D PlaneNormal, VECTOR_D PointPos);																						// 点に一番近い平面上の座標を得る
-	//extern	float 		Plane_Point_MinLength(VECTOR   PlanePos, VECTOR   PlaneNormal, VECTOR   PointPos);																						// 平面と点の一番近い距離を得る
+	DXLUA_PORT(t, Plane_Point_MinLength);
 	//extern	double		Plane_Point_MinLengthD(VECTOR_D PlanePos, VECTOR_D PlaneNormal, VECTOR_D PointPos);																						// 平面と点の一番近い距離を得る
 
 	//extern	HITRESULT_LINE   HitCheck_Line_Triangle(VECTOR   LinePos1, VECTOR   LinePos2, VECTOR   TrianglePos1, VECTOR   TrianglePos2, VECTOR   TrianglePos3);										// 三角形と線の当たり判定
