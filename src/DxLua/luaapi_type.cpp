@@ -420,6 +420,43 @@ void port_type(sol::state_view &lua, sol::table &t) {
 		metatable["__call"] = [](sol::stack_object self, sol::variadic_args va) { return sol::table(self)["new"](va); };
 	}
 
+	// MATERIALPARAM
+	{
+		// 定義する型
+		using type = DxLib::MATERIALPARAM;
+
+		// ユーザー型定義
+		auto usertype = t.new_usertype<type>(
+			"MATERIALPARAM",
+			"Diffuse", &type::Diffuse,
+			"Ambient", &type::Ambient,
+			"Specular", &type::Specular,
+			"Emissive", &type::Emissive,
+			"Power", &type::Power
+		);
+
+		// ユーザー型をテーブルとして取得
+		sol::table table = t["MATERIALPARAM"];
+
+		// メタテーブルの作成
+		sol::table metatable = table[sol::metatable_key] = lua.create_table();
+
+		// 専用の new 関数を用意
+		table["new"] = [](sol::object arg) {
+			type instance;
+			memset(&instance, 0, sizeof(instance));
+			if (!arg.is<sol::table>()) {
+				// テーブルではない
+
+			} else if (sol::table argt = arg.as<sol::table>()) {
+			}
+			return instance;
+		};
+
+		// ユーザー型テーブルの呼び出しで new を呼ぶように対応
+		metatable["__call"] = [](sol::stack_object self, sol::variadic_args va) { return sol::table(self)["new"](va); };
+	}
+
 	// HITRESULT_LINE
 	{
 		// 定義する型
