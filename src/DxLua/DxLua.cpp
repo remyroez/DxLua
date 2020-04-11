@@ -148,6 +148,7 @@ end)lua"
 	detail::port_draw(lua, library);
 	detail::port_model(lua, library);
 	detail::port_math(lua, library);
+	detail::port_baseimage(lua, library);
 
 	// 以下、ポーティング
 
@@ -198,8 +199,6 @@ end)lua"
 		}
 		return Result;
 	};
-	DXLUA_PORT(library, GetColor);
-	DXLUA_PORT(library, GetColorU8);
 
 	library["GetCharBytes"] = [](int CharCodeFormat, const char *String) {
 		return GetCharBytes(CharCodeFormat, String);

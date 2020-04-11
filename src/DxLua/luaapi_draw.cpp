@@ -151,6 +151,24 @@ int forward_GraphFilter(int FilterType, sol::variadic_args va, F f, Args&&... ar
 	return Result;
 }
 
+template <class T>
+auto &table_to_array(sol::table table, int num) {
+	static std::vector<T> array;
+	static T zero{};
+
+	auto size = std::min((size_t)num, table.size());
+	array.reserve(size);
+	if (array.size() < size) {
+		array.resize(size);
+	}
+
+	for (auto i = 0; i < size; ++i) {
+		array[i] = table[i + 1].get_or(zero);
+	}
+
+	return array;
+}
+
 } // namespace
 
 namespace DxLua::detail {
@@ -354,7 +372,11 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 
 	//extern	int			GetGraphSize(int GrHandle, int *SizeXBuf, int *SizeYBuf);										// グラフィックハンドルが持つ画像のサイズを得る
 	//extern	int			GetGraphSizeF(int GrHandle, float *SizeXBuf, float *SizeYBuf);										// グラフィックハンドルが持つ画像のサイズを得る( float型 )
-	//extern	int			GetGraphTextureSize(int GrHandle, int *SizeXBuf, int *SizeYBuf);										// グラフィックハンドルが持つ一つ目のテクスチャのサイズを得る
+	library["GetGraphTextureSize"] = [](int GrHandle) {
+		int SizeXBuf = 0, SizeYBuf = 0;
+		auto result = GetGraphTextureSize(GrHandle, &SizeXBuf, &SizeYBuf);
+		return std::tuple(result, SizeXBuf, SizeYBuf);
+	};
 	//extern	int			GetGraphUseBaseGraphArea(int GrHandle, int *UseX, int *UseY, int *UseSizeX, int *UseSizeY);			// LoadDivGraph や DerivationGraph で元画像の一部分を使用している場合に、指定のグラフィックハンドルが使用している元画像の範囲を取得する
 	//extern	int			GetGraphMipmapCount(int GrHandle);																		// グラフィックハンドルが持つテクスチャのミップマップレベル数を取得する
 	//extern	int			GetGraphFilePath(int GrHandle, TCHAR *FilePathBuffer);													// グラフィックハンドルが画像ファイルから読み込まれていた場合、その画像のファイルパスを取得する
@@ -520,15 +542,17 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 	//extern	int			DrawPolygon(const VERTEX *VertexArray, int PolygonNum, int GrHandle, int TransFlag, int UVScaling = FALSE);		// ２Ｄポリゴンを描画する( Vertex:三角形を形成する頂点配列の先頭アドレス( 頂点の数はポリゴンの数×３ )  PolygonNum:描画するポリゴンの数  GrHandle:使用するグラフィックハンドル  TransFlag:透過色処理を行うかどうか( TRUE:行う  FALSE:行わない )  UVScaling:基本FALSEでOK )
 	//extern	int			DrawPolygon2D(const VERTEX2D *VertexArray, int PolygonNum, int GrHandle, int TransFlag);							// ２Ｄポリゴンを描画する
 	library["DrawPolygon3D"] = [](sol::table VertexArrayTable, int PolygonNum, int GrHandle, sol::variadic_args va) {
-		std::vector<VERTEX3D> VertexArray(PolygonNum);
+		auto &VertexArray = table_to_array<VERTEX3D>(VertexArrayTable, PolygonNum);
 		int TransFlag = va_get(va, 0, false);
-		for (auto i = 0; i < std::min((size_t)PolygonNum, VertexArrayTable.size()); ++i) {
-			VertexArray[i] = VertexArrayTable[i + 1].get_or(VERTEX3D{});
-		}
 		return DrawPolygon3D(VertexArray.data(), PolygonNum, GrHandle, TransFlag);
 	};
 	//extern	int			DrawPolygonIndexed2D(const VERTEX2D *VertexArray, int VertexNum, const unsigned short *IndexArray, int PolygonNum, int GrHandle, int TransFlag);							// ２Ｄポリゴンを描画する( 頂点インデックスを使用 )
-	//extern	int			DrawPolygonIndexed3D(const VERTEX3D *VertexArray, int VertexNum, const unsigned short *IndexArray, int PolygonNum, int GrHandle, int TransFlag);							// ３Ｄポリゴンを描画する( 頂点インデックスを使用 )
+	library["DrawPolygonIndexed3D"] = [](sol::table VertexArrayTable, int VertexNum, sol::table IndexArrayTable, int PolygonNum, int GrHandle, sol::variadic_args va) {
+		auto &VertexArray = table_to_array<VERTEX3D>(VertexArrayTable, VertexNum);
+		auto &IndexArray = table_to_array<unsigned short>(IndexArrayTable, PolygonNum);
+		int TransFlag = va_get(va, 0, false);
+		return DrawPolygonIndexed3D(VertexArray.data(), VertexNum, IndexArray.data(), PolygonNum, GrHandle, TransFlag);
+	};
 	//extern	int			DrawPolygonIndexed3DBase(const VERTEX_3D *VertexArray, int VertexNum, const unsigned short *IndexArray, int IndexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */, int GrHandle, int TransFlag);							// ３Ｄポリゴンを描画する( 頂点インデックスを使用 )( 旧バージョン用 )
 	//extern	int			DrawPolygon3DBase(const VERTEX_3D *VertexArray, int VertexNum, int PrimitiveType /* DX_PRIMTYPE_TRIANGLELIST 等 */, int GrHandle, int TransFlag);							// ３Ｄポリゴンを描画する( 旧バージョン用 )
 
@@ -580,18 +604,27 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 	//extern	int			SetMaxAnisotropy(int MaxAnisotropy);											// 最大異方性値を設定する
 	//extern	int			SetUseLarge3DPositionSupport(int UseFlag);													// ３Ｄ処理で使用する座標値が 10000000.0f などの大きな値になっても描画の崩れを小さく抑える処理を使用するかどうかを設定する、DxLib_Init の呼び出し前でのみ使用可能( TRUE:描画の崩れを抑える処理を使用する( CPU負荷が上がります )　　FALSE:描画の崩れを抑える処理は使用しない( デフォルト ) )
 	//
-	//extern	int			SetUseZBufferFlag(int Flag);													// Ｚバッファを使用するかどうかを設定する( ２Ｄと３Ｄ描画に影響 )( TRUE:Ｚバッファを使用する  FALSE:Ｚバッファを使用しない( デフォルト ) )
-	//extern	int			SetWriteZBufferFlag(int Flag);													// Ｚバッファに書き込みを行うかどうかを設定する( ２Ｄと３Ｄ描画に影響 )( TRUE:書き込みを行う  FALSE:書き込みを行わない( デフォルト ) )
-	//extern	int			SetZBufferCmpType(int CmpType /* DX_CMP_NEVER 等 */);							// ＺバッファのＺ値と書き込むＺ値との比較モードを設定する( ２Ｄと３Ｄ描画に影響 )( CmpType:DX_CMP_NEVER等( デフォルト:DX_CMP_LESSEQUAL ) )
-	//extern	int			SetZBias(int Bias);													// 書き込むＺ値のバイアスを設定する( ２Ｄと３Ｄ描画に影響 )( Bias:バイアス値( デフォルト:0 ) )
+	library["SetUseZBufferFlag"] = [](sol::variadic_args va) {
+		int Flag = va_get(va, 0, false);
+		return SetUseZBufferFlag(Flag);
+	};
+	library["SetWriteZBufferFlag"] = [](sol::variadic_args va) {
+		int Flag = va_get(va, 0, false);
+		return SetWriteZBufferFlag(Flag);
+	};
+	DXLUA_PORT(library, SetZBufferCmpType);
+	DXLUA_PORT(library, SetZBias);
 	library["SetUseZBuffer3D"] = [](sol::variadic_args va) {
 		int Flag = va_get(va, 0, false);
 		return SetUseZBuffer3D(Flag);
 	};
-	//extern	int			SetWriteZBuffer3D(int Flag);													// Ｚバッファに書き込みを行うかどうかを設定する( ３Ｄ描画のみに影響 )( TRUE:書き込みを行う  FALSE:書き込みを行わない( デフォルト ) )
-	//extern	int			SetZBufferCmpType3D(int CmpType /* DX_CMP_NEVER 等 */);							// ＺバッファのＺ値と書き込むＺ値との比較モードを設定する( ３Ｄ描画のみに影響 )( CmpType:DX_CMP_NEVER等( デフォルト:DX_CMP_LESSEQUAL ) )
-	//extern	int			SetZBias3D(int Bias);													// 書き込むＺ値のバイアスを設定する( ３Ｄ描画のみに影響 )( Bias:バイアス値( デフォルト:0 ) )
-	//extern	int			SetDrawZ(float Z);														// ２Ｄ描画でＺバッファに書き込むＺ値を設定する( Z:書き込むＺ値( デフォルト:0.2f ) )
+	library["SetWriteZBuffer3D"] = [](sol::variadic_args va) {
+		int Flag = va_get(va, 0, false);
+		return SetWriteZBuffer3D(Flag);
+	};
+	DXLUA_PORT(library, SetZBufferCmpType3D);
+	DXLUA_PORT(library, SetZBias3D);
+	DXLUA_PORT(library, SetDrawZ);
 
 	DXLUA_PORT(library, SetDrawArea);
 	DXLUA_PORT(library, GetDrawArea);
@@ -1018,9 +1051,9 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 	};
 	//extern	int			SetMaterialUseVertDifColor(int UseFlag);																	// ３Ｄ描画のライティング計算で頂点カラーのディフューズカラーを使用するかどうかを設定する
 	//extern	int			SetMaterialUseVertSpcColor(int UseFlag);																	// ３Ｄ描画のライティング計算で頂点カラーのスペキュラカラーを使用するかどうかを設定する
-	//extern	int			SetMaterialParam(MATERIALPARAM Material);														// ３Ｄ描画のライティング計算で使用するマテリアルパラメータを設定する
+	DXLUA_PORT(library, SetMaterialParam);
 	//extern	int			SetUseSpecular(int UseFlag);																	// ３Ｄ描画にスペキュラを使用するかどうかを設定する
-	//extern	int			SetGlobalAmbientLight(COLOR_F Color);																// グローバルアンビエントライトカラーを設定する
+	DXLUA_PORT(library, SetGlobalAmbientLight);
 
 	//extern	int			ChangeLightTypeDir(VECTOR Direction);															// デフォルトライトのタイプをディレクショナルライトにする
 	//extern	int			ChangeLightTypeSpot(VECTOR Position, VECTOR Direction, float OutAngle, float InAngle, float Range, float Atten0, float Atten1, float Atten2);	// デフォルトライトのタイプをスポットライトにする
