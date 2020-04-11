@@ -136,9 +136,9 @@ void port_math(sol::state_view &lua, sol::table &t) {
 	//extern	double		Triangle_Triangle_MinLengthD(VECTOR_D Triangle1Pos1, VECTOR_D Triangle1Pos2, VECTOR_D Triangle1Pos3, VECTOR_D Triangle2Pos1, VECTOR_D Triangle2Pos2, VECTOR_D Triangle2Pos3);	// 二つの三角形の最近点間の距離を得る
 	//extern	float 		Triangle_Triangle_MinLength_Square(VECTOR   Triangle1Pos1, VECTOR   Triangle1Pos2, VECTOR   Triangle1Pos3, VECTOR   Triangle2Pos1, VECTOR   Triangle2Pos2, VECTOR   Triangle2Pos3);	// 二つの三角形の最近点間の距離の二乗を得る
 	//extern	double		Triangle_Triangle_MinLength_SquareD(VECTOR_D Triangle1Pos1, VECTOR_D Triangle1Pos2, VECTOR_D Triangle1Pos3, VECTOR_D Triangle2Pos1, VECTOR_D Triangle2Pos2, VECTOR_D Triangle2Pos3);	// 二つの三角形の最近点間の距離の二乗を得る
-	//extern	VECTOR  	Plane_Point_MinLength_Position(VECTOR   PlanePos, VECTOR   PlaneNormal, VECTOR   PointPos);																						// 点に一番近い平面上の座標を得る
+	DXLUA_PORT(t, Plane_Point_MinLength_Position);
 	//extern	VECTOR_D	Plane_Point_MinLength_PositionD(VECTOR_D PlanePos, VECTOR_D PlaneNormal, VECTOR_D PointPos);																						// 点に一番近い平面上の座標を得る
-	//extern	float 		Plane_Point_MinLength(VECTOR   PlanePos, VECTOR   PlaneNormal, VECTOR   PointPos);																						// 平面と点の一番近い距離を得る
+	DXLUA_PORT(t, Plane_Point_MinLength);
 	//extern	double		Plane_Point_MinLengthD(VECTOR_D PlanePos, VECTOR_D PlaneNormal, VECTOR_D PointPos);																						// 平面と点の一番近い距離を得る
 
 	//extern	HITRESULT_LINE   HitCheck_Line_Triangle(VECTOR   LinePos1, VECTOR   LinePos2, VECTOR   TrianglePos1, VECTOR   TrianglePos2, VECTOR   TrianglePos3);										// 三角形と線の当たり判定
@@ -227,10 +227,10 @@ void port_math(sol::state_view &lua, sol::table &t) {
 	// ベクトル値の生成
 	DXLUA_PORT(t, VGet);
 	//__inline VECTOR_D VGetD(double x, double y, double z) {
-	//__inline FLOAT2 F2Get(float u, float v) {
+	DXLUA_PORT(t, F2Get);
 
 	// ４要素ベクトル値の生成
-	//__inline FLOAT4 F4Get(float x, float y, float z, float w) {
+	DXLUA_PORT(t, F4Get);
 	//__inline DOUBLE4 D4Get(double x, double y, double z, double w) {
 
 	// ベクトルの加算
@@ -243,12 +243,12 @@ void port_math(sol::state_view &lua, sol::table &t) {
 	//__inline FLOAT2		F2Add(const FLOAT2 & In1, const FLOAT2 & In2) {
 
 	// ４要素ベクトルの加算
-	//__inline FLOAT4		F4Add(const FLOAT4 & In1, const FLOAT4 & In2) {
+	DXLUA_PORT(t, F4Add);
 	//__inline DOUBLE4	D4Add(const DOUBLE4 & In1, const DOUBLE4 & In2) {
-	//__inline FLOAT2		F2Sub(const FLOAT2 & In1, const FLOAT2 & In2) {
+	DXLUA_PORT(t, F2Sub);
 
 	// ４要素ベクトルの減算
-	//__inline FLOAT4		F4Sub(const FLOAT4 & In1, const FLOAT4 & In2) {
+	DXLUA_PORT(t, F4Sub);
 	//__inline DOUBLE4	D4Sub(const DOUBLE4 & In1, const DOUBLE4 & In2) {
 
 	// ベクトルの内積
@@ -262,10 +262,10 @@ void port_math(sol::state_view &lua, sol::table &t) {
 	// ベクトルのスケーリング
 	DXLUA_PORT(t, VScale);
 	//__inline VECTOR_D	VScaleD(const VECTOR_D & In, double Scale) {
-	//__inline FLOAT2		F2Scale(const FLOAT2 & In, float Scale) {
+	DXLUA_PORT(t, F2Scale);
 
 	// ４要素ベクトルのスケーリング
-	//__inline FLOAT4		F4Scale(const FLOAT4 & In, float Scale) {
+	DXLUA_PORT(t, F4Scale);
 	//__inline DOUBLE4	D4Scale(const DOUBLE4 & In, double Scale) {
 
 	// ベクトルの正規化
@@ -297,19 +297,19 @@ void port_math(sol::state_view &lua, sol::table &t) {
 	//extern	double		VRadD(VECTOR_D In1, VECTOR_D In2);
 
 	// 2つのクォータニオンの乗算の結果を返す
-	//__inline FLOAT4 QTCross(const FLOAT4 & A, const FLOAT4 & B) {
+	DXLUA_PORT(t, QTCross);
 	//__inline DOUBLE4 QTCrossD(const DOUBLE4 & A, const DOUBLE4 & B) {
 
 	// 共役クォータニオンを返す
-	//__inline FLOAT4 QTConj(const FLOAT4 & A) {
+	DXLUA_PORT(t, QTConj);
 	//__inline DOUBLE4 QTConjD(const DOUBLE4 & A) {
 
 	// 回転を表すクォータニオンを返す
-	//extern FLOAT4  QTRot(VECTOR   Axis, float  Angle);
+	DXLUA_PORT(t, QTRot);
 	//extern DOUBLE4 QTRotD(VECTOR_D Axis, double Angle);
 
 	// 3次元空間上の点を任意の軸の周りに任意の角度だけ回転させる関数
-	//extern VECTOR   VRotQ(VECTOR   P, VECTOR   Axis, float  Angle);
+	DXLUA_PORT(t, VRotQ);
 	//extern VECTOR_D VRotQD(VECTOR_D P, VECTOR_D Axis, double Angle);
 }
 
