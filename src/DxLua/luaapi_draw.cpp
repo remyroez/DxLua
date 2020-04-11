@@ -152,11 +152,11 @@ int forward_GraphFilter(int FilterType, sol::variadic_args va, F f, Args&&... ar
 }
 
 template <class T>
-auto &table_to_array(sol::table table, int num) {
+auto &table_to_array(sol::table table) {
 	static std::vector<T> array;
 	static T zero{};
 
-	auto size = std::min((size_t)num, table.size());
+	auto size = table.size();
 	array.reserve(size);
 	if (array.size() < size) {
 		array.resize(size);
@@ -542,14 +542,14 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 	//extern	int			DrawPolygon(const VERTEX *VertexArray, int PolygonNum, int GrHandle, int TransFlag, int UVScaling = FALSE);		// ２Ｄポリゴンを描画する( Vertex:三角形を形成する頂点配列の先頭アドレス( 頂点の数はポリゴンの数×３ )  PolygonNum:描画するポリゴンの数  GrHandle:使用するグラフィックハンドル  TransFlag:透過色処理を行うかどうか( TRUE:行う  FALSE:行わない )  UVScaling:基本FALSEでOK )
 	//extern	int			DrawPolygon2D(const VERTEX2D *VertexArray, int PolygonNum, int GrHandle, int TransFlag);							// ２Ｄポリゴンを描画する
 	library["DrawPolygon3D"] = [](sol::table VertexArrayTable, int PolygonNum, int GrHandle, sol::variadic_args va) {
-		auto &VertexArray = table_to_array<VERTEX3D>(VertexArrayTable, PolygonNum);
+		auto &VertexArray = table_to_array<VERTEX3D>(VertexArrayTable);
 		int TransFlag = va_get(va, 0, false);
 		return DrawPolygon3D(VertexArray.data(), PolygonNum, GrHandle, TransFlag);
 	};
 	//extern	int			DrawPolygonIndexed2D(const VERTEX2D *VertexArray, int VertexNum, const unsigned short *IndexArray, int PolygonNum, int GrHandle, int TransFlag);							// ２Ｄポリゴンを描画する( 頂点インデックスを使用 )
 	library["DrawPolygonIndexed3D"] = [](sol::table VertexArrayTable, int VertexNum, sol::table IndexArrayTable, int PolygonNum, int GrHandle, sol::variadic_args va) {
-		auto &VertexArray = table_to_array<VERTEX3D>(VertexArrayTable, VertexNum);
-		auto &IndexArray = table_to_array<unsigned short>(IndexArrayTable, PolygonNum);
+		auto &VertexArray = table_to_array<VERTEX3D>(VertexArrayTable);
+		auto &IndexArray = table_to_array<unsigned short>(IndexArrayTable);
 		int TransFlag = va_get(va, 0, false);
 		return DrawPolygonIndexed3D(VertexArray.data(), VertexNum, IndexArray.data(), PolygonNum, GrHandle, TransFlag);
 	};
