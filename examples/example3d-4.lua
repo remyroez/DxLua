@@ -162,7 +162,7 @@ function dx.Update()
 
     -- 画面左上に鏡のデバッグ表示
     for i = 1, MIRROR_NUM do
-        Mirror_DebugRender(i, 20 + 180 * i, 0)
+        Mirror_DebugRender(i, 20 + 180 * (i - 1), 0)
     end
 
 
@@ -174,7 +174,7 @@ end
 function Mirror_Initialize()
 	-- 鏡に映る映像の取得に使用するスクリーンの作成
 	for i = 1, MIRROR_NUM do
-		MirrorHandle[i] = dx.MakeScreen(MIRROR_SCREEN_W, MIRROR_SCREEN_H, false)
+        MirrorHandle[i] = dx.MakeScreen(MIRROR_SCREEN_W, MIRROR_SCREEN_H, false)
 	end
 end
 
@@ -210,13 +210,7 @@ end
 -- 鏡の描画
 function Mirror_Render(MirrorNo)
     local Vert = {}
-    for i = 1, MIRROR_POINTNUM * MIRROR_POINTNUM do
-        Vert[i] = dx.VERTEX3D()
-    end
     local Index = {}
-    for i = 1, (MIRROR_POINTNUM - 1) * (MIRROR_POINTNUM - 1) * 6 do
-        Index[i] = 0
-    end
 	local Material = dx.MATERIALPARAM()
 	local HUnitPos
 	local VUnitPos = {}
@@ -266,7 +260,8 @@ function Mirror_Render(MirrorNo)
 		HPos = VPos[1]
 		HUnitUV = dx.F4Scale(dx.F4Sub(VUV[2], VUV[1]), 1.0 / (MIRROR_POINTNUM - 1))
 		HUV = VUV[1]
-		for j = 1, MIRROR_POINTNUM do
+        for j = 1, MIRROR_POINTNUM do
+            Vert[k] = dx.VERTEX3D()
 			Vert[k].pos = HPos
 			Vert[k].norm = MirrorNormal
 			Vert[k].dif = DiffuseColor
@@ -289,10 +284,10 @@ function Mirror_Render(MirrorNo)
 	k = 1
 	for i = 1, MIRROR_POINTNUM - 1 do
 		for j = 1, MIRROR_POINTNUM - 1 do
-			Index[k + 0] = (i + 0) * MIRROR_POINTNUM + j + 0
-			Index[k + 1] = (i + 0) * MIRROR_POINTNUM + j + 1
-			Index[k + 2] = (i + 1) * MIRROR_POINTNUM + j + 0
-			Index[k + 3] = (i + 1) * MIRROR_POINTNUM + j + 1
+			Index[k + 0] = (i + 0 - 1) * MIRROR_POINTNUM + j + 0 - 1
+			Index[k + 1] = (i + 0 - 1) * MIRROR_POINTNUM + j + 1 - 1
+			Index[k + 2] = (i + 1 - 1) * MIRROR_POINTNUM + j + 0 - 1
+			Index[k + 3] = (i + 1 - 1) * MIRROR_POINTNUM + j + 1 - 1
 			Index[k + 4] = Index[k + 2]
 			Index[k + 5] = Index[k + 1]
 			k = k + 6
