@@ -1,4 +1,6 @@
-﻿#include <DxLib.h>
+﻿#include <iostream>
+
+#include <DxLib.h>
 #include <lua.hpp>
 #include <sol/sol.hpp>
 

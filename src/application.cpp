@@ -1,4 +1,5 @@
 ﻿#include <filesystem>
+#include <iostream>
 
 #include <DxLib.h>
 #include <lua.hpp>
