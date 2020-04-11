@@ -782,8 +782,8 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 	//extern	int			RenderVertex(void);										// 頂点バッファに溜まった頂点データを描画する( 特殊用途 )
 
 	// 描画パフォーマンス関係関数
-	//extern	int			GetDrawCallCount(void);										// 前々回の ScreenFlip 呼び出しから、前回の ScreenFlip 呼び出しまでの間に行われた描画コールの回数を取得する
-	//extern	float		GetFPS(void);										// フレームレート( １秒間に呼ばれる ScreenFlip の回数 )を取得する
+	DXLUA_PORT(library, GetDrawCallCount);
+	DXLUA_PORT(library, GetFPS);
 
 #ifndef DX_NON_SAVEFUNCTION
 
