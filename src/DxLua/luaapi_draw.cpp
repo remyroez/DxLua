@@ -173,18 +173,18 @@ auto &table_to_array(sol::table table) {
 
 namespace DxLua::detail {
 
-void port_draw(sol::state_view &lua, sol::table &library) {
+void port_draw(sol::state_view &lua, sol::table &t) {
 #ifndef DX_NOTUSE_DRAWFUNCTION
 
 	// グラフィックハンドル作成関係関数
 	//extern	int			MakeGraph(int SizeX, int SizeY, int NotUse3DFlag = FALSE);							// 指定サイズのグラフィックハンドルを作成する
-	library["MakeScreen"] = [library](int SizeX, int SizeY, sol::variadic_args va) {
+	t["MakeScreen"] = [](int SizeX, int SizeY, sol::variadic_args va) {
 		int UseAlphaChannel = va_get(va, 0, false);
 		return MakeScreen(SizeX, SizeY, UseAlphaChannel);
 	};
 	//extern	int			DerivationGraph(int   SrcX, int   SrcY, int   Width, int   Height, int SrcGraphHandle);	// 指定のグラフィックハンドルの指定部分だけを抜き出して新たなグラフィックハンドルを作成する
 	//extern	int			DerivationGraphF(float SrcX, float SrcY, float Width, float Height, int SrcGraphHandle);	// 指定のグラフィックハンドルの指定部分だけを抜き出して新たなグラフィックハンドルを作成する( float版 )
-	library["DeleteGraph"] = [library](int GrHandle, sol::variadic_args va) {
+	t["DeleteGraph"] = [](int GrHandle, sol::variadic_args va) {
 		int LogOutFlag = va_get(va, 0, false);
 		return DeleteGraph(GrHandle, LogOutFlag);
 	};
@@ -220,9 +220,9 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 	// 画像からグラフィックハンドルを作成する関数
 	//extern	int			LoadBmpToGraph(const TCHAR * FileName, int TextureFlag, int ReverseFlag, int SurfaceMode = DX_MOVIESURFACE_NORMAL);										// 画像ファイルからグラフィックハンドルを作成する
 	//extern	int			LoadBmpToGraphWithStrLen(const TCHAR * FileName, size_t FileNameLength, int TextureFlag, int ReverseFlag, int SurfaceMode = DX_MOVIESURFACE_NORMAL);										// 画像ファイルからグラフィックハンドルを作成する
-	library["LoadGraph"] = [library](const TCHAR *FileName, sol::variadic_args va) {
+	t["LoadGraph"] = [t](const TCHAR *FileName, sol::variadic_args va) {
 		int NotUse3DFlag = va_get(va, 0, false);
-		return LoadGraph(DxLua::to_data_path(library, FileName).c_str(), NotUse3DFlag);
+		return LoadGraph(DxLua::to_data_path(t, FileName).c_str(), NotUse3DFlag);
 	};
 	//extern	int			LoadGraphWithStrLen(const TCHAR * FileName, size_t FileNameLength, int NotUse3DFlag = FALSE);																							// 画像ファイルからグラフィックハンドルを作成する
 	//extern	int			LoadReverseGraph(const TCHAR * FileName, int NotUse3DFlag = FALSE);																							// 画像ファイルを反転したものでグラフィックハンドルを作成する
@@ -372,7 +372,7 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 
 	//extern	int			GetGraphSize(int GrHandle, int *SizeXBuf, int *SizeYBuf);										// グラフィックハンドルが持つ画像のサイズを得る
 	//extern	int			GetGraphSizeF(int GrHandle, float *SizeXBuf, float *SizeYBuf);										// グラフィックハンドルが持つ画像のサイズを得る( float型 )
-	library["GetGraphTextureSize"] = [](int GrHandle) {
+	t["GetGraphTextureSize"] = [](int GrHandle) {
 		int SizeXBuf = 0, SizeYBuf = 0;
 		auto result = GetGraphTextureSize(GrHandle, &SizeXBuf, &SizeYBuf);
 		return std::tuple(result, SizeXBuf, SizeYBuf);
@@ -396,13 +396,13 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 	//extern	int			ResetGraphPalette(int GrHandle);																		// SetGraphPalette で変更したパレットを全て元に戻す( ソフトウエアレンダリングモードで、且つパレット画像の場合のみ使用可能 )
 
 	// 図形描画関数
-	library["DrawLine"] = [](int x1, int y1, int x2, int y2, sol::variadic_args va) {
+	t["DrawLine"] = [](int x1, int y1, int x2, int y2, sol::variadic_args va) {
 		unsigned int Color = va_get(va, 0, 0xFFFFFFFFUL);
 		int Thickness = va_get(va, 1, 1);
 		return DrawLine(x1, y1, x2, y2, Color, Thickness);
 	};
 	//extern	int			DrawLineAA(float x1, float y1, float x2, float y2, unsigned int Color, float Thickness = 1.0f);							// 線を描画する( アンチエイリアス付き )
-	library["DrawBox"] = [](int x1, int y1, int x2, int y2, sol::variadic_args va) {
+	t["DrawBox"] = [](int x1, int y1, int x2, int y2, sol::variadic_args va) {
 		unsigned int Color = va_get(va, 0, 0xFFFFFFFFUL);
 		int FillFlag = va_get(va, 1, true);
 		return DrawBox(x1, y1, x2, y2, Color, FillFlag);
@@ -410,7 +410,7 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 	//extern	int			DrawBoxAA(float x1, float y1, float x2, float y2, unsigned int Color, int FillFlag, float LineThickness = 1.0f);			// 四角形を描画する( アンチエイリアス付き )
 	//extern	int			DrawFillBox(int   x1, int   y1, int   x2, int   y2, unsigned int Color);													// 中身を塗りつぶす四角形を描画する
 	//extern	int			DrawLineBox(int   x1, int   y1, int   x2, int   y2, unsigned int Color);													// 枠だけの四角形の描画 する
-	library["DrawCircle"] = [](int x, int y, int r, sol::variadic_args va) {
+	t["DrawCircle"] = [](int x, int y, int r, sol::variadic_args va) {
 		unsigned int Color = va_get(va, 0, 0xFFFFFFFFUL);
 		int FillFlag = va_get(va, 1, true);
 		int LineThickness = va_get(va, 2, 1);
@@ -420,7 +420,7 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 	//extern	int			DrawOval(int   x, int   y, int   rx, int   ry, unsigned int Color, int FillFlag, int   LineThickness = 1);	// 楕円を描画する
 	//extern	int			DrawOvalAA(float x, float y, float rx, float ry, int posnum, unsigned int Color, int FillFlag, float LineThickness = 1.0f);	// 楕円を描画する( アンチエイリアス付き )
 	//extern	int			DrawOval_Rect(int   x1, int   y1, int   x2, int   y2, unsigned int Color, int FillFlag);										// 指定の矩形に収まる円( 楕円 )を描画する
-	library["DrawTriangle"] = [](int x1, int y1, int x2, int y2, int x3, int y3, sol::variadic_args va) {
+	t["DrawTriangle"] = [](int x1, int y1, int x2, int y2, int x3, int y3, sol::variadic_args va) {
 		unsigned int Color = va_get(va, 0, 0xFFFFFFFFUL);
 		int FillFlag = va_get(va, 1, true);
 		return DrawTriangle(x1, y1, x2, y2, x3, y3, Color, FillFlag);
@@ -432,7 +432,7 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 	//extern	int			DrawRoundRectAA(float x1, float y1, float x2, float y2, float rx, float ry, int posnum, unsigned int Color, int FillFlag, float LineThickness = 1.0f);			// 角の丸い四角形を描画する( アンチエイリアス付き )
 	//extern	int			BeginAADraw(void);																																					// DrawTriangleAA などのアンチエイリアス付き図形描画の準備を行う
 	//extern	int			EndAADraw(void);																																					// DrawTriangleAA などのアンチエイリアス付き図形描画の後始末を行う
-	library["DrawPixel"] = [](int x, int y, sol::variadic_args va) {
+	t["DrawPixel"] = [](int x, int y, sol::variadic_args va) {
 		unsigned int Color = va_get(va, 0, 0xFFFFFFFFUL);
 		return DrawPixel(x, y, Color);
 	};
@@ -461,13 +461,13 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 	//extern	int			LoadGraphScreen(int x, int y, const TCHAR *GraphName, int TransFlag);										// 画像ファイルを読みこんで画面に描画する
 	//extern	int			LoadGraphScreenWithStrLen(int x, int y, const TCHAR *GraphName, size_t GraphNameLength, int TransFlag);										// 画像ファイルを読みこんで画面に描画する
 
-	library["DrawGraph"] = [](float xf, float yf, int GrHandle, bool TransFlag) {
+	t["DrawGraph"] = [](float xf, float yf, int GrHandle, bool TransFlag) {
 		return DrawGraph(xf, yf, GrHandle, TransFlag ? TRUE : FALSE);
 	};
-	library["DrawExtendGraph"] = [](int x1, int y1, int x2, int y2, int GrHandle, bool TransFlag) {
+	t["DrawExtendGraph"] = [](int x1, int y1, int x2, int y2, int GrHandle, bool TransFlag) {
 		return DrawExtendGraph(x1, y1, x2, y2, GrHandle, TransFlag ? TRUE : FALSE);
 	};
-	library["DrawRotaGraph"] = [](int x, int y, double ExRate, double Angle, int GrHandle, bool TransFlag, sol::variadic_args va) {
+	t["DrawRotaGraph"] = [](int x, int y, double ExRate, double Angle, int GrHandle, bool TransFlag, sol::variadic_args va) {
 		int ReverseXFlag = va_get(va, 0, false);
 		int ReverseYFlag = va_get(va, 1, false);
 		return DrawRotaGraph(x, y, ExRate, Angle, GrHandle, TransFlag ? TRUE : FALSE, ReverseXFlag, ReverseYFlag);
@@ -541,13 +541,13 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 
 	//extern	int			DrawPolygon(const VERTEX *VertexArray, int PolygonNum, int GrHandle, int TransFlag, int UVScaling = FALSE);		// ２Ｄポリゴンを描画する( Vertex:三角形を形成する頂点配列の先頭アドレス( 頂点の数はポリゴンの数×３ )  PolygonNum:描画するポリゴンの数  GrHandle:使用するグラフィックハンドル  TransFlag:透過色処理を行うかどうか( TRUE:行う  FALSE:行わない )  UVScaling:基本FALSEでOK )
 	//extern	int			DrawPolygon2D(const VERTEX2D *VertexArray, int PolygonNum, int GrHandle, int TransFlag);							// ２Ｄポリゴンを描画する
-	library["DrawPolygon3D"] = [](sol::table VertexArrayTable, int PolygonNum, int GrHandle, sol::variadic_args va) {
+	t["DrawPolygon3D"] = [](sol::table VertexArrayTable, int PolygonNum, int GrHandle, sol::variadic_args va) {
 		auto &VertexArray = table_to_array<VERTEX3D>(VertexArrayTable);
 		int TransFlag = va_get(va, 0, false);
 		return DrawPolygon3D(VertexArray.data(), PolygonNum, GrHandle, TransFlag);
 	};
 	//extern	int			DrawPolygonIndexed2D(const VERTEX2D *VertexArray, int VertexNum, const unsigned short *IndexArray, int PolygonNum, int GrHandle, int TransFlag);							// ２Ｄポリゴンを描画する( 頂点インデックスを使用 )
-	library["DrawPolygonIndexed3D"] = [](sol::table VertexArrayTable, int VertexNum, sol::table IndexArrayTable, int PolygonNum, int GrHandle, sol::variadic_args va) {
+	t["DrawPolygonIndexed3D"] = [](sol::table VertexArrayTable, int VertexNum, sol::table IndexArrayTable, int PolygonNum, int GrHandle, sol::variadic_args va) {
 		auto &VertexArray = table_to_array<VERTEX3D>(VertexArrayTable);
 		auto &IndexArray = table_to_array<unsigned short>(IndexArrayTable);
 		int TransFlag = va_get(va, 0, false);
@@ -577,10 +577,10 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 	//extern	int			DrawBillboard3D(VECTOR Pos, float cx, float cy, float Size, float Angle, int GrHandle, int TransFlag, int ReverseXFlag = FALSE, int ReverseYFlag = FALSE);		// ３Ｄ空間上に画像を描画
 
 	// 描画設定関係関数
-	DXLUA_PORT(library, SetDrawMode);
-	DXLUA_PORT(library, GetDrawMode);
-	DXLUA_PORT(library, SetDrawBlendMode);
-	library["GetDrawBlendMode"] = []() {
+	DXLUA_PORT(t, SetDrawMode);
+	DXLUA_PORT(t, GetDrawMode);
+	DXLUA_PORT(t, SetDrawBlendMode);
+	t["GetDrawBlendMode"] = []() {
 		int BlendMode = -1;
 		int BlendParam = -1;
 		auto result = GetDrawBlendMode(&BlendMode, &BlendParam);
@@ -604,32 +604,32 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 	//extern	int			SetMaxAnisotropy(int MaxAnisotropy);											// 最大異方性値を設定する
 	//extern	int			SetUseLarge3DPositionSupport(int UseFlag);													// ３Ｄ処理で使用する座標値が 10000000.0f などの大きな値になっても描画の崩れを小さく抑える処理を使用するかどうかを設定する、DxLib_Init の呼び出し前でのみ使用可能( TRUE:描画の崩れを抑える処理を使用する( CPU負荷が上がります )　　FALSE:描画の崩れを抑える処理は使用しない( デフォルト ) )
 	//
-	library["SetUseZBufferFlag"] = [](sol::variadic_args va) {
+	t["SetUseZBufferFlag"] = [](sol::variadic_args va) {
 		int Flag = va_get(va, 0, false);
 		return SetUseZBufferFlag(Flag);
 	};
-	library["SetWriteZBufferFlag"] = [](sol::variadic_args va) {
+	t["SetWriteZBufferFlag"] = [](sol::variadic_args va) {
 		int Flag = va_get(va, 0, false);
 		return SetWriteZBufferFlag(Flag);
 	};
-	DXLUA_PORT(library, SetZBufferCmpType);
-	DXLUA_PORT(library, SetZBias);
-	library["SetUseZBuffer3D"] = [](sol::variadic_args va) {
+	DXLUA_PORT(t, SetZBufferCmpType);
+	DXLUA_PORT(t, SetZBias);
+	t["SetUseZBuffer3D"] = [](sol::variadic_args va) {
 		int Flag = va_get(va, 0, false);
 		return SetUseZBuffer3D(Flag);
 	};
-	library["SetWriteZBuffer3D"] = [](sol::variadic_args va) {
+	t["SetWriteZBuffer3D"] = [](sol::variadic_args va) {
 		int Flag = va_get(va, 0, false);
 		return SetWriteZBuffer3D(Flag);
 	};
-	DXLUA_PORT(library, SetZBufferCmpType3D);
-	DXLUA_PORT(library, SetZBias3D);
-	DXLUA_PORT(library, SetDrawZ);
+	DXLUA_PORT(t, SetZBufferCmpType3D);
+	DXLUA_PORT(t, SetZBias3D);
+	DXLUA_PORT(t, SetDrawZ);
 
-	DXLUA_PORT(library, SetDrawArea);
-	DXLUA_PORT(library, GetDrawArea);
-	DXLUA_PORT(library, SetDrawAreaFull);
-	DXLUA_PORT(library, SetDraw3DScale);
+	DXLUA_PORT(t, SetDrawArea);
+	DXLUA_PORT(t, GetDrawArea);
+	DXLUA_PORT(t, SetDrawAreaFull);
+	DXLUA_PORT(t, SetDraw3DScale);
 
 	//extern	int			SetRestoreShredPoint(void (*ShredPoint)(void));								// SetRestoreGraphCallback の旧名
 	//extern	int			SetRestoreGraphCallback(void (*Callback)(void));									// グラフィックハンドル復元関数を登録する
@@ -663,21 +663,21 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 	//extern	int			GetTransformPositionD(VECTOR_D *LocalPos, double *x, double *y);					// ローカル座標からスクリーン座標を取得する
 	//extern	float		GetBillboardPixelSize(VECTOR   WorldPos, float  WorldSize);							// ワールド空間上のビルボードのサイズからスクリーンに投影した場合のピクセル単位のサイズを取得する
 	//extern	double		GetBillboardPixelSizeD(VECTOR_D WorldPos, double WorldSize);							// ワールド空間上のビルボードのサイズからスクリーンに投影した場合のピクセル単位のサイズを取得する
-	DXLUA_PORT_DX(library, ConvWorldPosToViewPos);
+	DXLUA_PORT_DX(t, ConvWorldPosToViewPos);
 	//extern	VECTOR_D	ConvWorldPosToViewPosD(VECTOR_D WorldPos);											// ワールド座標をビュー座標に変換する
-	DXLUA_PORT_DX(library, ConvWorldPosToScreenPos);
+	DXLUA_PORT_DX(t, ConvWorldPosToScreenPos);
 	//extern	VECTOR_D	ConvWorldPosToScreenPosD(VECTOR_D WorldPos);											// ワールド座標をスクリーン座標に変換する
-	DXLUA_PORT_DX(library, ConvWorldPosToScreenPosPlusW);
+	DXLUA_PORT_DX(t, ConvWorldPosToScreenPosPlusW);
 	//extern	DOUBLE4		ConvWorldPosToScreenPosPlusWD(VECTOR_D WorldPos);											// ワールド座標をスクリーン座標に変換する、最後のＸＹＺ座標をＷで割る前の値を得る
-	DXLUA_PORT_DX(library, ConvScreenPosToWorldPos);
+	DXLUA_PORT_DX(t, ConvScreenPosToWorldPos);
 	//extern	VECTOR_D	ConvScreenPosToWorldPosD(VECTOR_D ScreenPos);											// スクリーン座標をワールド座標に変換する
-	DXLUA_PORT_DX(library, ConvScreenPosToWorldPos_ZLinear);
+	DXLUA_PORT_DX(t, ConvScreenPosToWorldPos_ZLinear);
 	//extern	VECTOR_D	ConvScreenPosToWorldPos_ZLinearD(VECTOR_D ScreenPos);											// スクリーン座標をワールド座標に変換する( Z座標が線形 )
 
-	DXLUA_PORT_DX(library, SetUseBackCulling);
-	DXLUA_PORT_DX(library, GetUseBackCulling);
+	DXLUA_PORT_DX(t, SetUseBackCulling);
+	DXLUA_PORT_DX(t, GetUseBackCulling);
 
-	library["SetTextureAddressMode"] = [](int Mode, sol::variadic_args va) {
+	t["SetTextureAddressMode"] = [](int Mode, sol::variadic_args va) {
 		int Stage = va_get(va, 0, -1);
 		return SetTextureAddressMode(Mode, Stage);
 	};
@@ -698,35 +698,35 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 	//extern	float		GetFogDensity(void);														// フォグの密度を取得する( 0.0f ～ 1.0f )
 
 	// 画面関係関数
-	DXLUA_PORT_DX(library, GetPixel);
-	DXLUA_PORT(library, GetPixelF);
-	library["SetBackgroundColor"] = [](int Red, int Green, int Blue, sol::variadic_args va) {
+	DXLUA_PORT_DX(t, GetPixel);
+	DXLUA_PORT(t, GetPixelF);
+	t["SetBackgroundColor"] = [](int Red, int Green, int Blue, sol::variadic_args va) {
 		int Alpha = va_get(va, 0, 0);
 		return SetBackgroundColor(Red, Green, Blue, Alpha);
 	};
-	library["GetBackgroundColor"] = []() {
+	t["GetBackgroundColor"] = []() {
 		int Red, Green, Blue, Alpha;
 		auto Result = GetBackgroundColor(&Red, &Green, &Blue, &Alpha);
 		return std::tuple(Result, Red, Green, Blue, Alpha);
 	};
 	//extern	int				GetDrawScreenGraph(int x1, int y1, int x2, int y2, int GrHandle, int UseClientFlag = TRUE);	// 描画先の画面から指定領域の画像情報をグラフィックハンドルに転送する
 	//extern	int				BltDrawValidGraph(int TargetDrawValidGrHandle, int x1, int y1, int x2, int y2, int DestX, int DestY, int DestGrHandle);							// SetDrawScreen で描画対象にできるグラフィックハンドルから指定領域の画像情報を別のグラフィックハンドルに転送する
-	DXLUA_PORT(library, ScreenFlip);
-	DXLUA_PORT(library, ScreenCopy);
-	DXLUA_PORT(library, WaitVSync);
-	library["ClearDrawScreen"] = [](sol::variadic_args va) {
+	DXLUA_PORT(t, ScreenFlip);
+	DXLUA_PORT(t, ScreenCopy);
+	DXLUA_PORT(t, WaitVSync);
+	t["ClearDrawScreen"] = [](sol::variadic_args va) {
 		// TODO: ClearDrawScreen(const RECT * ClearRect = NULL);
 		return ClearDrawScreen();
 	};
 	//extern	int				ClearDrawScreenZBuffer(const RECT *ClearRect = NULL);												// 画面のＺバッファをクリアする
 	//extern	int				ClsDrawScreen(void);																		// ClearDrawScreenの旧名称
-	DXLUA_PORT(library, SetDrawScreen);
-	DXLUA_PORT(library, GetDrawScreen);
+	DXLUA_PORT(t, SetDrawScreen);
+	DXLUA_PORT(t, GetDrawScreen);
 	//extern	int				GetActiveGraph(void);																		// GetDrawScreen の旧名称
 	//extern	int				SetUseSetDrawScreenSettingReset(int UseFlag);																	// SetDrawScreen を実行した際にカメラや描画範囲の設定をリセットするかを設定する( UseFlag  TRUE:リセットする( デフォルト )  FALSE:リセットしない )
 	//extern	int				GetUseSetDrawScreenSettingReset(void);																		// SetDrawScreen を実行した際にカメラや描画範囲の設定をリセットするかを取得する
 	//extern	int				SetDrawZBuffer(int DrawScreen);																// 描画先Ｚバッファのセット( DrawScreen 付属のＺバッファを描画先Ｚバッファにする、DrawScreen を -1 にするとデフォルトの描画先Ｚバッファに戻る )
-	library["SetGraphMode"] = [](int ScreenSizeX, int ScreenSizeY, int ColorBitDepth, sol::variadic_args va) {
+	t["SetGraphMode"] = [](int ScreenSizeX, int ScreenSizeY, int ColorBitDepth, sol::variadic_args va) {
 		int RefreshRate = va_get(va, 0, 60);
 		return SetGraphMode(ScreenSizeX, ScreenSizeY, ColorBitDepth, RefreshRate);
 	};
@@ -737,7 +737,7 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 	//extern	int				SetEmulation320x240(int Flag);																	// ６４０ｘ４８０の画面で３２０ｘ２４０の画面解像度にするかどうかを設定する、６４０ｘ４８０以外の解像度では無効( TRUE:有効  FALSE:無効 )
 	//extern	int				SetZBufferSize(int ZBufferSizeX, int ZBufferSizeY);											// 画面用のＺバッファのサイズを設定する
 	//extern	int				SetZBufferBitDepth(int BitDepth);																// 画面用のＺバッファのビット深度を設定する( 16 or 24 or 32 )
-	library["SetWaitVSyncFlag"] = [](sol::object Flag) {
+	t["SetWaitVSyncFlag"] = [](sol::object Flag) {
 		return SetWaitVSyncFlag(Flag.as<bool>() ? TRUE : FALSE);
 	};
 	//extern	int				GetWaitVSyncFlag(void);																		// ScreenFlip 実行時にＶＳＹＮＣ待ちをするかどうかを取得する
@@ -782,8 +782,8 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 	//extern	int			RenderVertex(void);										// 頂点バッファに溜まった頂点データを描画する( 特殊用途 )
 
 	// 描画パフォーマンス関係関数
-	//extern	int			GetDrawCallCount(void);										// 前々回の ScreenFlip 呼び出しから、前回の ScreenFlip 呼び出しまでの間に行われた描画コールの回数を取得する
-	//extern	float		GetFPS(void);										// フレームレート( １秒間に呼ばれる ScreenFlip の回数 )を取得する
+	DXLUA_PORT(t, GetDrawCallCount);
+	DXLUA_PORT(t, GetFPS);
 
 #ifndef DX_NON_SAVEFUNCTION
 
@@ -921,18 +921,18 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 
 	// フィルター関係関数
 #ifndef DX_NON_FILTER
-	library["GraphFilter"] = [](int GrHandle, int FilterType, sol::variadic_args va) {
+	t["GraphFilter"] = [](int GrHandle, int FilterType, sol::variadic_args va) {
 		return ::forward_GraphFilter(FilterType, va, GraphFilter, GrHandle, FilterType);
 	};
-	library["GraphFilterBlt"] = [](int SrcGrHandle, int DestGrHandle, int FilterType, sol::variadic_args va) {
+	t["GraphFilterBlt"] = [](int SrcGrHandle, int DestGrHandle, int FilterType, sol::variadic_args va) {
 		return ::forward_GraphFilter(FilterType, va, GraphFilterBlt, SrcGrHandle, DestGrHandle, FilterType);
 	};
-	library["GraphFilterRectBlt"] = [](int SrcGrHandle, int DestGrHandle, int SrcX1, int SrcY1, int SrcX2, int SrcY2, int DestX, int DestY, int FilterType, sol::variadic_args va) {
+	t["GraphFilterRectBlt"] = [](int SrcGrHandle, int DestGrHandle, int SrcX1, int SrcY1, int SrcX2, int SrcY2, int DestX, int DestY, int FilterType, sol::variadic_args va) {
 		return ::forward_GraphFilter(FilterType, va, GraphFilterRectBlt, SrcGrHandle, DestGrHandle, SrcX1, SrcY1, SrcX2, SrcY2, DestX, DestY, FilterType);
 	};
-	DXLUA_PORT(library, GraphBlend);
-	DXLUA_PORT(library, GraphBlendBlt);
-	DXLUA_PORT(library, GraphBlendRectBlt);
+	DXLUA_PORT(t, GraphBlend);
+	DXLUA_PORT(t, GraphBlendBlt);
+	DXLUA_PORT(t, GraphBlendRectBlt);
 #endif // DX_NON_FILTER
 
 	// ムービーグラフィック関係関数
@@ -965,18 +965,17 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 #endif // DX_NON_MOVIE
 
 	// カメラ関係関数
-	//extern	int			SetCameraNearFar(float  Near, float  Far);												// カメラの Nearクリップ面と Farクリップ面の距離を設定する
+	DXLUA_PORT(t, SetCameraNearFar);
 	//extern	int			SetCameraNearFarD(double Near, double Far);												// カメラの Nearクリップ面と Farクリップ面の距離を設定する
-	//extern	int			SetCameraPositionAndTarget_UpVecY(VECTOR    Position, VECTOR   Target);									// カメラの視点、注視点、アップベクトルを設定する( アップベクトルはＹ軸方向から導き出す )
+	DXLUA_PORT(t, SetCameraPositionAndTarget_UpVecY);
 	//extern	int			SetCameraPositionAndTarget_UpVecYD(VECTOR_D  Position, VECTOR_D Target);									// カメラの視点、注視点、アップベクトルを設定する( アップベクトルはＹ軸方向から導き出す )
-	//extern	int			SetCameraPositionAndTargetAndUpVec(VECTOR    Position, VECTOR   TargetPosition, VECTOR   UpVector);		// カメラの視点、注視点、アップベクトルを設定する
+	DXLUA_PORT(t, SetCameraPositionAndTargetAndUpVec);
 	//extern	int			SetCameraPositionAndTargetAndUpVecD(VECTOR_D Position, VECTOR_D TargetPosition, VECTOR_D UpVector);		// カメラの視点、注視点、アップベクトルを設定する
-	//extern	int			SetCameraPositionAndAngle(VECTOR   Position, float  VRotate, float  HRotate, float  TRotate);	// カメラの視点、注視点、アップベクトルを設定する( 注視点とアップベクトルは垂直回転角度、水平回転角度、捻り回転角度から導き出す )
-	DXLUA_PORT(library, SetCameraPositionAndAngle);
+	DXLUA_PORT(t, SetCameraPositionAndAngle);
 	//extern	int			SetCameraPositionAndAngleD(VECTOR_D Position, double VRotate, double HRotate, double TRotate);	// カメラの視点、注視点、アップベクトルを設定する( 注視点とアップベクトルは垂直回転角度、水平回転角度、捻り回転角度から導き出す )
-	//extern	int			SetCameraViewMatrix(MATRIX   ViewMatrix);													// ビュー行列を直接設定する
+	DXLUA_PORT(t, SetCameraViewMatrix);
 	//extern	int			SetCameraViewMatrixD(MATRIX_D ViewMatrix);													// ビュー行列を直接設定する
-	//extern	int			SetCameraScreenCenter(float x, float y);													// 画面上におけるカメラが見ている映像の中心の座標を設定する
+	DXLUA_PORT(t, SetCameraScreenCenter);
 	//extern	int			SetCameraScreenCenterD(double x, double y);													// 画面上におけるカメラが見ている映像の中心の座標を設定する
 
 	//extern	int			SetupCamera_Perspective(float  Fov);															// 遠近法カメラをセットアップする
@@ -1045,32 +1044,32 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 	// ライト関係関数
 
 	// ライト関係関数
-	library["SetUseLighting"] = [](sol::variadic_args va) {
+	t["SetUseLighting"] = [](sol::variadic_args va) {
 		int Flag = va_get(va, 0, false);
 		return SetUseLighting(Flag);
 	};
 	//extern	int			SetMaterialUseVertDifColor(int UseFlag);																	// ３Ｄ描画のライティング計算で頂点カラーのディフューズカラーを使用するかどうかを設定する
 	//extern	int			SetMaterialUseVertSpcColor(int UseFlag);																	// ３Ｄ描画のライティング計算で頂点カラーのスペキュラカラーを使用するかどうかを設定する
-	DXLUA_PORT(library, SetMaterialParam);
+	DXLUA_PORT(t, SetMaterialParam);
 	//extern	int			SetUseSpecular(int UseFlag);																	// ３Ｄ描画にスペキュラを使用するかどうかを設定する
-	DXLUA_PORT(library, SetGlobalAmbientLight);
+	DXLUA_PORT(t, SetGlobalAmbientLight);
 
 	//extern	int			ChangeLightTypeDir(VECTOR Direction);															// デフォルトライトのタイプをディレクショナルライトにする
 	//extern	int			ChangeLightTypeSpot(VECTOR Position, VECTOR Direction, float OutAngle, float InAngle, float Range, float Atten0, float Atten1, float Atten2);	// デフォルトライトのタイプをスポットライトにする
 	//extern	int			ChangeLightTypePoint(VECTOR Position, float Range, float Atten0, float Atten1, float Atten2);		// デフォルトライトのタイプをポイントライトにする
-	DXLUA_PORT(library, GetLightType);
+	DXLUA_PORT(t, GetLightType);
 	//extern	int			SetLightEnable(int EnableFlag);																// デフォルトライトを使用するかどうかを設定する
 	//extern	int			GetLightEnable(void);																		// デフォルトライトを使用するかどうかを取得する( 戻り値　TRUE:有効  FALSE:無効 )
-	DXLUA_PORT(library, SetLightDifColor);
-	DXLUA_PORT(library, GetLightDifColor);
-	DXLUA_PORT(library, SetLightSpcColor);
-	DXLUA_PORT(library, GetLightSpcColor);
-	DXLUA_PORT(library, SetLightAmbColor);
-	DXLUA_PORT(library, GetLightAmbColor);
-	DXLUA_PORT(library, SetLightDirection);
-	DXLUA_PORT(library, GetLightDirection);
-	DXLUA_PORT(library, SetLightPosition);
-	DXLUA_PORT(library, GetLightPosition);
+	DXLUA_PORT(t, SetLightDifColor);
+	DXLUA_PORT(t, GetLightDifColor);
+	DXLUA_PORT(t, SetLightSpcColor);
+	DXLUA_PORT(t, GetLightSpcColor);
+	DXLUA_PORT(t, SetLightAmbColor);
+	DXLUA_PORT(t, GetLightAmbColor);
+	DXLUA_PORT(t, SetLightDirection);
+	DXLUA_PORT(t, GetLightDirection);
+	DXLUA_PORT(t, SetLightPosition);
+	DXLUA_PORT(t, GetLightPosition);
 	//extern	int			SetLightRangeAtten(float Range, float Atten0, float Atten1, float Atten2);						// デフォルトライトの距離減衰パラメータを設定する( 有効距離、距離減衰係数０、１、２ )
 	//extern	int			GetLightRangeAtten(float *Range, float *Atten0, float *Atten1, float *Atten2);					// デフォルトライトの距離減衰パラメータを取得する( 有効距離、距離減衰係数０、１、２ )
 	//extern	int			SetLightAngle(float OutAngle, float InAngle);												// デフォルトライトのスポットライトのパラメータを設定する( 外部コーン角度、内部コーン角度 )
