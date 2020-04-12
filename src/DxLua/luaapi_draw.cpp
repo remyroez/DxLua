@@ -965,18 +965,17 @@ void port_draw(sol::state_view &lua, sol::table &library) {
 #endif // DX_NON_MOVIE
 
 	// カメラ関係関数
-	//extern	int			SetCameraNearFar(float  Near, float  Far);												// カメラの Nearクリップ面と Farクリップ面の距離を設定する
+	DXLUA_PORT(library, SetCameraNearFar);
 	//extern	int			SetCameraNearFarD(double Near, double Far);												// カメラの Nearクリップ面と Farクリップ面の距離を設定する
-	//extern	int			SetCameraPositionAndTarget_UpVecY(VECTOR    Position, VECTOR   Target);									// カメラの視点、注視点、アップベクトルを設定する( アップベクトルはＹ軸方向から導き出す )
+	DXLUA_PORT(library, SetCameraPositionAndTarget_UpVecY);
 	//extern	int			SetCameraPositionAndTarget_UpVecYD(VECTOR_D  Position, VECTOR_D Target);									// カメラの視点、注視点、アップベクトルを設定する( アップベクトルはＹ軸方向から導き出す )
-	//extern	int			SetCameraPositionAndTargetAndUpVec(VECTOR    Position, VECTOR   TargetPosition, VECTOR   UpVector);		// カメラの視点、注視点、アップベクトルを設定する
+	DXLUA_PORT(library, SetCameraPositionAndTargetAndUpVec);
 	//extern	int			SetCameraPositionAndTargetAndUpVecD(VECTOR_D Position, VECTOR_D TargetPosition, VECTOR_D UpVector);		// カメラの視点、注視点、アップベクトルを設定する
-	//extern	int			SetCameraPositionAndAngle(VECTOR   Position, float  VRotate, float  HRotate, float  TRotate);	// カメラの視点、注視点、アップベクトルを設定する( 注視点とアップベクトルは垂直回転角度、水平回転角度、捻り回転角度から導き出す )
 	DXLUA_PORT(library, SetCameraPositionAndAngle);
 	//extern	int			SetCameraPositionAndAngleD(VECTOR_D Position, double VRotate, double HRotate, double TRotate);	// カメラの視点、注視点、アップベクトルを設定する( 注視点とアップベクトルは垂直回転角度、水平回転角度、捻り回転角度から導き出す )
-	//extern	int			SetCameraViewMatrix(MATRIX   ViewMatrix);													// ビュー行列を直接設定する
+	DXLUA_PORT(library, SetCameraViewMatrix);
 	//extern	int			SetCameraViewMatrixD(MATRIX_D ViewMatrix);													// ビュー行列を直接設定する
-	//extern	int			SetCameraScreenCenter(float x, float y);													// 画面上におけるカメラが見ている映像の中心の座標を設定する
+	DXLUA_PORT(library, SetCameraScreenCenter);
 	//extern	int			SetCameraScreenCenterD(double x, double y);													// 画面上におけるカメラが見ている映像の中心の座標を設定する
 
 	//extern	int			SetupCamera_Perspective(float  Fov);															// 遠近法カメラをセットアップする
