@@ -179,17 +179,17 @@ void port_math(sol::state_view &lua, sol::table &t) {
 	//extern	int			GetRectSize(const RECT * Rect, int *Width, int *Height);								// 矩形の幅と高さを求める
 
 	// 表記簡略版
-	//extern	MATRIX		MGetIdent(void);															// 単位行列を取得する
+	DXLUA_PORT(t, MGetIdent);
 	//extern	MATRIX_D	MGetIdentD(void);															// 単位行列を取得する
-	//extern	MATRIX		MMult(MATRIX   In1, MATRIX   In2);										// 行列の乗算を行う
+	DXLUA_PORT(t, MMult);
 	//extern	MATRIX_D	MMultD(MATRIX_D In1, MATRIX_D In2);										// 行列の乗算を行う
-	//extern	MATRIX		MScale(MATRIX   InM, float  Scale);										// 行列のスケーリングを行う
+	DXLUA_PORT(t, MScale);
 	//extern	MATRIX_D	MScaleD(MATRIX_D InM, double Scale);										// 行列のスケーリングを行う
-	//extern	MATRIX		MAdd(MATRIX   In1, MATRIX   In2);										// 行列の足し算を行う
+	DXLUA_PORT(t, MAdd);
 	//extern	MATRIX_D	MAddD(MATRIX_D In1, MATRIX_D In2);										// 行列の足し算を行う
-	//extern	MATRIX		MGetScale(VECTOR   Scale);													// 拡大行列を取得する
+	DXLUA_PORT(t, MGetScale);
 	//extern	MATRIX_D	MGetScaleD(VECTOR_D Scale);													// 拡大行列を取得する
-	//extern	MATRIX		MGetRotX(float  XAxisRotate);												// Ｘ軸回転行列を取得する
+	DXLUA_PORT(t, MGetRotX);
 	//extern	MATRIX_D	MGetRotXD(double XAxisRotate);												// Ｘ軸回転行列を取得する
 	DXLUA_PORT(t, MGetRotY);
 	//extern	MATRIX_D	MGetRotYD(double YAxisRotate);												// Ｙ軸回転行列を取得する

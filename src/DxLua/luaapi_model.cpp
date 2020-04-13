@@ -265,8 +265,8 @@ void port_model(sol::state_view &lua, sol::table &t) {
 	//extern	int			MV1LoadTextureWithStrLen(const TCHAR *FilePath, size_t FilePathLength);					// ３Ｄモデルに貼り付けるのに向いた画像の読み込み方式で画像を読み込む( 戻り値  -1:エラー  0以上:グラフィックハンドル )
 
 	// フレーム関係
-	//extern	int			MV1GetFrameNum(int MHandle);															// フレームの数を取得する
-	//extern	int			MV1SearchFrame(int MHandle, const TCHAR *FrameName);			// フレームの名前からモデル中のフレームのフレームインデックスを取得する( 無かった場合は戻り値が-1 )
+	DXLUA_PORT(t, MV1GetFrameNum);
+	DXLUA_PORT(t, MV1SearchFrame);
 	//extern	int			MV1SearchFrameWithStrLen(int MHandle, const TCHAR *FrameName, size_t FrameNameLength);			// フレームの名前からモデル中のフレームのフレームインデックスを取得する( 無かった場合は戻り値が-1 )
 	//extern	int			MV1SearchFrameChild(int MHandle, int FrameIndex = -1, const TCHAR *ChildName = NULL);	// フレームの名前から指定のフレームの子フレームのフレームインデックスを取得する( 名前指定版 )( FrameIndex を -1 にすると親を持たないフレームを ChildIndex で指定する )( 無かった場合は戻り値が-1 )
 	//extern	int			MV1SearchFrameChildWithStrLen(int MHandle, int FrameIndex = -1, const TCHAR *ChildName = NULL, size_t ChildNameLength = 0);	// フレームの名前から指定のフレームの子フレームのフレームインデックスを取得する( 名前指定版 )( FrameIndex を -1 にすると親を持たないフレームを ChildIndex で指定する )( 無かった場合は戻り値が-1 )
