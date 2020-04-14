@@ -215,7 +215,7 @@ function dx.Update()
         local CameraLookAtPosition;
 
         -- 注視点はキャラクターモデルの座標から CAMERA_LOOK_AT_HEIGHT 分だけ高い位置
-        CameraLookAtPosition = Position;
+        CameraLookAtPosition = dx.VECTOR(Position);
         CameraLookAtPosition.y = CameraLookAtPosition.y + CAMERA_LOOK_AT_HEIGHT
 
         -- カメラの位置はカメラの水平角度と垂直角度から算出
@@ -253,7 +253,7 @@ function dx.Update()
 
         Pos1 = dx.VGet(-LINE_AREA_SIZE / 2.0, 0.0, -LINE_AREA_SIZE / 2.0);
         Pos2 = dx.VGet(-LINE_AREA_SIZE / 2.0, 0.0, LINE_AREA_SIZE / 2.0);
-        for i = 1, LINE_NUM do
+        for i = 1, LINE_NUM + 1 do
             dx.DrawLine3D(Pos1, Pos2, dx.GetColor(255, 255, 255));
             Pos1.x = Pos1.x + (LINE_AREA_SIZE / LINE_NUM)
             Pos2.x = Pos2.x + (LINE_AREA_SIZE / LINE_NUM)
