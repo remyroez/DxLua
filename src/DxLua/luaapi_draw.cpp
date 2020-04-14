@@ -442,9 +442,15 @@ void port_draw(sol::state_view &lua, sol::table &t) {
 	//extern 	int			DrawPixelSet(const POINTDATA *PointDataArray, int Num);																					// 点の集合を描画する
 	//extern	int			DrawLineSet(const LINEDATA *LineDataArray, int Num);																					// 線の集合を描画する
 
-	//extern	int			DrawPixel3D(VECTOR   Pos, unsigned int Color);							// ３Ｄの点を描画する
+	t["DrawPixel3D"] = [](const VECTOR &Pos, sol::variadic_args va) {
+		unsigned int Color = va_get(va, 0, 0xFFFFFFFFUL);
+		return DrawPixel3D(Pos, Color);
+	};
 	//extern	int			DrawPixel3DD(VECTOR_D Pos, unsigned int Color);							// ３Ｄの点を描画する
-	//extern	int			DrawLine3D(VECTOR   Pos1, VECTOR   Pos2, unsigned int Color);							// ３Ｄの線分を描画する
+	t["DrawLine3D"] = [](const VECTOR &Pos1, const VECTOR &Pos2, sol::variadic_args va) {
+		unsigned int Color = va_get(va, 0, 0xFFFFFFFFUL);
+		return DrawLine3D(Pos1, Pos2, Color);
+	};
 	//extern	int			DrawLine3DD(VECTOR_D Pos1, VECTOR_D Pos2, unsigned int Color);							// ３Ｄの線分を描画する
 	//extern	int			DrawTriangle3D(VECTOR   Pos1, VECTOR   Pos2, VECTOR   Pos3, unsigned int Color, int FillFlag);				// ３Ｄの三角形を描画する
 	//extern	int			DrawTriangle3DD(VECTOR_D Pos1, VECTOR_D Pos2, VECTOR_D Pos3, unsigned int Color, int FillFlag);				// ３Ｄの三角形を描画する
