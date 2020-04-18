@@ -151,6 +151,7 @@ end)lua"
 	detail::port_model(lua, library);
 	detail::port_math(lua, library);
 	detail::port_baseimage(lua, library);
+	detail::port_system(lua, library);
 
 	// 以下、ポーティング
 
