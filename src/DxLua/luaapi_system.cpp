@@ -51,7 +51,11 @@ void port_system(sol::state_view &lua, sol::table &t) {
 	DXLUA_PORT(t, ConvMilliSecondsToSysPerformanceCount);
 	DXLUA_PORT(t, ConvMicroSecondsToSysPerformanceCount);
 	DXLUA_PORT(t, ConvNanoSecondsToSysPerformanceCount);
-	//extern	int			GetDateTime(DATEDATA * DateBuf);			// 現在時刻を取得する 
+	t["GetDateTime"] = [](sol::variadic_args va) {
+		static DATEDATA DateBuf;
+		int Result = GetDateTime(&DateBuf);
+		return DateBuf;
+	};
 
 	// 乱数取得
 	DXLUA_PORT(t, GetRand);
@@ -77,7 +81,6 @@ void port_system(sol::state_view &lua, sol::table &t) {
 		}
 		return DestBuffer.data();
 	};
-	//DXLUA_PORT(t, SetClipboardText);
 	t["SetClipboardText"] = [](sol::optional<std::string> maybe_Text) {
 		int Result = FALSE;
 		if (maybe_Text) {
