@@ -1,4 +1,6 @@
-﻿#include <DxLib.h>
+﻿#include <tuple>
+
+#include <DxLib.h>
 #include <lua.hpp>
 #include <sol/sol.hpp>
 
@@ -91,10 +93,20 @@ void port_system(sol::state_view &lua, sol::table &t) {
 	};
 
 	// iniファイル関係
-	//extern	int			GetPrivateProfileStringDx(const TCHAR * AppName, const TCHAR * KeyName, const TCHAR * Default, TCHAR * ReturnedStringBuffer, size_t ReturnedStringBufferBytes, const TCHAR * IniFilePath, int IniFileCharCodeFormat = -1 /* DX_CHARCODEFORMAT_SHIFTJIS 等、-1 でデフォルト */);		// GetPrivateProfileString のＤＸライブラリ版
-	//extern	int			GetPrivateProfileStringDxWithStrLen(const TCHAR * AppName, size_t AppNameLength, const TCHAR * KeyName, size_t KeyNameLength, const TCHAR * Default, size_t DefaultLength, TCHAR * ReturnedStringBuffer, size_t ReturnedStringBufferBytes, const TCHAR * IniFilePath, size_t IniFilePathLength, int IniFileCharCodeFormat = -1 /* DX_CHARCODEFORMAT_SHIFTJIS 等、-1 でデフォルト */);		// GetPrivateProfileString のＤＸライブラリ版
-	//extern	int			GetPrivateProfileIntDx(const TCHAR * AppName, const TCHAR * KeyName, int          Default, const TCHAR * IniFilePath, int IniFileCharCodeFormat = -1 /* DX_CHARCODEFORMAT_SHIFTJIS 等、-1 でデフォルト */);		// GetPrivateProfileInt のＤＸライブラリ版
-	//extern	int			GetPrivateProfileIntDxWithStrLen(const TCHAR * AppName, size_t AppNameLength, const TCHAR * KeyName, size_t KeyNameLength, int          Default, const TCHAR * IniFilePath, size_t IniFilePathLength, int IniFileCharCodeFormat = -1 /* DX_CHARCODEFORMAT_SHIFTJIS 等、-1 でデフォルト */);		// GetPrivateProfileInt のＤＸライブラリ版
+	t["GetPrivateProfileStringDx"] = [](const TCHAR *AppName, const TCHAR *KeyName, const TCHAR *Default, size_t ReturnedStringBufferBytes, const TCHAR *IniFilePath, sol::variadic_args va) {
+		int IniFileCharCodeFormat = va_get(va, 0, -1);
+		static std::vector<char> ReturnedStringBuffer;
+		ReturnedStringBuffer.reserve(ReturnedStringBufferBytes);
+		if (ReturnedStringBuffer.size() < ReturnedStringBufferBytes) {
+			ReturnedStringBuffer.resize(ReturnedStringBufferBytes);
+		}
+		int Result = GetPrivateProfileStringDx(AppName, KeyName, Default, ReturnedStringBuffer.data(), ReturnedStringBufferBytes, IniFilePath, IniFileCharCodeFormat);
+		return std::tuple(Result, ReturnedStringBuffer.data());
+	};
+	t["GetPrivateProfileIntDx"] = [](const TCHAR *AppName, const TCHAR *KeyName, int Default, const TCHAR *IniFilePath, sol::variadic_args va) {
+		int IniFileCharCodeFormat = va_get(va, 0, -1);
+		return GetPrivateProfileIntDx(AppName, KeyName, Default, IniFilePath, IniFileCharCodeFormat);
+	};
 	//extern	int			GetPrivateProfileStringDxForMem(const TCHAR * AppName, const TCHAR * KeyName, const TCHAR * Default, TCHAR * ReturnedStringBuffer, size_t ReturnedStringBufferBytes, const void *IniFileImage, size_t IniFileImageBytes, int IniFileCharCodeFormat = -1 /* DX_CHARCODEFORMAT_SHIFTJIS 等、-1 でデフォルト */);		// GetPrivateProfileStringDx のメモリから読み込む版
 	//extern	int			GetPrivateProfileStringDxForMemWithStrLen(const TCHAR * AppName, size_t AppNameLength, const TCHAR * KeyName, size_t KeyNameLength, const TCHAR * Default, size_t DefaultLength, TCHAR * ReturnedStringBuffer, size_t ReturnedStringBufferBytes, const void *IniFileImage, size_t IniFileImageBytes, int IniFileCharCodeFormat = -1 /* DX_CHARCODEFORMAT_SHIFTJIS 等、-1 でデフォルト */);		// GetPrivateProfileStringDx のメモリから読み込む版
 	//extern	int			GetPrivateProfileIntDxForMem(const TCHAR * AppName, const TCHAR * KeyName, int          Default, const void *IniFileImage, size_t IniFileImageBytes, int IniFileCharCodeFormat = -1 /* DX_CHARCODEFORMAT_SHIFTJIS 等、-1 でデフォルト */);		// GetPrivateProfileIntDx のメモリから読み込む版
