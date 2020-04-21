@@ -114,14 +114,26 @@ void port_system(sol::state_view &lua, sol::table &t) {
 
 #if defined( __APPLE__ ) || defined( __ANDROID__ )
 
-// メールアプリを送信メール編集状態で起動する
-// MailAddr    : 宛先( NULL で無効 )、メールアドレスが複数ある場合はカンマ『,』で区切ってください
-// MailCCAddr  : CC の宛先( NULL で無効 )、メールアドレスが複数ある場合はカンマ『,』で区切ってください
-// MailBCCAddr : BCC の宛先( NULL で無効 )、メールアドレスが複数ある場合はカンマ『,』で区切ってください
-// Subject     : タイトル( NULL で無効 )、メールアドレスが複数ある場合はカンマ『,』で区切ってください
-// Text        : 本文( NULL で無効 )、メールアドレスが複数ある場合はカンマ『,』で区切ってください
-	//extern	int			MailApp_Send(const TCHAR * MailAddr = NULL, const TCHAR * MailCCAddr = NULL, const TCHAR * MailBCCAddr = NULL, const TCHAR * Subject = NULL, const TCHAR * Text = NULL);
-	//extern	int			MailApp_SendWithStrLen(const TCHAR * MailAddr = NULL, size_t MailAddrLength = 0, const TCHAR * MailCCAddr = NULL, size_t MailCCAddrLength = 0, const TCHAR * MailBCCAddr = NULL, size_t MailBCCAddrLength = 0, const TCHAR * Subject = NULL, size_t SubjectLength = 0, const TCHAR * Text = NULL, size_t TextLength = 0);
+	t["MailApp_Send"] = [](
+		sol::optional<std::string> maybe_MailAddr, 
+		sol::optional<std::string> maybe_MailCCAddr,
+		sol::optional<std::string> maybe_MailBCCAddr,
+		sol::optional<std::string> maybe_Subject,
+		sol::optional<std::string> maybe_Text) {
+		const TCHAR *MailAddr = NULL;
+		const TCHAR *MailCCAddr = NULL;
+		const TCHAR *MailBCCAddr = NULL;
+		const TCHAR *Subject = NULL;
+		const TCHAR *Text = NULL;
+
+		if (maybe_MailAddr) MailAddr = maybe_MailAddr.value().c_str();
+		if (maybe_MailCCAddr) MailCCAddr = maybe_MailCCAddr.value().c_str();
+		if (maybe_MailBCCAddr) MailBCCAddr = maybe_MailBCCAddr.value().c_str();
+		if (maybe_Subject) Subject = maybe_Subject.value().c_str();
+		if (maybe_Text) Text = maybe_Text.value().c_str();
+
+		return MailApp_Send(MailAddr, MailCCAddr, MailBCCAddr, Subject, Text);
+	};
 
 #endif // defined( __APPLE__ ) || defined( __ANDROID__ )
 
