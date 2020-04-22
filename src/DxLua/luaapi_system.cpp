@@ -19,7 +19,19 @@ void port_system(sol::state_view &lua, sol::table &t) {
 
 	// エラー関係関数
 	DXLUA_PORT(t, GetLastErrorCode);
-	//extern	int			GetLastErrorMessage(TCHAR * StringBuffer, int StringBufferBytes);		// 最後に発生したエラーのエラーメッセージを指定の文字列バッファに取得する
+	t["GetLastErrorMessage"] = [](sol::variadic_args va) {
+		int StringBufferBytes = va_get(va, 0, 0);
+		static std::vector<char> StringBuffer;
+		if (StringBufferBytes <= 0) {
+		} else {
+			StringBuffer.reserve(StringBufferBytes);
+			if (StringBuffer.size() < StringBufferBytes) {
+				StringBuffer.resize(StringBufferBytes);
+			}
+		}
+		int Result = GetLastErrorMessage(StringBuffer.data(), StringBuffer.size());
+		return std::tuple(Result, StringBuffer.data());
+	};
 
 	// メッセージ処理関数
 	DXLUA_PORT(t, ProcessMessage);
@@ -109,6 +121,26 @@ void port_system(sol::state_view &lua, sol::table &t) {
 	};
 	//extern	int			GetPrivateProfileStringDxForMem(const TCHAR * AppName, const TCHAR * KeyName, const TCHAR * Default, TCHAR * ReturnedStringBuffer, size_t ReturnedStringBufferBytes, const void *IniFileImage, size_t IniFileImageBytes, int IniFileCharCodeFormat = -1 /* DX_CHARCODEFORMAT_SHIFTJIS 等、-1 でデフォルト */);		// GetPrivateProfileStringDx のメモリから読み込む版
 	//extern	int			GetPrivateProfileStringDxForMemWithStrLen(const TCHAR * AppName, size_t AppNameLength, const TCHAR * KeyName, size_t KeyNameLength, const TCHAR * Default, size_t DefaultLength, TCHAR * ReturnedStringBuffer, size_t ReturnedStringBufferBytes, const void *IniFileImage, size_t IniFileImageBytes, int IniFileCharCodeFormat = -1 /* DX_CHARCODEFORMAT_SHIFTJIS 等、-1 でデフォルト */);		// GetPrivateProfileStringDx のメモリから読み込む版
+#if 0
+	t["GetPrivateProfileStringDxForMem"] = [](
+		const TCHAR *AppName,
+		const TCHAR *KeyName,
+		const TCHAR *Default,
+		size_t ReturnedStringBufferBytes,
+		const void *IniFileImage,
+		size_t IniFileImageBytes,
+		sol::variadic_args va
+	) {
+		int IniFileCharCodeFormat = va_get(va, 0, -1);
+		static std::vector<char> ReturnedStringBuffer;
+		ReturnedStringBuffer.reserve(ReturnedStringBufferBytes);
+		if (ReturnedStringBuffer.size() < ReturnedStringBufferBytes) {
+			ReturnedStringBuffer.resize(ReturnedStringBufferBytes);
+		}
+		int Result = GetPrivateProfileStringDxForMem(AppName, KeyName, Default, ReturnedStringBuffer.data(), ReturnedStringBufferBytes, IniFileImage, IniFileImageBytes, IniFileCharCodeFormat);
+		return Result;
+	};
+#endif
 	//extern	int			GetPrivateProfileIntDxForMem(const TCHAR * AppName, const TCHAR * KeyName, int          Default, const void *IniFileImage, size_t IniFileImageBytes, int IniFileCharCodeFormat = -1 /* DX_CHARCODEFORMAT_SHIFTJIS 等、-1 でデフォルト */);		// GetPrivateProfileIntDx のメモリから読み込む版
 	//extern	int			GetPrivateProfileIntDxForMemWithStrLen(const TCHAR * AppName, size_t AppNameLength, const TCHAR * KeyName, size_t KeyNameLength, int          Default, const void *IniFileImage, size_t IniFileImageBytes, int IniFileCharCodeFormat = -1 /* DX_CHARCODEFORMAT_SHIFTJIS 等、-1 でデフォルト */);		// GetPrivateProfileIntDx のメモリから読み込む版
 
@@ -119,7 +151,8 @@ void port_system(sol::state_view &lua, sol::table &t) {
 		sol::optional<std::string> maybe_MailCCAddr,
 		sol::optional<std::string> maybe_MailBCCAddr,
 		sol::optional<std::string> maybe_Subject,
-		sol::optional<std::string> maybe_Text) {
+		sol::optional<std::string> maybe_Text
+	) {
 		const TCHAR *MailAddr = NULL;
 		const TCHAR *MailCCAddr = NULL;
 		const TCHAR *MailBCCAddr = NULL;
