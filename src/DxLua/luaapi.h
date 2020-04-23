@@ -30,6 +30,7 @@ void port_draw(sol::state_view &lua, sol::table &t);
 void port_model(sol::state_view &lua, sol::table &t);
 void port_math(sol::state_view &lua, sol::table &t);
 void port_baseimage(sol::state_view &lua, sol::table &t);
+void port_system(sol::state_view &lua, sol::table &t);
 
 } // namespace DxLua::detail
 

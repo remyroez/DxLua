@@ -13,4 +13,5 @@ target_sources(DxLua PRIVATE
     luaapi_model.cpp
     luaapi_math.cpp
     luaapi_baseimage.cpp
+    luaapi_system.cpp
 )

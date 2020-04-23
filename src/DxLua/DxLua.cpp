@@ -151,32 +151,9 @@ end)lua"
 	detail::port_model(lua, library);
 	detail::port_math(lua, library);
 	detail::port_baseimage(lua, library);
+	detail::port_system(lua, library);
 
 	// 以下、ポーティング
-
-	DXLUA_PORT(library, ProcessMessage);
-
-	DXLUA_PORT(library, WaitTimer);
-
-#ifndef DX_NON_INPUT
-	DXLUA_PORT(library, WaitKey);
-#endif // DX_NON_INPUT
-
-	library["GetNowCount"] = [](sol::variadic_args va) {
-		return GetNowCount(va.leftover_count() > 0 ? (va[0].as<bool>() ? TRUE : FALSE) : FALSE);
-	};
-	library["GetNowHiPerformanceCount"] = [](sol::variadic_args va) {
-		return GetNowHiPerformanceCount(va.leftover_count() > 0 ? (va[0].as<bool>() ? TRUE : FALSE) : FALSE);
-	};
-
-	DXLUA_PORT(library, GetRand);
-	DXLUA_PORT(library, SRand);
-
-	DXLUA_PORT(library, SetCameraPositionAndTarget_UpVecY);
-
-	library["SetAlwaysRunFlag"] = [](sol::object Flag) {
-		return SetAlwaysRunFlag(Flag.as<bool>() ? TRUE : FALSE);
-	};
 
 	library["SetDoubleStartValidFlag"] = [](sol::object Flag) {
 		return SetDoubleStartValidFlag(Flag.as<bool>() ? TRUE : FALSE);
