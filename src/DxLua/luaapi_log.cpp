@@ -23,12 +23,16 @@ void port_log(sol::state_view &lua, sol::table &t) {
 	};
 
 	// ログ出力設定関数
-	//extern	int			SetOutApplicationLogValidFlag(int Flag);													// ログファイル( Log.txt ) を作成するかどうかを設定する( TRUE:作成する( デフォルト )  FALSE:作成しない )、DxLib_Init の前でのみ使用可能　
-	//extern	int			SetApplicationLogFileName(const TCHAR * FileName);										// ログファイルの名前を設定する( Log.txt 以外にしたい場合に使用 )
-	//extern	int			SetApplicationLogFileNameWithStrLen(const TCHAR * FileName, size_t FileNameLength);				// ログファイルの名前を設定する( Log.txt 以外にしたい場合に使用 )
-	//extern	int			SetApplicationLogSaveDirectory(const TCHAR * DirectoryPath);								// ログファイル( Log.txt ) を保存するディレクトリパスを設定する
-	//extern	int			SetApplicationLogSaveDirectoryWithStrLen(const TCHAR * DirectoryPath, size_t DirectoryPathLength);	// ログファイル( Log.txt ) を保存するディレクトリパスを設定する
-	//extern	int			SetUseDateNameLogFile(int Flag);													// ログファイル名に日付をつけるかどうかをセットする( TRUE:付ける  FALSE:付けない( デフォルト ) )
+	t["SetOutApplicationLogValidFlag"] = [](sol::variadic_args va) {
+		int Flag = va_get(va, 0, false);
+		return SetOutApplicationLogValidFlag(Flag);
+	};
+	DXLUA_PORT(t, SetApplicationLogFileName);
+	DXLUA_PORT(t, SetApplicationLogSaveDirectory);
+	t["SetUseDateNameLogFile"] = [](sol::variadic_args va) {
+		int Flag = va_get(va, 0, false);
+		return SetUseDateNameLogFile(Flag);
+	};
 
 #ifndef DX_NON_PRINTF_DX
 
