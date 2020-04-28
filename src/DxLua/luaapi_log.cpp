@@ -49,10 +49,12 @@ void port_log(sol::state_view &lua, sol::table &t) {
 	DXLUA_PORT(t, SetLogDrawArea);
 
 	// 簡易画面出力関数
-	//extern 	int			printfDx(const TCHAR * FormatString, ...);								// printf と同じ引数で画面に文字列を表示するための関数
-	//extern	int			putsDx(const TCHAR * String, int NewLine = TRUE);						// puts と同じ引数で画面に文字列を表示するための関数
-	//extern	int			putsDxWithStrLen(const TCHAR * String, size_t StringLength, int NewLine = TRUE);	// puts と同じ引数で画面に文字列を表示するための関数
-	//extern	int			clsDx(void);															// printfDx の結果をリセットするための関数
+	DXLUA_PORT(t, printfDx);
+	t["putsDx"] = [](const TCHAR *String, sol::variadic_args va) {
+		int NewLine = va_get(va, 0, false);
+		return putsDx(String, NewLine);
+	};
+	DXLUA_PORT(t, clsDx);
 
 #endif // DX_NON_PRINTF_DX
 
