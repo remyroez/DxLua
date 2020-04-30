@@ -15,4 +15,5 @@ target_sources(DxLua PRIVATE
     luaapi_baseimage.cpp
     luaapi_system.cpp
     luaapi_log.cpp
+    luaapi_asyncload.cpp
 )

@@ -153,6 +153,7 @@ end)lua"
 	detail::port_baseimage(lua, library);
 	detail::port_system(lua, library);
 	detail::port_log(lua, library);
+	detail::port_asyncload(lua, library);
 
 	// 以下、ポーティング
 
