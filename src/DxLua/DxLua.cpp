@@ -154,6 +154,7 @@ end)lua"
 	detail::port_system(lua, library);
 	detail::port_log(lua, library);
 	detail::port_asyncload(lua, library);
+	detail::port_file(lua, library);
 
 	// 以下、ポーティング
 
