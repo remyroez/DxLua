@@ -33,6 +33,7 @@ void port_baseimage(sol::state_view &lua, sol::table &t);
 void port_system(sol::state_view &lua, sol::table &t);
 void port_log(sol::state_view &lua, sol::table &t);
 void port_asyncload(sol::state_view &lua, sol::table &t);
+void port_file(sol::state_view &lua, sol::table &t);
 
 } // namespace DxLua::detail
 
