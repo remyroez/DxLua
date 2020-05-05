@@ -17,4 +17,5 @@ target_sources(DxLua PRIVATE
     luaapi_log.cpp
     luaapi_asyncload.cpp
     luaapi_file.cpp
+    luaapi_inputstring.cpp
 )

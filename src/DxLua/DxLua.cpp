@@ -155,6 +155,7 @@ end)lua"
 	detail::port_log(lua, library);
 	detail::port_asyncload(lua, library);
 	detail::port_file(lua, library);
+	detail::port_inputstring(lua, library);
 
 	// 以下、ポーティング
 
@@ -184,13 +185,6 @@ end)lua"
 
 	library["GetCharBytes"] = [](int CharCodeFormat, const char *String) {
 		return GetCharBytes(CharCodeFormat, String);
-	};
-
-	library["GetInputChar"] = [](sol::object DeleteFlag) {
-		return (unsigned int)GetInputChar(DeleteFlag.as<bool>() ? TRUE : FALSE);
-	};
-	library["GetInputCharWait"] = [](sol::object DeleteFlag) {
-		return (unsigned int)GetInputCharWait(DeleteFlag.as<bool>() ? TRUE : FALSE);
 	};
 
 	library["Buffer_getInt32"] = [](sol::table table, sol::variadic_args va) {
